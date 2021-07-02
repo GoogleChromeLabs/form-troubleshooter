@@ -48,7 +48,7 @@ body {
   animation: fadeIn 0.3s ease-in;
   background-color: #fefefe;
   min-width: 300px;
-  padding: 25px 20px 10px 20px;
+  padding: 25px 10px 10px 10px;
 }
 
 button {
