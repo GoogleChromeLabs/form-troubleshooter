@@ -4,7 +4,10 @@ Chrome extension to find and fix common form problems.
 
 ![image](https://user-images.githubusercontent.com/205226/124280594-c7b74a00-db40-11eb-8770-78a857815480.png)
 
-![image](https://user-images.githubusercontent.com/205226/124281013-37c5d000-db41-11eb-8094-2461b8e002ca.png)
+![image](https://user-images.githubusercontent.com/205226/124281671-d9e5b800-db41-11eb-93d4-32b268c10a74.png)
+
+![image](https://user-images.githubusercontent.com/205226/124281578-c0447080-db41-11eb-8a13-f04b1badd920.png)
+
 
 ## How it works
 
