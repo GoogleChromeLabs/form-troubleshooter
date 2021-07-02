@@ -149,14 +149,19 @@ function saveAsHTML() {
   chrome.tabs.query({active: true, currentWindow: true})
     .then((tabs) => {
       headerHTML = '<header><h1>Form audit<br>' +
-        `<span style="font-weight: 300">${tabs[0].title}<br>${tabs[0].url}</span></h1></header>`;
+        `<span style="font-weight: 400">${tabs[0].title}</span><br>` +
+        `<span style="font-weight: 200">${tabs[0].url}</span></h1></header>`;
     });
   fetch('../css/popup.css')
     .then((response) => response.text())
     .then((text) => {
-      const css = `<style>${text}</style>`;
-      const mainHTML = document.querySelector('main').innerHTML;
-      const footerHTML = document.querySelector('footer').innerHTML;
+      const extras = 'body {margin: 40px;}\n' +
+        'details {width: unset;}\n' +
+        'footer, header, main {margin: 0 auto; max-width: 1000px;}' +
+        'h1 {border-bottom: 2px solid #eee; font-size: 32px; margin: 0 0 60px 0; padding: 0 0 18px 0;}';
+      const css = `<style>${text}\n${extras}</style>`;
+      const mainHTML = `<main>${document.querySelector('main').innerHTML}</main>`;
+      const footerHTML = `<footer>${document.querySelector('footer').innerHTML}</footer>`;
       const blob = new Blob([css, headerHTML, mainHTML, footerHTML], {type: 'text/html'});
       const url = URL.createObjectURL(blob);
       chrome.downloads.download({

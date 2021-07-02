@@ -47,7 +47,6 @@ body {
   /* Bit of a hack... Hides display instability. */
   animation: fadeIn 0.3s ease-in;
   background-color: #fefefe;
-  margin: 0;
   min-width: 300px;
   padding: 25px 20px 10px 20px;
 }
