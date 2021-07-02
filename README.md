@@ -2,6 +2,13 @@
 
 Chrome extension to find and fix common form problems.
 
+![image](https://user-images.githubusercontent.com/205226/124280594-c7b74a00-db40-11eb-8770-78a857815480.png)
+
+![image](https://user-images.githubusercontent.com/205226/124281671-d9e5b800-db41-11eb-93d4-32b268c10a74.png)
+
+![image](https://user-images.githubusercontent.com/205226/124281578-c0447080-db41-11eb-8a13-f04b1badd920.png)
+
+
 ## How it works
 
 The extension checks the current page for form and form field elements each time it's opened.
@@ -18,10 +25,9 @@ the form elements and attributes in the page.
 1. popup.js [displays an overview](js/popup.js#L58) of form and form field data in popup.html.
 1. audits.js [displays results](js/audits.js#L59) of the audits in popup.html.
 
-
 ## Feedback and feature requests
 
-Feedback welcome.
+Feedback and audit suggestions welcome!
 
 * [Make a comment or request](https://forms.gle/Sm7DbKfLX3hHNcDp9)
 * [File a bug](https://github.com/samdutton/form-troubleshooter/issues/new)
