@@ -47,12 +47,12 @@ function getAndStoreElementData() {
     } else {
       // Run this every time the popup is opened, in case page elements are updated dynamically.
       const elementData = {
-        form: getElementInfo('form', ['id', 'name', 'action', 'method', 'containsFormFields']),
-        input: getElementInfo('input', ['id', 'name', 'autocomplete', 'placeholder', 'required', 'type']),
-        select: getElementInfo('select', ['id', 'name', 'autocomplete', 'required']),
-        textarea: getElementInfo('textarea', ['id', 'name', 'autocomplete', 'required']),
-        button: getElementInfo('button', ['id', 'name', 'textContent', 'type']),
-        label: getElementInfo('label', ['for', 'textContent', 'invalidContent']),
+        form: getElementInfo('form', ['id', 'class', 'name', 'action', 'method', 'containsFormField']),
+        input: getElementInfo('input', ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type']),
+        select: getElementInfo('select', ['id', 'class', 'name', 'autocomplete', 'required']),
+        textarea: getElementInfo('textarea', ['id', 'class', 'name', 'autocomplete', 'required']),
+        button: getElementInfo('button', ['id', 'class', 'name', 'textContent', 'type']),
+        label: getElementInfo('label', ['id', 'class', 'for', 'textContent', 'containsFormField', 'invalidLabelDescendants']),
       };
       chrome.storage.local.set({elementData: elementData}, () => {
         console.log('elementData', elementData);
@@ -75,8 +75,9 @@ function getElementInfo(tagName, properties) {
 }
 
 // Get attribute values and other properties for a form or form field element.
-// TODO: better way to add properties that are only used for one element, e.g. label.invalidContent.
+// TODO: better way to add properties that are only used for one element, e.g. label.invalidLabelDescendants.
 function getElementProperties(element, properties) {
+  // Set properties used for all form and form field element.
   let elementProperties = {
     // For form elements, formAncestorID will be used to check for forms in forms (which is an error).
     // NB: closest() returns the element it's called on if that matches the selector.
@@ -84,30 +85,36 @@ function getElementProperties(element, properties) {
       element.parentNode.closest('form').getAttribute('id') : null,
     tagName: element.tagName.toLowerCase(),
   };
-
   const invalidAttributes = getInvalidAttributes(element);
   if (invalidAttributes) {
     elementProperties.invalidAttributes = invalidAttributes;
   }
+  // Add properties appropriate for specific elements, as defined in properties.
   for (const property of properties) {
-    if (property === 'textContent') {
+    switch (property) {
+    case 'textContent':
       elementProperties.textContent = element.textContent.trim();
-    } else if (property === 'containsFormFields') {
-      // Used for forms.
-      elementProperties.containsFormFields =
+      break;
+    case 'containsFormField':
+      // Used for forms and labels.
+      elementProperties.containsFormField =
         element.querySelector('button, input, select, textarea') !== null;
-    } else if (property === 'required') {
+      break;
+    case 'required':
       elementProperties.required = element.hasAttribute('required') ? 'required' : null;
-    } else if (property === 'invalidContent') {
-      // Used for labels.
-      const invalidNodes = [...element.querySelectorAll('a, button, h1, h2, h3, h4, h5, h6')];
-      elementProperties.invalidContent = invalidNodes.map(node => node.nodeName.toLowerCase()).join(', ');
-    } else {
+      break;
+    case 'invalidLabelDescendants':
+      // Only used for labels.
+      // eslint-disable-next-line no-case-declarations
+      const invalidLabelDescendants = [...element.querySelectorAll('a, button, h1, h2, h3, h4, h5, h6')];
+      elementProperties.invalidLabelDescendants =
+        invalidLabelDescendants.map(node => node.nodeName.toLowerCase()).join(', ');
+      break;
+    default:
       elementProperties[property] = element.hasAttribute(property) ?
         element.getAttribute(property) : null;
     }
   }
-
   return elementProperties;
 }
 

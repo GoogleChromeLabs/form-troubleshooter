@@ -141,7 +141,7 @@ function hasFieldsWithIdOrName() {
     const item = {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
-        `${problemFields.join('<br>• ')}`,
+        `${problemFields.join('<br>• ')}<br>(This may not be an error.)`,
       learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname">The HTML name attribute</a>',
       title: 'Form fields should have an <code>id</code> or a <code>name</code>.',
       type: 'warning',
@@ -286,7 +286,7 @@ function hasNoFieldsWithEmptyAutocomplete() {
 // All form elements contain at least one form field element.
 function hasNoFormElementsWithoutFormFields() {
   const problemForms = elementData.form
-    .filter(form => !form.containsFormFields)
+    .filter(form => !form.containsFormField)
     .map(form => stringifyElement(form));
   if (problemForms.length) {
     const item = {
@@ -305,7 +305,7 @@ function hasNoFormElementsWithoutFormFields() {
 // See https://developer.mozilla.org/docs/Web/HTML/Element/label#accessibility_concerns.
 function hasNoLabelsContainingInvalidElements() {
   const problemLabels = elementData.label
-    .filter(label => label.invalidContent)
+    .filter(label => label.invalidLabelDescendants)
     .map(label => `Label '${label.textContent}' contains the element <code>&lt;${label.invalidContent}&gt;</code>.`);
   if (problemLabels.length) {
     const item = {
@@ -359,15 +359,17 @@ function hasNoEmptyLabels() {
 // See also: hasNoEmptyForAttributes().
 function hasNoLabelsMissingForAttributes() {
   const problemLabels = elementData.label
-    .filter(label => label.for === null)
+    // Ignore labels that contain form fields: they don't need for attributes.
+    // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label#:~:text=nest
+    .filter(label => !label.containsFormField && label.for === null)
     .map(label => stringifyElement(label));
   if (problemLabels.length) {
     const item = {
       // description: 'All labels should have a for attribute.',
-      details: 'Found label(s) without a <code>for</code> attribute:<br>• ' +
+      details: 'Found label(s) with no form field descendant, and with no <code>for</code> attribute:<br>• ' +
         `${problemLabels.join('<br>• ')}`,
       learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage">The HTML for attribute</a>',
-      title: 'Labels must have a for attribute.',
+      title: 'Labels must have a for attribute or contain a form field.',
       type: 'error',
     };
     items.push(item);
@@ -455,13 +457,18 @@ function findDuplicates(array, property, ignoreIfDifferent) {
 
 // Create a representation of a form element.
 function stringifyElement(field) {
-  const attributesToInclude = ['action', 'autocomplete', 'for', 'id', 'name', 'placeholder'];
+  const attributesToInclude = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder'];
   // entry[0] is an attribute name, entry[1] is an attribute value (which may be null or empty).
   let attributes = Object.entries(field)
     .filter(entry => attributesToInclude.includes(entry[0]))
-    // Iinclude empty attributes, e.g. for="", but not missing attributes.
+    // Include empty attributes, e.g. for="", but not missing attributes.
     .filter(entry => field[entry[0]] !== null)
-    .map(entry => `${entry[0]}="${entry[1]}"`).join(' ');
+    .map(entry => {
+      // console.log('>>>', '|' + entry[0] + '|', '|' + entry[1] + '|');
+      return `${entry[0]}="${entry[1]}"`;
+    })
+    .join(' ');
+
   const openingTag = `&lt;${field.tagName}${attributes ? ' ' + attributes : ''}&gt;`;
   return field.tagName === 'label' ?
     `<code>${openingTag}${field.textContent || ''}&lt;/label&gt;</code>` :

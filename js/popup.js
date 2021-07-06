@@ -20,12 +20,12 @@ const overviewSummary = document.querySelector('#overview summary');
 
 // Keys are used to order sections displayed in popup.
 const ELEMENTS = {
-  form: ['id', 'name', 'action', 'method'],
-  input: ['id', 'name', 'autocomplete', 'placeholder', 'required', 'type'],
-  select: ['id', 'name', 'autocomplete', 'required'],
-  textarea: ['id', 'name', 'autocomplete', 'required'],
-  button: ['id', 'name', 'textContent', 'type'],
-  label: ['for', 'textContent'],
+  form: ['id', 'class', 'name', 'action', 'method'],
+  input: ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type'],
+  select: ['id', 'class', 'name', 'autocomplete', 'required'],
+  textarea: ['id', 'class', 'name', 'autocomplete', 'required'],
+  button: ['id', 'class', 'name', 'textContent', 'type'],
+  label: ['id', 'class', 'for', 'textContent'],
 };
 
 // Send a message to the content script to audit the current page.
@@ -112,6 +112,7 @@ function createAttributeTable(elementName, elementArray) {
   for (const attributeName of ELEMENTS[elementName]) {
     addElement(tr, 'th', attributeName);
   }
+  // Add columns that aren't for attribute values. (See below for <td>.)
   switch (elementName) {
   case 'for':
     addElement(tr, 'th', 'Field');
@@ -129,6 +130,7 @@ function createAttributeTable(elementName, elementArray) {
         element[attributeName] === '' ? '[empty]' : element[attributeName];
       addElement(tr, 'td', attributeValue);
     }
+    // Add columns that aren't for attribute values. (See above for <th>.)
     switch (elementName) {
     // Each for attribute should have an associated field.
     // The field id or name provided by content-script.js should match the for value.
@@ -158,7 +160,8 @@ function saveAsHTML() {
       const extras = 'body {margin: 40px;}\n' +
         'details {width: unset;}\n' +
         'footer, header, main {margin: 0 auto; max-width: 1000px;}' +
-        'h1 {border-bottom: 2px solid #eee; font-size: 32px; margin: 0 0 60px 0; padding: 0 0 18px 0;}';
+        'h1 {border-bottom: 2px solid #eee; font-size: 32px; margin: 0 0 60px 0; ' +
+          'overflow: hidden; padding: 0 0 18px 0; text-overflow: ellipsis; white-space: nowrap}';
       const css = `<style>${text}\n${extras}</style>`;
       const mainHTML = `<main>${document.querySelector('main').innerHTML}</main>`;
       const footerHTML = `<footer>${document.querySelector('footer').innerHTML}</footer>`;
