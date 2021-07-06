@@ -9,6 +9,36 @@ Chrome extension to find and fix common form problems.
 ![image](https://user-images.githubusercontent.com/205226/124281578-c0447080-db41-11eb-8a13-f04b1badd920.png)
 
 
+## Installation 
+
+When released, this extension will be available from the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
+
+For the moment, you'll need to install it from the local files.
+
+1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) 
+or clone the repo: `git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`.
+1. In Chrome, navigate to `chrome://extensions`.
+1. Enable **Developer mode**.
+1. Click the **Load unpacked** button and select the top-level directory containing the extension.
+1. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, 
+select **Form Troubleshooter**.
+
+
+## Usage
+
+Visit a page you want to check and click the extension icon. The extension popup has three sections:
+
+* **Overview of form and form field elements**
+* **Errors**
+* **Warning**
+
+The extension retrieves and audits form element and attribute every time the icon is clicked.
+
+**Save as HTML** saves the report as a local HTML file.
+
+You can try out the extension on the test page [form-problems.glitch.me](https://form-problems.glitch.me).
+
+
 ## How it works
 
 The extension checks the current page for form and form field elements each time it's opened.
@@ -25,12 +55,14 @@ the form elements and attributes in the page.
 1. popup.js [displays an overview](js/popup.js#L58) of form and form field data in popup.html.
 1. audits.js [displays results](js/audits.js#L59) of the audits in popup.html.
 
+
 ## Feedback and feature requests
 
 Feedback and audit suggestions welcome!
 
 * [Make a comment or request](https://forms.gle/Sm7DbKfLX3hHNcDp9)
 * [File a bug](https://github.com/samdutton/form-troubleshooter/issues/new)
+
 
 ## TODO
 
