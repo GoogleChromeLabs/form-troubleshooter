@@ -1,6 +1,6 @@
 # Form troubleshooter
 
-Chrome extension to find and fix common form problems.
+**A Chrome extension to find and fix common form problems.**
 
 ![image](https://user-images.githubusercontent.com/205226/124280594-c7b74a00-db40-11eb-8770-78a857815480.png)
 
@@ -13,15 +13,18 @@ Chrome extension to find and fix common form problems.
 
 When released, this extension will be available from the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
 
-For the moment, you'll need to install it from the local files.
+For the moment, you'll need to download the code and install the extension from local files.
 
 1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) 
-or clone the repo: `git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`.
-1. In Chrome, navigate to `chrome://extensions`.
-1. Enable **Developer mode**.
-1. Click the **Load unpacked** button and select the top-level directory containing the extension.
-1. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, 
-select **Form Troubleshooter**.
+or clone the repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
+2. In Chrome, navigate to `chrome://extensions`.<br><br>
+<img alt="Screenshot of the chrome://extensions page" src="https://user-images.githubusercontent.com/205226/124620948-c86a1c00-de71-11eb-8c9d-5d7353c13f65.png" width="75%">
+
+3. Enable **Developer mode**.
+4. Click the **Load unpacked** button and select the top-level directory containing the extension.
+5. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, 
+select **Form Troubleshooter**.<br><br>
+<img alt="Screenshot of the Chrome Extensions menu" src="https://user-images.githubusercontent.com/205226/124620955-cb650c80-de71-11eb-9c99-65430ac7949b.png" width="75%">
 
 
 ## Usage
@@ -30,13 +33,27 @@ Visit a page you want to check and click the extension icon. The extension popup
 
 * **Overview of form and form field elements**
 * **Errors**
-* **Warning**
+* **Warnings**
 
 The extension retrieves and audits form element and attribute every time the icon is clicked.
 
 **Save as HTML** saves the report as a local HTML file.
 
 You can try out the extension on the test page [form-problems.glitch.me](https://form-problems.glitch.me).
+
+
+## Caveats
+
+* The extension is designed to be used as a tool, not to confirm whether code is 'right' or 'wrong'. 
+Form usage is often complex (especially for high-traffic sites) so it's difficult to provide 
+validation for form code that works across a variety of sites.
+* Some errors found by the extension may represent known problems, or be triggered by 'incorrect' 
+code that is justified for reasons outside the scope of the extension. In particular, many 
+high-traffic sites use form code in a variety of ways to function at scale and integrate with legacy 
+and third-party systems. The same code may not be appropriate for smaller-scale sites.
+
+However, please [File a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for any 
+errors reported that appear to be incorrect.
 
 
 ## How it works
@@ -61,7 +78,7 @@ the form elements and attributes in the page.
 Feedback and audit suggestions welcome!
 
 * [Make a comment or request](https://forms.gle/Sm7DbKfLX3hHNcDp9)
-* [File a bug](https://github.com/samdutton/form-troubleshooter/issues/new)
+* [File a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new)
 
 
 ## TODO
