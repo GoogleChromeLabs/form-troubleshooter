@@ -306,7 +306,7 @@ function hasNoFormElementsWithoutFormFields() {
 function hasNoLabelsContainingInvalidElements() {
   const problemLabels = elementData.label
     .filter(label => label.invalidLabelDescendants)
-    .map(label => `Label '${label.textContent}' contains the element <code>&lt;${label.invalidContent}&gt;</code>.`);
+    .map(label => `Label '${label.textContent}' contains the element <code>&lt;${label.invalidLabelDescendants}&gt;</code>.`);
   if (problemLabels.length) {
     const item = {
       // description: 'The for attribute of a label must not be empty.',
