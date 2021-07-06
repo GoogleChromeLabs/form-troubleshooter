@@ -1,6 +1,6 @@
 # Form troubleshooter
 
-Chrome extension to find and fix common form problems.
+**A Chrome extension to find and fix common form problems.**
 
 ![image](https://user-images.githubusercontent.com/205226/124280594-c7b74a00-db40-11eb-8770-78a857815480.png)
 
@@ -13,15 +13,18 @@ Chrome extension to find and fix common form problems.
 
 When released, this extension will be available from the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
 
-For the moment, you'll need to install it from the local files.
+For the moment, you'll need to download the code and install the extension from local files.
 
 1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) 
-or clone the repo: `git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`.
-1. In Chrome, navigate to `chrome://extensions`.
-1. Enable **Developer mode**.
-1. Click the **Load unpacked** button and select the top-level directory containing the extension.
-1. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, 
-select **Form Troubleshooter**.
+or clone the repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
+2. In Chrome, navigate to `chrome://extensions`.<br><br>
+<img alt="Screenshot of the chrome://extensions page" src="https://user-images.githubusercontent.com/205226/124620948-c86a1c00-de71-11eb-8c9d-5d7353c13f65.png" width="75%">
+
+3. Enable **Developer mode**.
+4. Click the **Load unpacked** button and select the top-level directory containing the extension.
+5. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, 
+select **Form Troubleshooter**.<br><br>
+<img alt="Screenshot of the Chrome Extensions menu" src="https://user-images.githubusercontent.com/205226/124620955-cb650c80-de71-11eb-9c99-65430ac7949b.png" width="75%">
 
 
 ## Usage
@@ -30,7 +33,7 @@ Visit a page you want to check and click the extension icon. The extension popup
 
 * **Overview of form and form field elements**
 * **Errors**
-* **Warning**
+* **Warnings**
 
 The extension retrieves and audits form element and attribute every time the icon is clicked.
 
