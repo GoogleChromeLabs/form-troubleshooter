@@ -172,14 +172,15 @@ function hasElementsWithUniqueIds() {
 
 
 // Element name values within the same form are unique.
-// Other than <input type="radio" ...> this is an error.
+// Other than <input type="radio" ...> or <input type="checkbox" ...> this is an error.
 function hasElementsWithUniqueNames() {
   let duplicates = findDuplicates(inputsSelectsTextareas, 'name', 'formAncestorID')
     // Radio buttons have duplicate names.
-    .filter(field => field.type !== 'radio');
+    .filter(field => field.type !== 'radio' && field.type !== 'checkbox');
   let problemFields = duplicates.map(field => stringifyElement(field));
   // Deduplicate items with same tagName and id.
   problemFields = [...new Set(problemFields)];
+  console.log('>>>', problemFields);
   if (problemFields.length) {
     const item = {
       // description: 'Autocomplete values must be valid.',
@@ -197,7 +198,7 @@ function hasElementsWithUniqueNames() {
 // Empty autocomplete are handled in hasNoFieldsWithEmptyAutocomplete().
 function hasFieldsWithAutocompleteAttributes() {
   const problemFields = inputsSelectsTextareas
-    .filter(field => field.autocomplete === null &&
+    .filter(field => field.autocomplete === null && field.type !== 'hidden' &&
         (AUTOCOMPLETE_TOKENS.includes(field.id) || AUTOCOMPLETE_TOKENS.includes(field.name)))
     .map(field => stringifyElement(field));
   if (problemFields.length) {
@@ -404,7 +405,7 @@ function hasUniqueForAttributes() {
   if (problemLabels.length) {
     const item = {
       // description: 'The for attribute of a label must be unique.',
-      details: 'Found label(s) with the same <code>for</code> attribute:<br>• ' +
+      details: 'Found labels with the same <code>for</code> attribute:<br>• ' +
         problemLabels.join('<br>• '),
       learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/">Duplicate Form Label</a>',
       title: 'The for attribute of a label must be unique.',
@@ -444,12 +445,15 @@ function findDuplicates(array, property, ignoreIfDifferent) {
     return array.find((findElement, findIndex) => {
       const isDuplicate = filterElement[property] &&
         filterElement[property] === findElement[property] && filterIndex !== findIndex;
-      if (isDuplicate) {
-        // console.log('>>> filterElement[property]', filterElement[property], findElement[property],
-        //   ignoreIfDifferent, filterElement[ignoreIfDifferent], findElement[ignoreIfDifferent]);
-      }
+      // if (isDuplicate) {
+      //   console.log('>>> filterElement[property]', filterElement[property], findElement[property],
+      //     ignoreIfDifferent, filterElement[ignoreIfDifferent], findElement[ignoreIfDifferent]);
+      // }
+      // If the ignoreIfDifferent parameter is used, return the duplicates only if they have
+      // the same (and non-null) value for the ignoreIfDifferent property.
       return ignoreIfDifferent ?
-        isDuplicate && filterElement[ignoreIfDifferent] === findElement[ignoreIfDifferent] :
+        isDuplicate && filterElement[ignoreIfDifferent] && findElement[ignoreIfDifferent] &&
+          filterElement[ignoreIfDifferent] === findElement[ignoreIfDifferent] :
         isDuplicate;
     });
   });

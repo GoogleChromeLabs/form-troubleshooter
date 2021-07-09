@@ -77,11 +77,11 @@ function getElementInfo(tagName, properties) {
 // Get attribute values and other properties for a form or form field element.
 // TODO: better way to add properties that are only used for one element, e.g. label.invalidLabelDescendants.
 function getElementProperties(element, properties) {
-  // Set properties used for all form and form field element.
+  // Set properties used for all form and form field elements.
   let elementProperties = {
-    // For form elements, formAncestorID will be used to check for forms in forms (which is an error).
+    // For form elements, formAncestor will be used to check for forms in forms (which is an error).
     // NB: closest() returns the element it's called on if that matches the selector.
-    formAncestorID: element.parentNode.closest('form') ?
+    formAncestor: element.parentNode.closest('form') ?
       element.parentNode.closest('form').getAttribute('id') : null,
     tagName: element.tagName.toLowerCase(),
   };
@@ -132,3 +132,13 @@ function getInvalidAttributes(element) {
     })
     .join(', ');
 }
+
+// Get the HTML tags for an ancestor element, or return null if there is none.
+// This is useful as a way to identity
+// For example:
+// • If an element is contained in a form, return the form tag.
+// • If the element is not in a form, return null.
+// function getAncestorTags(element, ancestorTagName) {
+//   const ancestor = element.parentNode.closest(ancestorTagName);
+//   return ancestor ? ancestor.outerHTML.replace(ancestor.innerHTML, '') : null;
+// }
