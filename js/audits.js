@@ -256,7 +256,10 @@ function hasNoFieldsWithAutocompleteOff() {
     const item = {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form field(s) with <code>autocomplete="off"</code>:<br>• ' +
-        `${problemFields.join('<br>• ')}<br>Setting <code>autocomplete="off"</code> does not disable autofill.`,
+        `${problemFields.join('<br>• ')}<br>Although <code>autocomplete="off"</code> is 
+          <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-off" 
+          title="HTML spec autocomplete attribute information">valid HTML</a>, most browsers ignore 
+          it: setting <code>autocomplete="off"</code> does not disable autofill.`,
       learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values">The HTML autocomplete attribute: Values</a>',
       title: 'Form fields should not use autocomplete="off".',
       type: 'warning',

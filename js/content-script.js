@@ -4,9 +4,11 @@ SPDX-License-Identifier: Apache-2.0 */
 /* global chrome */
 
 // From https://html.spec.whatwg.org/multipage/forms.html. Added 'role'.
-// Also aria-* and data-*
+// 'autofill-information' and 'autofill-prediction' are for use with chrome://flags/#show-autofill-type-predictions.
+// aria-* and data-* are handled in getInvalidAttributes().
 const ATTRIBUTES = {
-  'global': ['accesskey', 'autocapitalize', 'autofocus', 'class', 'contenteditable', 'dir', 'draggable',
+  'global': ['accesskey', 'autocapitalize', 'autofocus', 'autofill-information',
+    'autofill-prediction', 'class', 'contenteditable', 'dir', 'draggable',
     'enterkeyhint', 'hidden', 'inputmode', 'is', 'id', 'itemid', 'itemprop', 'itemref', 'itemscope',
     'itemtype', 'lang', 'nonce', 'role', 'spellcheck', 'style', 'tabindex', 'title', 'translate'],
   'button': ['disabled', 'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate',
