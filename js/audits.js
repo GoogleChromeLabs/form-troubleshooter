@@ -122,7 +122,7 @@ function hasNoElementsWithInvalidAttributes() {
       details: 'Found element(s) with invalid attributes:<br>• ' +
         `${problemElements.join('<br>• ')}` +
         '<br>Consider using <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes" title="MDN article: Using data attributes">data attributes</a> instead of non-standard attributes.',
-      learnMore: 'Learn more: <a href="https://html.spec.whatwg.org/multipage/forms.html">HTML Living Standard: Forms</a>',
+      learnMore: 'Learn more: <a href="https://html.spec.whatwg.org/multipage/forms.html" target="_blank">HTML Living Standard: Forms</a>',
       title: 'Element attributes should be valid.',
       type: 'warning',
     };
@@ -142,7 +142,7 @@ function hasFieldsWithIdOrName() {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
         `${problemFields.join('<br>• ')}<br>(This may not be an error.)`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname">The HTML name attribute</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The HTML name attribute</a>',
       title: 'Form fields should have an <code>id</code> or a <code>name</code>.',
       type: 'warning',
     };
@@ -162,7 +162,7 @@ function hasElementsWithUniqueIds() {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
         `${problemFields.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active">ID attribute value must be unique</a>',
+      learnMore: 'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active" target="_blank">ID attribute value must be unique</a>',
       title: 'Form fields must have unique <code>id</code> values.',
       type: 'error',
     };
@@ -186,7 +186,7 @@ function hasElementsWithUniqueNames() {
       // description: 'Autocomplete values must be valid.',
       details: 'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
         `${problemFields.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname">The input element name attribute</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The input element name attribute</a>',
       title: 'Fields in the same form must have unique <code>name</code> values.',
       type: 'error',
     };
@@ -207,7 +207,7 @@ function hasFieldsWithAutocompleteAttributes() {
       details: 'Found form field(s) with no <code>autocomplete</code> attribute, ' +
         'even though an appropriate value is available:<br>• ' +
         `${problemFields.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://web.dev/sign-in-form-best-practices/#autofill">Help users to avoid re-entering data</a>',
+      learnMore: 'Learn more: <a href="https://web.dev/sign-in-form-best-practices/#autofill" target="_blank">Help users to avoid re-entering data</a>',
       title: 'Form fields should use autocomplete where possible.',
       type: 'warning',
     };
@@ -238,7 +238,7 @@ function hasFieldsWithValidAutocompleteAttributes() {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form field(s) with invalid <code>autocomplete</code> values:<br>• ' +
         `${problemFields.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete">The HTML autocomplete attribute</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete" target="_blank">The HTML autocomplete attribute</a>',
       title: 'Autocomplete values must be valid.',
       type: 'error',
     };
@@ -260,7 +260,7 @@ function hasNoFieldsWithAutocompleteOff() {
           <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-off" 
           title="HTML spec autocomplete attribute information">valid HTML</a>, most browsers ignore 
           it: setting <code>autocomplete="off"</code> does not disable autofill.`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values">The HTML autocomplete attribute: Values</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values" target="_blank">The HTML autocomplete attribute: Values</a>',
       title: 'Form fields should not use autocomplete="off".',
       type: 'warning',
     };
@@ -279,7 +279,7 @@ function hasNoFieldsWithEmptyAutocomplete() {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form field(s) with empty autocomplete values:<br>• ' +
         `${problemFields.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values">The HTML autocomplete attribute: Values</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values" target="_blank">The HTML autocomplete attribute: Values</a>',
       title: 'Autocomplete values must not be empty.',
       type: 'error',
     };
@@ -297,7 +297,7 @@ function hasNoFormElementsWithoutFormFields() {
       // description: 'Autocomplete values must be valid.',
       details: 'Found form(s) not containing any form fields:<br>• ' +
         `${problemForms.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form">MDN: The HTML form element</a>.',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" target="_blank">MDN: The HTML form element</a>.',
       title: 'Forms should contain form fields.',
       type: 'error',
     };
@@ -316,7 +316,7 @@ function hasNoLabelsContainingInvalidElements() {
       // description: 'The for attribute of a label must not be empty.',
       details: 'Found label(s) containing a heading or interactive element:<br>• ' +
         `${problemLabels.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/label#accessibility_concerns">Label element: Accessibility concerns</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/label#accessibility_concerns" target="_blank">Label element: Accessibility concerns</a>',
       title: 'Don\'t put headings or interactive elements in labels.',
       type: 'warning',
     };
@@ -334,7 +334,7 @@ function hasUniqueLabels() {
       // description: 'Labels should have unique values.',
       details: 'Found labels in the same form with duplicate values:<br>• ' +
         `${problemLabels.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/">Duplicate Form Labels</a>',
+      learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Labels</a>',
       title: 'Labels in the same form should have unique values.',
       type: 'warning',
     };
@@ -351,7 +351,7 @@ function hasNoEmptyLabels() {
     const item = {
       // description: 'The for attribute of a label must not be empty.',
       details: `Found empty label(s):<br>• ${problemLabels.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/empty-missing-form-label">Empty or Missing Form Label</a>',
+      learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/empty-missing-form-label" target="_blank">Empty or Missing Form Label</a>',
       title: 'Labels must have text content.',
       type: 'error',
     };
@@ -372,7 +372,7 @@ function hasNoLabelsMissingForAttributes() {
       // description: 'All labels should have a for attribute.',
       details: 'Found label(s) with no form field descendant, and with no <code>for</code> attribute:<br>• ' +
         `${problemLabels.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage">The HTML for attribute</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage" target="_blank">The HTML for attribute</a>',
       title: 'Labels must have a for attribute or contain a form field.',
       type: 'error',
     };
@@ -391,7 +391,7 @@ function hasNoEmptyForAttributes() {
       // description: 'The for attribute of a label must not be empty.',
       details: 'Found label(s) with an empty <code>for</code> attribute:<br>• ' +
         `${problemLabels.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage">The HTML for attribute</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage" target="_blank">The HTML for attribute</a>',
       title: 'The for attribute of a label must not be empty.',
       type: 'error',
     };
@@ -410,7 +410,7 @@ function hasUniqueForAttributes() {
       // description: 'The for attribute of a label must be unique.',
       details: 'Found labels with the same <code>for</code> attribute:<br>• ' +
         problemLabels.join('<br>• '),
-      learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/">Duplicate Form Label</a>',
+      learnMore: 'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Label</a>',
       title: 'The for attribute of a label must be unique.',
       type: 'error',
     };
@@ -429,7 +429,7 @@ function hasForAttributesThatMatchIds() {
       // description: 'The for attribute of a label must match the id of a form field.',
       details: 'The <code>for</code> attribute of the following label(s) does not match the id ' +
       `of a form field:<br>• ${problemLabels.join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage">The HTML for attribute</a>',
+      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage" target="_blank">The HTML for attribute</a>',
       title: 'The for attribute of a label must match the id of a form field.',
       type: 'error',
     };
