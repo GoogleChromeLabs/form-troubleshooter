@@ -18,7 +18,7 @@ const AUTOCOMPLETE_TOKENS = ['additional-name', 'address-level1', 'address-level
   // Allow 'on'.
   'honorific-suffix', 'impp', 'language', 'mobile', 'name', 'new-password', 'nickname', 'on', 'one-time-code',
   'organization', 'organization-title', 'pager', 'photo', 'postal-code', 'sex', 'shipping', 'street-address',
-  'tel-area-code', 'tel-country-code', 'tel-extension', 'tel-local', 'tel-national',
+  'tel', 'tel-area-code', 'tel-country-code', 'tel-extension', 'tel-local', 'tel-national',
   'transaction-amount', 'transaction-currency', 'url', 'username', 'work'];
 
 // Run all audits and display errors and warnings as necessary.
