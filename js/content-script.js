@@ -30,7 +30,6 @@ const ATTRIBUTES = {
 // Need to re-run the audits here every time the popup is opened.
 chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
-    // console.log('message received in content-script:', request.message);
     if (request.message === 'popup opened') {
       getAndStoreElementData();
     }
@@ -47,14 +46,15 @@ function getAndStoreElementData() {
     if (error) {
       console.error('chrome.storage.local.clear() error in content-script.js:', error);
     } else {
+      const elements = getAllDescendants(document);
       // Run this every time the popup is opened, in case page elements are updated dynamically.
       const elementData = {
-        form: getElementInfo('form', ['id', 'class', 'name', 'action', 'method', 'containsFormField']),
-        input: getElementInfo('input', ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type']),
-        select: getElementInfo('select', ['id', 'class', 'name', 'autocomplete', 'required']),
-        textarea: getElementInfo('textarea', ['id', 'class', 'name', 'autocomplete', 'required']),
-        button: getElementInfo('button', ['id', 'class', 'name', 'textContent', 'type']),
-        label: getElementInfo('label', ['id', 'class', 'for', 'textContent', 'containsFormField', 'invalidLabelDescendants']),
+        form: getElementInfo(elements, 'form', ['id', 'class', 'name', 'action', 'method', 'containsFormField']),
+        input: getElementInfo(elements, 'input', ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type']),
+        select: getElementInfo(elements, 'select', ['id', 'class', 'name', 'autocomplete', 'required']),
+        textarea: getElementInfo(elements, 'textarea', ['id', 'class', 'name', 'autocomplete', 'required']),
+        button: getElementInfo(elements, 'button', ['id', 'class', 'name', 'textContent', 'type']),
+        label: getElementInfo(elements, 'label', ['id', 'class', 'for', 'textContent', 'containsFormField', 'invalidLabelDescendants']),
       };
       chrome.storage.local.set({elementData: elementData}, () => {
         console.log('elementData', elementData);
@@ -64,12 +64,35 @@ function getAndStoreElementData() {
   });
 }
 
+/**
+ * Gets all DOM elements including elements in the shadow DOM
+ * @param {Element} parent 
+ * @returns {Element[]}
+ */
+function getAllDescendants(parent) {
+  /** @type {Element} */
+  let element;
+  const queue = [...parent.children];
+  const descendants = [];
+
+  while ((element = queue.shift())) {
+    descendants.push(element);
+    queue.push(...element.children);
+
+    if (element.shadowRoot) {
+      queue.push(...element.shadowRoot.children);
+    }
+  }
+
+  return descendants;
+}
+
 // Get attribute (or textContent) values for all elements of a given name,
 // e.g. all input or label elements.
-function getElementInfo(tagName, properties) {
+function getElementInfo(allElements, tagName, properties) {
   const elementInfo = [];
   // Get all the elements with this elementName.
-  const elements = [...document.getElementsByTagName(tagName)];
+  const elements = allElements.filter(el => el.tagName.toLowerCase() === tagName.toLowerCase());
   for (const element of elements) {
     elementInfo.push(getElementProperties(element, properties));
   }
@@ -83,8 +106,11 @@ function getElementProperties(element, properties) {
   let elementProperties = {
     // For form elements, formAncestor will be used to check for forms in forms (which is an error).
     // NB: closest() returns the element it's called on if that matches the selector.
-    formAncestor: element.parentNode.closest('form') ?
-      element.parentNode.closest('form').getAttribute('id') : null,
+    formAncestor: element.parentNode && element.parentNode.closest
+      ? element.parentNode.closest('form')
+        ? element.parentNode.closest('form').getAttribute('id')
+        : null
+      : null,
     tagName: element.tagName.toLowerCase(),
   };
   const invalidAttributes = getInvalidAttributes(element);
@@ -93,14 +119,15 @@ function getElementProperties(element, properties) {
   }
   // Add properties appropriate for specific elements, as defined in properties.
   for (const property of properties) {
+    const descendants = getAllDescendants(element);
+
     switch (property) {
     case 'textContent':
       elementProperties.textContent = element.textContent.trim();
       break;
     case 'containsFormField':
       // Used for forms and labels.
-      elementProperties.containsFormField =
-        element.querySelector('button, input, select, textarea') !== null;
+      elementProperties.containsFormField = descendants.filter(filterByTags('button', 'input', 'select', 'textarea')).length > 0;
       break;
     case 'required':
       elementProperties.required = element.hasAttribute('required') ? 'required' : null;
@@ -108,7 +135,7 @@ function getElementProperties(element, properties) {
     case 'invalidLabelDescendants':
       // Only used for labels.
       // eslint-disable-next-line no-case-declarations
-      const invalidLabelDescendants = [...element.querySelectorAll('a, button, h1, h2, h3, h4, h5, h6')];
+      const invalidLabelDescendants = descendants.filter(filterByTags('a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'));
       elementProperties.invalidLabelDescendants =
         invalidLabelDescendants.map(node => node.nodeName.toLowerCase()).join(', ');
       break;
@@ -133,6 +160,16 @@ function getInvalidAttributes(element) {
       attributeName.startsWith('on'));
     })
     .join(', ');
+}
+
+/**
+ * Builds a filter function to return elements by tag name
+ * @param  {...string} tagsNames
+ * @returns {(element: Element) => boolean}
+ */
+function filterByTags(...tagsNames) {
+  const tags = tagsNames.map(t => t.toLowerCase());
+  return (/** @type {Element} */ element) => tags.some(tag => element.tagName.toLowerCase() === tag);
 }
 
 // Get the HTML tags for an ancestor element, or return null if there is none.
