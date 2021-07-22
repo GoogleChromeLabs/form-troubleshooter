@@ -12,7 +12,7 @@ let inputsSelectsTextareas;
 // From https://html.spec.whatwg.org/multipage/form-control-infrastructure.html
 const AUTOCOMPLETE_TOKENS = ['additional-name', 'address-level1', 'address-level2',
   'address-level3', 'address-level4', 'address-line1', 'address-line2', 'address-line3', 'bday',
-  'bday-day', 'bday-month', 'bday-year', 'cc-additional-name', 'cc-csc', 'cc-exp', 'cc-exp-month',
+  'bday-day', 'bday-month', 'bday-year', 'billing', 'cc-additional-name', 'cc-csc', 'cc-exp', 'cc-exp-month',
   'cc-exp-year', 'cc-family-name', 'cc-given-name', 'cc-name', 'cc-number', 'cc-type', 'country',
   'country-name', 'current-password', 'email', 'family-name', 'fax', 'given-name', 'home', 'honorific-prefix',
   // Allow 'on'.
