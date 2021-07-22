@@ -36,10 +36,12 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-// Get data for form and form field elements, then store the data using chrome.storage.
-// Need to do this every time the extension popup is opened,
-// in case something in the page has been changed dynamically.
-// Once complete, send a response to the popup.
+/**
+ * Get data for form and form field elements, then store the data using chrome.storage.
+ * Need to do this every time the extension popup is opened,
+ * in case something in the page has been changed dynamically.
+ * Once complete, send a response to the popup.
+ */
 function getAndStoreElementData() {
   chrome.storage.local.clear(() => {
     const error = chrome.runtime.lastError;
@@ -66,7 +68,7 @@ function getAndStoreElementData() {
 
 /**
  * Gets all DOM elements including elements in the shadow DOM
- * @param {Element} parent 
+ * @param {Element} parent
  * @returns {Element[]}
  */
 function getAllDescendants(parent) {
@@ -87,8 +89,15 @@ function getAllDescendants(parent) {
   return descendants;
 }
 
-// Get attribute (or textContent) values for all elements of a given name,
-// e.g. all input or label elements.
+/**
+ * Get attribute (or textContent) values for all elements of a given name,
+ * e.g. all input or label elements.
+ *
+ * @param {Element[]} allElements
+ * @param {string} tagName
+ * @param {string[]} properties
+ * @returns {{ formAncestor?: HTMLFormElement, tagName: string, [key: string]: any }[]}
+ */
 function getElementInfo(allElements, tagName, properties) {
   const elementInfo = [];
   // Get all the elements with this elementName.
@@ -99,8 +108,15 @@ function getElementInfo(allElements, tagName, properties) {
   return elementInfo;
 }
 
-// Get attribute values and other properties for a form or form field element.
-// TODO: better way to add properties that are only used for one element, e.g. label.invalidLabelDescendants.
+/**
+ * Get attribute values and other properties for a form or form field element.
+ *
+ * TODO: better way to add properties that are only used for one element, e.g. label.invalidLabelDescendants.
+ *
+ * @param {Element} element
+ * @param {string[]} properties
+ * @returns {{ formAncestor?: HTMLFormElement, tagName: string, [key: string]: any }}
+ */
 function getElementProperties(element, properties) {
   // Set properties used for all form and form field elements.
   let elementProperties = {
@@ -147,7 +163,12 @@ function getElementProperties(element, properties) {
   return elementProperties;
 }
 
-// Return a comma-separate list of invalid attributes for an element.
+/**
+ * Return a comma-separate list of invalid attributes for an element.
+ *
+ * @param {Element} element
+ * @returns {string}
+ */
 function getInvalidAttributes(element) {
   return [...element.attributes]
     .map(attribute => attribute.name)
