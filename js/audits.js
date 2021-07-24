@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 // runAudits() is called in popup.js after elementData is set using values from content-script.js
 /* exported runAudits */
-/* global elementData */
+/* global elementData FuzzySet */
 
 const items = [];
 
@@ -218,6 +218,7 @@ function hasFieldsWithAutocompleteAttributes() {
 // Form autocomplete atttribute values are valid.
 // See also: hasNoFieldsWithAutocompleteOff() and hasNoFieldsWithEmptyAutocomplete().
 function hasFieldsWithValidAutocompleteAttributes() {
+  const fuzzyAutocompleteSet = new FuzzySet(AUTOCOMPLETE_TOKENS);
   const problemFields = [];
   for (const field of inputsSelectsTextareas) {
     // fields missing autocomplete, autocomplete="", and autocomplete="off" are handled elsewhere.
@@ -229,7 +230,15 @@ function hasFieldsWithValidAutocompleteAttributes() {
     // The test here is only for valid tokens: token order isn't checked.
     for (const token of field.autocomplete.split(' ')) {
       if (!AUTOCOMPLETE_TOKENS.includes(token) && !token.startsWith('section-')) {
-        problemFields.push(stringifyElement(field));
+        const matches = fuzzyAutocompleteSet.get(token, undefined, 0.5);
+        const [[, suggestion]] = matches || [[0, null]];
+        let message = stringifyElement(field);
+
+        if (suggestion) {
+          message += `, did you mean <code>${suggestion}</code> (instead of <code>${token}</code>)?`;
+        }
+
+        problemFields.push(message);
       }
     }
   }
