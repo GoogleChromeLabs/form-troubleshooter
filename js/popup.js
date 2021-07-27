@@ -125,9 +125,10 @@ function createAttributeTable(elementName, elementArray) {
     // For each instance of the current element...
     tr = document.createElement('tr');
     // ...display the attribute value.
+    const attributes = Object.assign({}, element.attributes, element);
     for (const attributeName of ELEMENTS[elementName]) {
-      const attributeValue = element[attributeName] === null ? '—' :
-        element[attributeName] === '' ? '[empty]' : element[attributeName];
+      const attributeValue = attributes[attributeName] === null || attributes[attributeName] === undefined ? '—' :
+        attributes[attributeName] === '' ? '[empty]' : attributes[attributeName];
       addElement(tr, 'td', attributeValue);
     }
     // Add columns that aren't for attribute values. (See above for <th>.)

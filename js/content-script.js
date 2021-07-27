@@ -3,34 +3,11 @@ SPDX-License-Identifier: Apache-2.0 */
 
 /* global chrome */
 
-// From https://html.spec.whatwg.org/multipage/forms.html. Added 'role'.
-// 'autofill-information' and 'autofill-prediction' are for use with chrome://flags/#show-autofill-type-predictions.
-// aria-* and data-* are handled in getInvalidAttributes().
-const ATTRIBUTES = {
-  'global': ['accesskey', 'autocapitalize', 'autofocus', 'autofill-information',
-    'autofill-prediction', 'class', 'contenteditable', 'dir', 'draggable',
-    'enterkeyhint', 'hidden', 'inputmode', 'is', 'id', 'itemid', 'itemprop', 'itemref', 'itemscope',
-    'itemtype', 'lang', 'nonce', 'role', 'spellcheck', 'style', 'tabindex', 'title', 'translate'],
-  'button': ['disabled', 'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate',
-    'formtarget', 'name', 'type', 'value'],
-  'form': ['accept-charset', 'action', 'autocomplete', 'enctype', 'method', 'name', 'novalidate',
-    'target', 'rel'],
-  // autocorrect for Safari
-  'input': ['accept', 'alt', 'autocomplete', 'autocorrect', 'checked', 'dirname', 'disabled',
-    'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'height',
-    'list', 'max', 'maxlength', 'min', 'minlength', 'multiple', 'name', 'pattern', 'placeholder',
-    'readonly', 'required', 'size', 'src', 'step', 'type', 'value', 'width', 'title'],
-  'label': ['for'],
-  'select': ['autocomplete', 'disabled', 'form', 'multiple', 'name', 'required', 'size'],
-  'textarea': ['autocomplete', 'cols', 'dirname', 'disabled', 'form', 'maxlength', 'minlength',
-    'name', 'placeholder', 'readonly', 'required', 'rows', 'wrap']
-};
-
 // Listen for a message from the popup that it has been opened.
 // Need to re-run the audits here every time the popup is opened.
 chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
-    if (request.message === 'popup opened') {
+    if (request.message === 'dom inspected') {
       getAndStoreElementData();
     }
   }
@@ -43,69 +20,137 @@ chrome.runtime.onMessage.addListener(
  * Once complete, send a response to the popup.
  */
 function getAndStoreElementData() {
-  chrome.storage.local.clear(() => {
-    const error = chrome.runtime.lastError;
-    if (error) {
-      console.error('chrome.storage.local.clear() error in content-script.js:', error);
-    } else {
-      const elements = getAllDescendants(document);
-      // Run this every time the popup is opened, in case page elements are updated dynamically.
-      const elementData = {
-        form: getElementInfo(elements, 'form', ['id', 'class', 'name', 'action', 'method', 'containsFormField']),
-        input: getElementInfo(elements, 'input', ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type']),
-        select: getElementInfo(elements, 'select', ['id', 'class', 'name', 'autocomplete', 'required']),
-        textarea: getElementInfo(elements, 'textarea', ['id', 'class', 'name', 'autocomplete', 'required']),
-        button: getElementInfo(elements, 'button', ['id', 'class', 'name', 'textContent', 'type']),
-        label: getElementInfo(elements, 'label', ['id', 'class', 'for', 'textContent', 'containsFormField', 'invalidLabelDescendants']),
-      };
-      chrome.storage.local.set({elementData: elementData}, () => {
-        console.log('elementData', elementData);
-        chrome.runtime.sendMessage({message: 'stored element data'});
-      });
-    }
+  chrome.storage.local.get('tree', data => {
+    const tree = getTreeNodeWithParents(data.tree);
+    const elementData = {
+      form: getElementInfo(tree, 'form', ['id', 'class', 'name', 'action', 'method', 'containsFormField']),
+      input: getElementInfo(tree, 'input', ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type']),
+      select: getElementInfo(tree, 'select', ['id', 'class', 'name', 'autocomplete', 'required']),
+      textarea: getElementInfo(tree, 'textarea', ['id', 'class', 'name', 'autocomplete', 'required']),
+      button: getElementInfo(tree, 'button', ['id', 'class', 'name', 'textContent', 'type']),
+      label: getElementInfo(tree, 'label', ['id', 'class', 'for', 'textContent', 'containsFormField', 'invalidLabelDescendants']),
+    };
+    chrome.storage.local.set({elementData: elementData}, () => {
+      console.log('elementData', elementData);
+      chrome.runtime.sendMessage({message: 'stored element data'});
+    });
   });
 }
 
 /**
- * Gets all DOM elements including elements in the shadow DOM
- * @param {Element} parent
- * @returns {Element[]}
+ * Form element properties
+ * @typedef {{ formAncestorID?: string, tagName: string, attributes: [key: string]: any }} ElementProperties
  */
-function getAllDescendants(parent) {
-  /** @type {Element} */
-  let element;
-  const queue = [...parent.children];
-  const descendants = [];
-
-  while ((element = queue.shift())) {
-    descendants.push(element);
-    queue.push(...element.children);
-
-    if (element.shadowRoot) {
-      queue.push(...element.shadowRoot.children);
-    }
-  }
-
-  return descendants;
-}
 
 /**
  * Get attribute (or textContent) values for all elements of a given name,
  * e.g. all input or label elements.
  *
- * @param {Element[]} allElements
+ * @param {TreeNodeWithParent} tree
  * @param {string} tagName
  * @param {string[]} properties
- * @returns {{ formAncestor?: HTMLFormElement, tagName: string, [key: string]: any }[]}
+ * @returns {ElementProperties[]}
  */
-function getElementInfo(allElements, tagName, properties) {
+function getElementInfo(tree, tagName, properties) {
   const elementInfo = [];
-  // Get all the elements with this elementName.
-  const elements = allElements.filter(el => el.tagName.toLowerCase() === tagName.toLowerCase());
-  for (const element of elements) {
-    elementInfo.push(getElementProperties(element, properties));
+  // Get all the nodes with this tagName.
+  const nodes = findDescendants(tree, [tagName]);
+
+  for (const node of nodes) {
+    elementInfo.push(getElementProperties(node, properties));
   }
   return elementInfo;
+}
+
+/**
+ * TreeNode which has been extended to include it's parent node
+ * @typedef {{TreeNode & {parent?: TreeNodeWithParent, children: TreeNodeWithParent[], attributes: {[key: string]: string}}}} TreeNodeWithParent
+ */
+
+/**
+ * Copies a tree, adding parent relationships
+ *
+ * @param {TreeNode} parent
+ * @returns {TreeNodeWithParent}
+ */
+function getTreeNodeWithParents(parent) {
+  const root = Object.assign({attributes: {}}, parent);
+  const queue = [root];
+  let item;
+
+  while ((item = queue.shift())) {
+    if (item.children) {
+      item.children = item.children.map(c => (Object.assign({attributes: {}}, c, {parent: item})));
+      queue.push(...item.children);
+    } else {
+      item.children = [];
+    }
+  }
+
+  return root;
+}
+
+/**
+ * Finds descendants of a given node by tagName
+ *
+ * @param {TreeNode} parent
+ * @param {string[]} tagNames
+ * @returns {TreeNodeWithParent[]}
+ */
+function findDescendants(parent, tagNames) {
+  const queue = [...(parent.children || [])];
+  const results = [];
+  let item;
+
+  while ((item = queue.shift())) {
+    if (tagNames.some(t => t === item.name)) {
+      results.push(item);
+    }
+    if (item.children) {
+      queue.push(...item.children);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Gets text content recursively for a given node
+ *
+ * @param {TreeNode} parent
+ * @returns {string}
+ */
+function getTextContent(parent) {
+  const queue = [...(parent.children || [])];
+  const results = [];
+  let item;
+
+  while ((item = queue.shift())) {
+    if (item.text) {
+      results.push(item.text);
+    }
+    if (item.children) {
+      queue.unshift(...item.children);
+    }
+  }
+
+  return results.join(' ');
+}
+
+/**
+ * Searches for the closest parent node with the matching tagName
+ *
+ * @param {TreeNodeWithParent} node
+ * @param {string} tagName
+ * @returns {TreeNodeWithParent}
+ */
+function closestParent(node, tagName) {
+  let currentNode = node;
+  while ((currentNode = currentNode.parent)) {
+    if (tagName === currentNode.name) {
+      return currentNode;
+    }
+  }
 }
 
 /**
@@ -113,84 +158,51 @@ function getElementInfo(allElements, tagName, properties) {
  *
  * TODO: better way to add properties that are only used for one element, e.g. label.invalidLabelDescendants.
  *
- * @param {Element} element
+ * @param {TreeNodeWithParent} node
  * @param {string[]} properties
- * @returns {{ formAncestor?: HTMLFormElement, tagName: string, [key: string]: any }}
+ * @returns {ElementProperties}
  */
-function getElementProperties(element, properties) {
+function getElementProperties(node, properties) {
+  let form = closestParent(node, 'form');
   // Set properties used for all form and form field elements.
   let elementProperties = {
     // For form elements, formAncestor will be used to check for forms in forms (which is an error).
-    // NB: closest() returns the element it's called on if that matches the selector.
-    formAncestor: element.parentNode && element.parentNode.closest
-      ? element.parentNode.closest('form')
-        ? element.parentNode.closest('form').getAttribute('id')
-        : null
-      : null,
-    tagName: element.tagName.toLowerCase(),
+    formAncestorID: form ? form.id : null,
+    tagName: node.name,
+    attributes: node.attributes,
   };
-  const invalidAttributes = getInvalidAttributes(element);
-  if (invalidAttributes) {
-    elementProperties.invalidAttributes = invalidAttributes;
-  }
   // Add properties appropriate for specific elements, as defined in properties.
   for (const property of properties) {
-    const descendants = getAllDescendants(element);
-
     switch (property) {
-    case 'textContent':
-      elementProperties.textContent = element.textContent.trim();
+    case 'textContent': {
+      const text = getTextContent(node);
+      if (text) {
+        elementProperties.textContent = getTextContent(node);
+      }
       break;
-    case 'containsFormField':
+    }
+    case 'containsFormField': {
       // Used for forms and labels.
-      elementProperties.containsFormField = descendants.filter(filterByTags('button', 'input', 'select', 'textarea')).length > 0;
+      elementProperties.containsFormField = findDescendants(node, ['button', 'input', 'select', 'textarea']).length > 0;
       break;
-    case 'required':
-      elementProperties.required = element.hasAttribute('required') ? 'required' : null;
+    }
+    case 'required': {
+      elementProperties.required = node.attributes.required !== undefined;
       break;
-    case 'invalidLabelDescendants':
+    }
+    case 'invalidLabelDescendants': {
       // Only used for labels.
       // eslint-disable-next-line no-case-declarations
-      const invalidLabelDescendants = descendants.filter(filterByTags('a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'));
+      const invalidLabelDescendants = findDescendants(node, ['a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
       elementProperties.invalidLabelDescendants =
-        invalidLabelDescendants.map(node => node.nodeName.toLowerCase()).join(', ');
+        invalidLabelDescendants.map(item => item.name).join(', ');
       break;
+    }
     default:
-      elementProperties[property] = element.hasAttribute(property) ?
-        element.getAttribute(property) : null;
+      break;
     }
   }
   return elementProperties;
-}
-
-/**
- * Return a comma-separate list of invalid attributes for an element.
- *
- * @param {Element} element
- * @returns {string}
- */
-function getInvalidAttributes(element) {
-  return [...element.attributes]
-    .map(attribute => attribute.name)
-    .filter(attributeName => {
-      return !(ATTRIBUTES[element.tagName.toLowerCase()].includes(attributeName) ||
-      ATTRIBUTES.global.includes(attributeName) ||
-      attributeName.startsWith('aria-') ||
-      attributeName.startsWith('data-') ||
-      // Allow inline event handlers.
-      attributeName.startsWith('on'));
-    })
-    .join(', ');
-}
-
-/**
- * Builds a filter function to return elements by tag name
- * @param  {...string} tagsNames
- * @returns {(element: Element) => boolean}
- */
-function filterByTags(...tagsNames) {
-  const tags = tagsNames.map(t => t.toLowerCase());
-  return (/** @type {Element} */ element) => tags.some(tag => element.tagName.toLowerCase() === tag);
 }
 
 // Get the HTML tags for an ancestor element, or return null if there is none.

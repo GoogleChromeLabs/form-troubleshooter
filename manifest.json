@@ -10,6 +10,11 @@
     {
       "matches": ["*://*/*"],
       "js": ["js/content-script.js", "js/audits.js"]
+    },
+    {
+      "matches": ["*://*/*"],
+      "js": ["js/dom-inspector.js"],
+      "all_frames": true
     }
   ],
   "permissions": ["activeTab", "downloads", "storage", "tabs"],

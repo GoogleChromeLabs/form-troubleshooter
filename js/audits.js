@@ -21,6 +21,29 @@ const AUTOCOMPLETE_TOKENS = ['additional-name', 'address-level1', 'address-level
   'tel', 'tel-area-code', 'tel-country-code', 'tel-extension', 'tel-local', 'tel-national',
   'transaction-amount', 'transaction-currency', 'url', 'username', 'work'];
 
+// From https://html.spec.whatwg.org/multipage/forms.html. Added 'role'.
+// 'autofill-information' and 'autofill-prediction' are for use with chrome://flags/#show-autofill-type-predictions.
+// aria-* and data-* are handled in getInvalidAttributes().
+const ATTRIBUTES = {
+  'global': ['accesskey', 'autocapitalize', 'autofocus', 'autofill-information',
+    'autofill-prediction', 'class', 'contenteditable', 'dir', 'draggable',
+    'enterkeyhint', 'hidden', 'inputmode', 'is', 'id', 'itemid', 'itemprop', 'itemref', 'itemscope',
+    'itemtype', 'lang', 'nonce', 'role', 'spellcheck', 'style', 'tabindex', 'title', 'translate'],
+  'button': ['disabled', 'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate',
+    'formtarget', 'name', 'type', 'value'],
+  'form': ['accept-charset', 'action', 'autocomplete', 'enctype', 'method', 'name', 'novalidate',
+    'target', 'rel'],
+  // autocorrect for Safari
+  'input': ['accept', 'alt', 'autocomplete', 'autocorrect', 'checked', 'dirname', 'disabled',
+    'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'height',
+    'list', 'max', 'maxlength', 'min', 'minlength', 'multiple', 'name', 'pattern', 'placeholder',
+    'readonly', 'required', 'size', 'src', 'step', 'type', 'value', 'width', 'title'],
+  'label': ['for'],
+  'select': ['autocomplete', 'disabled', 'form', 'multiple', 'name', 'required', 'size'],
+  'textarea': ['autocomplete', 'cols', 'dirname', 'disabled', 'form', 'maxlength', 'minlength',
+    'name', 'placeholder', 'readonly', 'required', 'rows', 'wrap']
+};
+
 // Run all audits and display errors and warnings as necessary.
 // Called by popup.js after it sets the value of elementData, using data about
 // elements on the current page stored by content-script.js using chrome.storage.
@@ -114,8 +137,15 @@ function runLabelAudits() {
 function hasNoElementsWithInvalidAttributes() {
   const allElements = Object.values(elementData).flat();
   const problemElements = allElements
-    .filter (element => element.invalidAttributes)
-    .map(element => `${element.tagName}: ${element.invalidAttributes}`);
+    .filter(element => element.attributes)
+    .map(element => {
+      const invalidAttributes = getInvalidAttributes(element);
+      if (invalidAttributes) {
+        return `${element.tagName}: ${invalidAttributes}`;
+      }
+      return null;
+    })
+    .filter(str => str);
   if (problemElements.length) {
     const item = {
       // description: 'Autocomplete values must be valid.',
@@ -135,7 +165,7 @@ function hasFieldsWithIdOrName() {
   // Attributes may be either missing or empty.
   // Inputs with type submit or file don't need an id or name.
   const problemFields = inputsSelectsTextareas
-    .filter (field => !field.id && !field.name && field.type !== 'submit' && field.type !== 'file')
+    .filter (({attributes}) => !attributes.id && !attributes.name && attributes.type !== 'submit' && attributes.type !== 'file')
     .map(field => stringifyElement(field));
   if (problemFields.length) {
     const item = {
@@ -198,8 +228,8 @@ function hasElementsWithUniqueNames() {
 // Empty autocomplete are handled in hasNoFieldsWithEmptyAutocomplete().
 function hasFieldsWithAutocompleteAttributes() {
   const problemFields = inputsSelectsTextareas
-    .filter(field => field.autocomplete === null && field.type !== 'hidden' &&
-        (AUTOCOMPLETE_TOKENS.includes(field.id) || AUTOCOMPLETE_TOKENS.includes(field.name)))
+    .filter(({attributes}) => attributes.autocomplete === null && attributes.type !== 'hidden' &&
+        (AUTOCOMPLETE_TOKENS.includes(attributes.id) || AUTOCOMPLETE_TOKENS.includes(attributes.name)))
     .map(field => stringifyElement(field));
   if (problemFields.length) {
     const item = {
@@ -220,14 +250,15 @@ function hasFieldsWithAutocompleteAttributes() {
 function hasFieldsWithValidAutocompleteAttributes() {
   const problemFields = [];
   for (const field of inputsSelectsTextareas) {
+    const attributes = field.attributes;
     // fields missing autocomplete, autocomplete="", and autocomplete="off" are handled elsewhere.
-    if (!field.autocomplete || field.autocomplete === 'off') {
+    if (!attributes.autocomplete || attributes.autocomplete === 'off') {
       continue;
     }
     // autocomplete attributes may include multiple tokens, e.g. autocomplete="shipping postal-code".
     // section-* is also allowed.
     // The test here is only for valid tokens: token order isn't checked.
-    for (const token of field.autocomplete.split(' ')) {
+    for (const token of attributes.autocomplete.split(' ')) {
       if (!AUTOCOMPLETE_TOKENS.includes(token) && !token.startsWith('section-')) {
         problemFields.push(stringifyElement(field));
       }
@@ -250,7 +281,7 @@ function hasFieldsWithValidAutocompleteAttributes() {
 // See also: hasFieldsWithValidAutocompleteAttributes() and hasNoFieldsWithEmptyAutocomplete().
 function hasNoFieldsWithAutocompleteOff() {
   const problemFields = inputsSelectsTextareas
-    .filter(field => field.autocomplete === 'off')
+    .filter(({attributes}) => attributes.autocomplete === 'off')
     .map(field => stringifyElement(field));
   if (problemFields.length) {
     const item = {
@@ -272,7 +303,7 @@ function hasNoFieldsWithAutocompleteOff() {
 // See also: hasFieldsWithValidAutocompleteAttributes() and hasNoFieldsWithAutocompleteOff().
 function hasNoFieldsWithEmptyAutocomplete() {
   const problemFields = inputsSelectsTextareas
-    .filter(field => field.autocomplete === '')
+    .filter(({attributes}) => attributes.autocomplete === '')
     .map(field => stringifyElement(field));
   if (problemFields.length) {
     const item = {
@@ -345,7 +376,7 @@ function hasUniqueLabels() {
 // All labels have textContent (i.e. are not empty).
 function hasNoEmptyLabels() {
   const problemLabels = elementData.label
-    .filter(label => label.textContent === '')
+    .filter(label => !label.textContent)
     .map(label => stringifyElement(label));
   if (problemLabels.length) {
     const item = {
@@ -365,7 +396,7 @@ function hasNoLabelsMissingForAttributes() {
   const problemLabels = elementData.label
     // Ignore labels that contain form fields: they don't need for attributes.
     // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label#:~:text=nest
-    .filter(label => !label.containsFormField && label.for === null)
+    .filter(label => !label.containsFormField && (label.attributes.for === null || label.attributes.for === undefined))
     .map(label => stringifyElement(label));
   if (problemLabels.length) {
     const item = {
@@ -384,7 +415,7 @@ function hasNoLabelsMissingForAttributes() {
 // See also hasNoLabelsMissingForAttributes().
 function hasNoEmptyForAttributes() {
   const problemLabels = elementData.label
-    .filter(label => label.for === '')
+    .filter(label => label.attributes.for === '')
     .map(label => stringifyElement(label));
   if (problemLabels.length) {
     const item = {
@@ -421,8 +452,9 @@ function hasUniqueForAttributes() {
 // All for attributes match the id of a form field.
 function hasForAttributesThatMatchIds() {
   const problemLabels = elementData.label
-    .filter(label => label.for &&
-      !inputsSelectsTextareas.find(element => element.id === label.for))
+    .map(label => Object.assign({attributes: {}}, label))
+    .filter(label => label.attributes.for &&
+      !inputsSelectsTextareas.find(({attributes}) => attributes.id === label.attributes.for))
     .map(label => stringifyElement(label));
   if (problemLabels.length) {
     const item = {
@@ -446,17 +478,16 @@ function hasForAttributesThatMatchIds() {
 function findDuplicates(array, property, ignoreIfDifferent) {
   return array.filter((filterElement, filterIndex) => {
     return array.find((findElement, findIndex) => {
-      const isDuplicate = filterElement[property] &&
-        filterElement[property] === findElement[property] && filterIndex !== findIndex;
-      // if (isDuplicate) {
-      //   console.log('>>> filterElement[property]', filterElement[property], findElement[property],
-      //     ignoreIfDifferent, filterElement[ignoreIfDifferent], findElement[ignoreIfDifferent]);
-      // }
+      const filterAttributes = filterElement.attributes;
+      const findAttributes = findElement.attributes;
+      const isDuplicate = filterAttributes[property] &&
+          filterAttributes[property] === findAttributes[property] && filterIndex !== findIndex;
+
       // If the ignoreIfDifferent parameter is used, return the duplicates only if they have
       // the same (and non-null) value for the ignoreIfDifferent property.
       return ignoreIfDifferent ?
-        isDuplicate && filterElement[ignoreIfDifferent] && findElement[ignoreIfDifferent] &&
-          filterElement[ignoreIfDifferent] === findElement[ignoreIfDifferent] :
+        isDuplicate && filterAttributes[ignoreIfDifferent] && findAttributes[ignoreIfDifferent] &&
+          filterAttributes[ignoreIfDifferent] === findAttributes[ignoreIfDifferent] :
         isDuplicate;
     });
   });
@@ -466,7 +497,7 @@ function findDuplicates(array, property, ignoreIfDifferent) {
 function stringifyElement(field) {
   const attributesToInclude = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder'];
   // entry[0] is an attribute name, entry[1] is an attribute value (which may be null or empty).
-  let attributes = Object.entries(field)
+  let attributes = Object.entries(field.attributes)
     .filter(entry => attributesToInclude.includes(entry[0]))
     // Include empty attributes, e.g. for="", but not missing attributes.
     .filter(entry => field[entry[0]] !== null)
@@ -480,6 +511,19 @@ function stringifyElement(field) {
   return field.tagName === 'label' ?
     `<code>${openingTag}${field.textContent || ''}&lt;/label&gt;</code>` :
     `<code>${openingTag}</code>`;
+}
+
+function getInvalidAttributes(element) {
+  return Object.keys(element.attributes)
+    .filter(attributeName => {
+      return element.name && !(ATTRIBUTES[element.name].includes(attributeName) ||
+        ATTRIBUTES.global.includes(attributeName) ||
+        attributeName.startsWith('aria-') ||
+        attributeName.startsWith('data-') ||
+        // Allow inline event handlers.
+        attributeName.startsWith('on'));
+    })
+    .join(', ');
 }
 
 // Test for findDuplicates().

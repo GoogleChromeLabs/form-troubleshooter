@@ -61,16 +61,18 @@ errors reported that appear to be incorrect.
 The extension checks the current page for form and form field elements each time it's opened.
 
 1. The extension icon is clicked to open [popup.html](popup.html).
-1. popup.js [sends a message](js/popup.js#L34) to [content-script.js](js/content-script.js#L32) that 
-the popup has opened.
-1. content-script.js [gets data](js/popup.js#L33) for form and form field elements on the current page. 
-1. content-script.js [stores the data](js/popup.js#L42) using chrome.storage.
-1. content-script.js [sends a message](js/content-script.js#L57) that element data has been stored.
+1. popup.js [sends a message](js/popup.js#L33) to [dom-inspector.js](js/dom-inspector.js#L13) that the popup has opened (`popup opened`).
+1. dom-inspector.js [traverses the DOM](js/dom-inspector.js#L50) including the shadow DOM and `iframe`s.
+1. dom-inspector.js [stores a DOM representation](js/dom-inspector.js#L21) using `chrome.storage` which will be used by content-script.js.
+1. dom-inspector.js [sends a message](js/dom-inspector.js#L22) via background.js that the DOM has been inspected (`dom inspected`).
+1. content-script.js [processes the DOM information](js/content-script.js#L11) for form and form field elements on the current page. 
+1. content-script.js [stores form data](js/content-script.js#L33) using `chrome.storage`.
+1. content-script.js [sends a message](js/content-script.js#L35) that element data has been stored.
 1. On [getting the message](js/popup.js#L42), popup.js [gets the data from chrome.storage](js/popup.js#L50).
 1. popup.js [runs the audits](js/popup.js#L54) defined in [audits.js](js/audits.js#L27), to check 
 the form elements and attributes in the page.
 1. popup.js [displays an overview](js/popup.js#L58) of form and form field data in popup.html.
-1. audits.js [displays results](js/audits.js#L59) of the audits in popup.html.
+1. audits.js [displays results](js/audits.js#L82) of the audits in popup.html.
 
 
 ## Feedback and feature requests
