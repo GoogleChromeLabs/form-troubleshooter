@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { getTextContent } from '../tree-util';
 
-const FORM_ATTRIBUTES_TO_INCLUDE = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder'];
+const FORM_ATTRIBUTES_TO_INCLUDE = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder', 'type'];
 const END_TAGS_TO_INCLUDE = new Set(['label']);
 
 function escapeHtml(html) {

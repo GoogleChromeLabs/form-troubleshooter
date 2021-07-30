@@ -179,3 +179,29 @@ export const ATTRIBUTES = {
 };
 
 export const FORM_FIELDS = ['form', 'label', 'button', 'input', 'select', 'textarea'];
+
+// From: https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+export const INPUT_TYPES = [
+  'hidden',
+  'text',
+  'search',
+  'tel',
+  'url',
+  'email',
+  'password',
+  'date',
+  'month',
+  'week',
+  'time',
+  'datetime-local',
+  'number',
+  'range',
+  'color',
+  'checkbox',
+  'radio',
+  'file',
+  'submit',
+  'image',
+  'reset',
+  'button',
+];
