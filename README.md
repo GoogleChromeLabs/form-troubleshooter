@@ -13,16 +13,19 @@
 When released, this extension will be available from the
 [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
 
-For the moment, you'll need to download the code and install the extension from local files.
+For the moment, you'll need to download the code, build, and install the extension from local files. Note that you will
+need to have NodeJS 12+ to build the extension.
 
 1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) or clone the
    repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
-2. In Chrome, navigate to `chrome://extensions`.<br><br>
+2. Install dependencies: `npm install`
+3. Build the extension: `npm run build`
+4. In Chrome, navigate to `chrome://extensions`.<br><br>
    <img alt="Screenshot of the chrome://extensions page" src="https://user-images.githubusercontent.com/205226/124620948-c86a1c00-de71-11eb-8c9d-5d7353c13f65.png" width="75%">
 
-3. Enable **Developer mode**.
-4. Click the **Load unpacked** button and select the top-level directory containing the extension.
-5. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form
+5. Enable **Developer mode**.
+6. Click the **Load unpacked** button and select the extension's `build/` directory.
+7. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form
    Troubleshooter**.<br><br>
    <img alt="Screenshot of the Chrome Extensions menu" src="https://user-images.githubusercontent.com/205226/124620955-cb650c80-de71-11eb-9c99-65430ac7949b.png" width="75%">
 
