@@ -178,7 +178,63 @@ describe('autocomplete', function () {
           '<input autocomplete="section-1 ',
         )}</code><strong><code>usrname</code></strong><code>${escapeHtml('">')}</code>, did you mean ${wrapInCode(
           'username',
-        )}`,
+        )}?`,
+      );
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should return audit error when input has invalid autocomplete value (suggest alias for delivery)', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { autocomplete: 'delivery address-line1' } }],
+      });
+      const result = hasValidAutocomplete(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>delivery</code></strong><code>${escapeHtml(
+          ' address-line1">',
+        )}</code>, did you mean ${wrapInCode('shipping')}?`,
+      );
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should return audit error when input has invalid autocomplete value (suggest alias for zip)', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { autocomplete: 'zip' } }],
+      });
+      const result = hasValidAutocomplete(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>zip</code></strong><code>${escapeHtml(
+          '">',
+        )}</code>, did you mean ${wrapInCode('postal-code')}?`,
+      );
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should return audit error when input has invalid autocomplete value (suggest alias for zipcode)', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { autocomplete: 'zipcode' } }],
+      });
+      const result = hasValidAutocomplete(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>zipcode</code></strong><code>${escapeHtml(
+          '">',
+        )}</code>, did you mean ${wrapInCode('postal-code')}?`,
+      );
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should return audit error when input has invalid autocomplete value (suggest alias for state)', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { autocomplete: 'state' } }],
+      });
+      const result = hasValidAutocomplete(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>state</code></strong><code>${escapeHtml(
+          '">',
+        )}</code>, did you mean ${wrapInCode('address-level1')}?`,
       );
       expect(result[0].type).to.equal('error');
     });

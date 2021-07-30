@@ -1,7 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { AUTOCOMPLETE_TOKENS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
+import { AUTOCOMPLETE_ALIASES, AUTOCOMPLETE_TOKENS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
 import { findDescendants } from '../tree-util';
 import { stringifyFormElementAsCode } from './audit-util';
 import Fuse from 'fuse.js';
@@ -103,7 +103,9 @@ export function hasValidAutocomplete(tree) {
   const issues = [];
   const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
   const invalidFieldMessages = [];
-  const autocompleteSuggestions = new Fuse(AUTOCOMPLETE_TOKENS, { threshold: 0.3 });
+  const autocompleteSuggestions = new Fuse([...AUTOCOMPLETE_TOKENS, ...Object.keys(AUTOCOMPLETE_ALIASES)], {
+    threshold: 0.3,
+  });
 
   for (const field of fields) {
     const attributes = field.attributes;
@@ -117,10 +119,13 @@ export function hasValidAutocomplete(tree) {
     for (const token of attributes.autocomplete.split(' ').filter(Boolean)) {
       if (!AUTOCOMPLETE_TOKENS.includes(token) && !token.startsWith('section-')) {
         const matches = autocompleteSuggestions.search(token);
-        const suggestion = matches[0] ? matches[0].item : null;
+        let suggestion = matches[0] ? matches[0].item : null;
         let message = stringifyFormElementAsCode(field, token);
 
         if (suggestion) {
+          if (AUTOCOMPLETE_ALIASES[suggestion]) {
+            suggestion = AUTOCOMPLETE_ALIASES[suggestion];
+          }
           message += `, did you mean <code>${suggestion}</code>?`;
         }
 

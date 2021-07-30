@@ -68,6 +68,15 @@ export const AUTOCOMPLETE_TOKENS = [
   'work',
 ];
 
+// Common autocomplete mistakes and their suggestions
+export const AUTOCOMPLETE_ALIASES = {
+  'cc-cvv': 'cc-csc',
+  'delivery': 'shipping',
+  'state': 'address-level1',
+  'zip-code': 'postal-code',
+  'zip': 'postal-code',
+};
+
 // Keys are used to order sections displayed in popup.
 export const ELEMENTS = {
   form: ['id', 'class', 'name', 'action', 'method'],
