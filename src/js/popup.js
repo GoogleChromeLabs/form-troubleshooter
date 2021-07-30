@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { groupBy } from './array-util';
 import { runAudits } from './audits';
-import { findDescendants, getTreeNodeWithParents } from './tree-util';
+import { findDescendants, getTextContent, getTreeNodeWithParents } from './tree-util';
 
 /*
 1. Each time the popup is opened, ask content-script.js to get
@@ -139,18 +139,26 @@ function createAttributeTable(elementName, elementArray) {
     // For each instance of the current element...
     tr = document.createElement('tr');
     // ...display the attribute value.
-    const attributes = Object.assign({}, element.attributes);
+    const attributes = element.attributes;
     for (const attributeName of ELEMENTS[elementName]) {
-      const attributeValue =
-        attributes[attributeName] == null
-          ? '—'
-          : attributes[attributeName] === ''
-          ? attributeName === 'required'
-            ? true
-            : '[empty]'
-          : attributes[attributeName];
+      let attributeValue = attributes[attributeName];
+      if (attributeValue == null) {
+        if (attributeName === 'textContent') {
+          attributeValue = getTextContent(element);
+        } else {
+          attributeValue = '-';
+        }
+      } else if (!attributeValue) {
+        if (attributeName === 'required') {
+          attributeValue = 'true';
+        } else {
+          attributeValue = '[empty]';
+        }
+      }
+
       addElement(tr, 'td', attributeValue);
     }
+
     // Add columns that aren't for attribute values. (See above for <th>.)
     switch (elementName) {
       // Each for attribute should have an associated field.
