@@ -158,5 +158,28 @@ describe('autocomplete', function () {
       const result = hasValidAutocomplete(tree);
       expect(result).to.be.eql([]);
     });
+
+    it('should return audit error when input has invalid autocomplete value with suggestion', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { autocomplete: 'section-1 usrname' } }],
+      });
+      const result = hasValidAutocomplete(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(
+        `${wrapInCode('<input autocomplete="section-1 usrname">')}, did you mean ${wrapInCode('username')}`,
+      );
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should return audit error when input has invalid autocomplete value without suggestion', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { autocomplete: 'section-1 sjdjdasd' } }],
+      });
+      const result = hasValidAutocomplete(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(wrapInCode('<input autocomplete="section-1 sjdjdasd">'));
+      expect(result[0].details).to.not.contain('did you mean');
+      expect(result[0].type).to.equal('error');
+    });
   });
 });

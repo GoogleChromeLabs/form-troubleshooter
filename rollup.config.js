@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import resolve from 'rollup-plugin-node-resolve';
 
 const buildFolder = 'build/';
 
@@ -10,6 +11,9 @@ export default [
       file: `${buildFolder}js/popup.js`,
     },
     plugins: [
+      resolve({
+        browser: true,
+      }),
       copy('src/popup.html', `${buildFolder}popup.html`),
       copy('src/css', `${buildFolder}css`),
       copy('src/images', `${buildFolder}images`),

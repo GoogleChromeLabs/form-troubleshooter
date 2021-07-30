@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { AUTOCOMPLETE_TOKENS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
 import { findDescendants } from '../tree-util';
 import { stringifyFormElementAsCode } from './audit-util';
+import Fuse from 'fuse.js';
 
 /**
  * Form fields have autocomplete attributes when appropriate.
@@ -101,7 +102,8 @@ export function hasValidAutocomplete(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
   const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
-  const invalidFields = [];
+  const invalidFieldMessages = [];
+  const autocompleteSuggestions = new Fuse(AUTOCOMPLETE_TOKENS, { threshold: 0.3 });
 
   for (const field of fields) {
     const attributes = field.attributes;
@@ -114,16 +116,24 @@ export function hasValidAutocomplete(tree) {
     // The test here is only for valid tokens: token order isn't checked.
     for (const token of attributes.autocomplete.split(' ').filter(Boolean)) {
       if (!AUTOCOMPLETE_TOKENS.includes(token) && !token.startsWith('section-')) {
-        invalidFields.push(field);
+        const matches = autocompleteSuggestions.search(token);
+        const suggestion = matches[0] ? matches[0].item : null;
+        let message = stringifyFormElementAsCode(field);
+
+        if (suggestion) {
+          message += `, did you mean <code>${suggestion}</code> (instead of <code>${token}</code>)?`;
+        }
+
+        invalidFieldMessages.push(message);
       }
     }
   }
 
-  if (invalidFields.length) {
+  if (invalidFieldMessages.length) {
     issues.push({
       details:
         'Found form field(s) with invalid <code>autocomplete</code> values:<br>• ' +
-        `${invalidFields.map(field => stringifyFormElementAsCode(field)).join('<br>• ')}`,
+        `${invalidFieldMessages.join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete" target="_blank">The HTML autocomplete attribute</a>',
       title: 'Autocomplete values must be valid.',

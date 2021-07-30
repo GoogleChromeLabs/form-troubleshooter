@@ -41,6 +41,10 @@
     "mocha": "^9.0.3",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "rollup": "^2.55.0"
+    "rollup": "^2.55.0",
+    "rollup-plugin-node-resolve": "^5.2.0"
+  },
+  "dependencies": {
+    "fuse.js": "^6.4.6"
   }
 }
