@@ -1,75 +1,9 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
+import { AUTOCOMPLETE_TOKENS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
 import { findDescendants } from '../tree-util';
 import { stringifyFormElementAsCode } from './audit-util';
-
-const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
-
-// From https://html.spec.whatwg.org/multipage/form-control-infrastructure.html
-const AUTOCOMPLETE_TOKENS = [
-  'additional-name',
-  'address-level1',
-  'address-level2',
-  'address-level3',
-  'address-level4',
-  'address-line1',
-  'address-line2',
-  'address-line3',
-  'bday',
-  'bday-day',
-  'bday-month',
-  'bday-year',
-  'billing',
-  'cc-additional-name',
-  'cc-csc',
-  'cc-exp',
-  'cc-exp-month',
-  'cc-exp-year',
-  'cc-family-name',
-  'cc-given-name',
-  'cc-name',
-  'cc-number',
-  'cc-type',
-  'country',
-  'country-name',
-  'current-password',
-  'email',
-  'family-name',
-  'fax',
-  'given-name',
-  'home',
-  'honorific-prefix',
-  // Allow 'on'.
-  'honorific-suffix',
-  'impp',
-  'language',
-  'mobile',
-  'name',
-  'new-password',
-  'nickname',
-  'on',
-  'one-time-code',
-  'organization',
-  'organization-title',
-  'pager',
-  'photo',
-  'postal-code',
-  'sex',
-  'shipping',
-  'street-address',
-  'tel',
-  'tel-area-code',
-  'tel-country-code',
-  'tel-extension',
-  'tel-local',
-  'tel-national',
-  'transaction-amount',
-  'transaction-currency',
-  'url',
-  'username',
-  'work',
-];
 
 /**
  * Form fields have autocomplete attributes when appropriate.

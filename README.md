@@ -85,7 +85,7 @@ Feedback and audit suggestions welcome!
 
 - [ ] Link to and/or highlight problematic elements.
 - [x] Move code for displaying audit results [out of audits.js](js/audits.js#L59).
-- [ ] Move constants to external file.
+- [x] Move constants to external file.
 - [ ] Check for forms (or other elements) that don't have a closing tag.
 - [ ] Check for invalid `type` attribute values, for example `<input type="check">`.
 - [ ] Suggest alternatives to invalid attribute names, e.g. for `autcomplete`.

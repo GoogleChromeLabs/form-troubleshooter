@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { groupBy } from './array-util';
 import { runAudits } from './audits';
+import { ELEMENTS } from './constants';
 import { findDescendants, getTextContent, getTreeNodeWithParents } from './tree-util';
 
 /*
@@ -19,16 +20,6 @@ saveAsHTMLButton.onclick = saveAsHTML;
 
 const overviewDetails = document.querySelector('details#overview');
 const overviewSummary = document.querySelector('#overview summary');
-
-// Keys are used to order sections displayed in popup.
-const ELEMENTS = {
-  form: ['id', 'class', 'name', 'action', 'method'],
-  input: ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type'],
-  select: ['id', 'class', 'name', 'autocomplete', 'required'],
-  textarea: ['id', 'class', 'name', 'autocomplete', 'required'],
-  button: ['id', 'class', 'name', 'textContent', 'type'],
-  label: ['id', 'class', 'for', 'textContent'],
-};
 
 // Send a message to the content script to audit the current page.
 // Need to do this every time the popup is opened.
