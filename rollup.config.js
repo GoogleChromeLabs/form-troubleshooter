@@ -7,7 +7,7 @@ export default [
   {
     input: 'src/js/popup.js',
     output: {
-      file: `${buildFolder}js/popup.js`
+      file: `${buildFolder}js/popup.js`,
     },
     plugins: [
       copy('src/popup.html', `${buildFolder}popup.html`),
@@ -19,21 +19,21 @@ export default [
   {
     input: 'src/background.js',
     output: {
-      file: `${buildFolder}background.js`
-    }
+      file: `${buildFolder}background.js`,
+    },
   },
   {
     input: 'src/js/content-script.js',
     output: {
-      file: `${buildFolder}js/content-script.js`
-    }
+      file: `${buildFolder}js/content-script.js`,
+    },
   },
   {
     input: 'src/js/options.js',
     output: {
-      file: `${buildFolder}js/options.js`
-    }
-  }
+      file: `${buildFolder}js/options.js`,
+    },
+  },
 ];
 
 function copy(source, destination) {
@@ -55,6 +55,6 @@ function mergeJson(jsonFiles, target) {
         .map(file => JSON.parse(fs.readFileSync(file, 'utf-8')));
 
       fs.writeFileSync(target, JSON.stringify(Object.assign({}, baseFile, ...otherJsonFiles), null, '  '));
-    }
+    },
   };
 }

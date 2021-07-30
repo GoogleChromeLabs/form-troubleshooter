@@ -1,9 +1,9 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import {groupBy} from './array-util';
-import {runAudits} from './audits';
-import {findDescendants, getTreeNodeWithParents} from './tree-util';
+import { groupBy } from './array-util';
+import { runAudits } from './audits';
+import { findDescendants, getTreeNodeWithParents } from './tree-util';
 
 /*
 1. Each time the popup is opened, ask content-script.js to get
@@ -32,24 +32,22 @@ const ELEMENTS = {
 
 // Send a message to the content script to audit the current page.
 // Need to do this every time the popup is opened.
-chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  chrome.tabs.sendMessage(tabs[0].id, {message: 'popup opened'} );
+chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+  chrome.tabs.sendMessage(tabs[0].id, { message: 'popup opened' });
 });
 
 // Listen for a message from the content script that
 // data has been stored for form and form field elements.
-chrome.runtime.onMessage.addListener(
-  (request, sender, sendResponse) => {
-    // console.log('message received in popup:', request.message);
-    if (request.message === 'stored element data') {
-      processFormData();
-    }
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // console.log('message received in popup:', request.message);
+  if (request.message === 'stored element data') {
+    processFormData();
   }
-);
+});
 
 // Get the data about forms and form fields that has been stored by content-script.js.
 function processFormData() {
-  chrome.storage.local.get(['tree'], (result) => {
+  chrome.storage.local.get(['tree'], result => {
     const tree = getTreeNodeWithParents(result.tree);
 
     // Now elementData is available, run the audits defined in audits.js.
@@ -62,7 +60,10 @@ function processFormData() {
 
 function displaySummary(tree) {
   let elementsNotFound = [];
-  const elementsByType = groupBy(findDescendants(tree, Object.keys(ELEMENTS)).filter(node => node.name), node => node.name);
+  const elementsByType = groupBy(
+    findDescendants(tree, Object.keys(ELEMENTS)).filter(node => node.name),
+    node => node.name,
+  );
 
   // Use ELEMENTS to choose display order.
   // Can't store a Map to share between content script and popup :(.
@@ -127,11 +128,11 @@ function createAttributeTable(elementName, elementArray) {
   }
   // Add columns that aren't for attribute values. (See below for <td>.)
   switch (elementName) {
-  case 'for':
-    addElement(tr, 'th', 'Field');
-    break;
-  default:
-    break;
+    case 'for':
+      addElement(tr, 'th', 'Field');
+      break;
+    default:
+      break;
   }
   table.append(tr);
   for (const element of elementArray) {
@@ -141,9 +142,10 @@ function createAttributeTable(elementName, elementArray) {
     const attributes = Object.assign({}, element.attributes);
     for (const attributeName of ELEMENTS[elementName]) {
       // eslint-disable-next-line eqeqeq
-      const attributeValue = attributes[attributeName] == null
-        ? '—'
-        : attributes[attributeName] === ''
+      const attributeValue =
+        attributes[attributeName] == null
+          ? '—'
+          : attributes[attributeName] === ''
           ? attributeName === 'required'
             ? true
             : '[empty]'
@@ -152,13 +154,13 @@ function createAttributeTable(elementName, elementArray) {
     }
     // Add columns that aren't for attribute values. (See above for <th>.)
     switch (elementName) {
-    // Each for attribute should have an associated field.
-    // The field id or name provided by content-script.js should match the for value.
-    case 'for':
-      addElement(tr, 'td', element.field);
-      break;
-    default:
-      break;
+      // Each for attribute should have an associated field.
+      // The field id or name provided by content-script.js should match the for value.
+      case 'for':
+        addElement(tr, 'td', element.field);
+        break;
+      default:
+        break;
     }
     table.appendChild(tr);
   }
@@ -168,28 +170,29 @@ function createAttributeTable(elementName, elementArray) {
 // Save results locally as an HTML file.
 function saveAsHTML() {
   let headerHTML;
-  chrome.tabs.query({active: true, currentWindow: true})
-    .then((tabs) => {
-      headerHTML = '<header><h1>Form audit<br>' +
-        `<span style="font-weight: 400">${tabs[0].title}</span><br>` +
-        `<span style="font-weight: 200">${tabs[0].url}</span></h1></header>`;
-    });
+  chrome.tabs.query({ active: true, currentWindow: true }).then(tabs => {
+    headerHTML =
+      '<header><h1>Form audit<br>' +
+      `<span style="font-weight: 400">${tabs[0].title}</span><br>` +
+      `<span style="font-weight: 200">${tabs[0].url}</span></h1></header>`;
+  });
   fetch('../css/popup.css')
-    .then((response) => response.text())
-    .then((text) => {
-      const extras = 'body {margin: 40px;}\n' +
+    .then(response => response.text())
+    .then(text => {
+      const extras =
+        'body {margin: 40px;}\n' +
         'details {width: unset;}\n' +
         'footer, header, main {margin: 0 auto; max-width: 1000px;}' +
         'h1 {border-bottom: 2px solid #eee; font-size: 32px; margin: 0 0 60px 0; ' +
-          'overflow: hidden; padding: 0 0 18px 0; text-overflow: ellipsis; white-space: nowrap}';
+        'overflow: hidden; padding: 0 0 18px 0; text-overflow: ellipsis; white-space: nowrap}';
       const css = `<style>${text}\n${extras}</style>`;
       const mainHTML = `<main>${document.querySelector('main').innerHTML}</main>`;
       const footerHTML = `<footer>${document.querySelector('footer').innerHTML}</footer>`;
-      const blob = new Blob([css, headerHTML, mainHTML, footerHTML], {type: 'text/html'});
+      const blob = new Blob([css, headerHTML, mainHTML, footerHTML], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       chrome.downloads.download({
         url: url,
-        filename: 'form-audit.html'
+        filename: 'form-audit.html',
       });
     });
 }

@@ -8,13 +8,13 @@ SPDX-License-Identifier: Apache-2.0 */
  * @returns {TreeNodeWithParent}
  */
 export function getTreeNodeWithParents(parent) {
-  const root = Object.assign({attributes: {}}, parent);
+  const root = Object.assign({ attributes: {} }, parent);
   const queue = [root];
   let item;
 
   while ((item = queue.shift())) {
     if (item.children) {
-      item.children = item.children.map(c => (Object.assign({attributes: {}}, c, {parent: item})));
+      item.children = item.children.map(c => Object.assign({ attributes: {} }, c, { parent: item }));
       queue.push(...item.children);
     } else {
       item.children = [];

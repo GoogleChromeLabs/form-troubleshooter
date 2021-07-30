@@ -5,7 +5,7 @@
  * @param {(item: T) => S} groupByFn
  * @returns {Map<S, T[]>}
  */
-export function groupBy(array, groupByFn = (item) => item) {
+export function groupBy(array, groupByFn = item => item) {
   const map = new Map();
 
   array.forEach(item => {

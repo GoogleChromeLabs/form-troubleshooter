@@ -1,46 +1,127 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import {groupBy} from '../array-util';
-import {closestParent, findDescendants} from '../tree-util';
-import {stringifyFormElementAsCode} from './audit-util';
+import { groupBy } from '../array-util';
+import { closestParent, findDescendants } from '../tree-util';
+import { stringifyFormElementAsCode } from './audit-util';
 
 // From https://html.spec.whatwg.org/multipage/forms.html. Added 'role'.
 // 'autofill-information' and 'autofill-prediction' are for use with chrome://flags/#show-autofill-type-predictions.
 // aria-* and data-* are handled in getInvalidAttributes().
 const ATTRIBUTES = {
-  'global': ['accesskey', 'autocapitalize', 'autofocus', 'autofill-information',
-    'autofill-prediction', 'class', 'contenteditable', 'dir', 'draggable',
-    'enterkeyhint', 'hidden', 'inputmode', 'is', 'id', 'itemid', 'itemprop', 'itemref', 'itemscope',
-    'itemtype', 'lang', 'nonce', 'role', 'spellcheck', 'style', 'tabindex', 'title', 'translate'],
-  'button': ['disabled', 'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate',
-    'formtarget', 'name', 'type', 'value'],
-  'form': ['accept-charset', 'action', 'autocomplete', 'enctype', 'method', 'name', 'novalidate',
-    'target', 'rel'],
+  global: [
+    'accesskey',
+    'autocapitalize',
+    'autofocus',
+    'autofill-information',
+    'autofill-prediction',
+    'class',
+    'contenteditable',
+    'dir',
+    'draggable',
+    'enterkeyhint',
+    'hidden',
+    'inputmode',
+    'is',
+    'id',
+    'itemid',
+    'itemprop',
+    'itemref',
+    'itemscope',
+    'itemtype',
+    'lang',
+    'nonce',
+    'role',
+    'spellcheck',
+    'style',
+    'tabindex',
+    'title',
+    'translate',
+  ],
+  button: [
+    'disabled',
+    'form',
+    'formaction',
+    'formenctype',
+    'formmethod',
+    'formnovalidate',
+    'formtarget',
+    'name',
+    'type',
+    'value',
+  ],
+  form: ['accept-charset', 'action', 'autocomplete', 'enctype', 'method', 'name', 'novalidate', 'target', 'rel'],
   // autocorrect for Safari
-  'input': ['accept', 'alt', 'autocomplete', 'autocorrect', 'checked', 'dirname', 'disabled',
-    'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'height',
-    'list', 'max', 'maxlength', 'min', 'minlength', 'multiple', 'name', 'pattern', 'placeholder',
-    'readonly', 'required', 'size', 'src', 'step', 'type', 'value', 'width', 'title'],
-  'label': ['for'],
-  'select': ['autocomplete', 'disabled', 'form', 'multiple', 'name', 'required', 'size'],
-  'textarea': ['autocomplete', 'cols', 'dirname', 'disabled', 'form', 'maxlength', 'minlength',
-    'name', 'placeholder', 'readonly', 'required', 'rows', 'wrap']
+  input: [
+    'accept',
+    'alt',
+    'autocomplete',
+    'autocorrect',
+    'checked',
+    'dirname',
+    'disabled',
+    'form',
+    'formaction',
+    'formenctype',
+    'formmethod',
+    'formnovalidate',
+    'formtarget',
+    'height',
+    'list',
+    'max',
+    'maxlength',
+    'min',
+    'minlength',
+    'multiple',
+    'name',
+    'pattern',
+    'placeholder',
+    'readonly',
+    'required',
+    'size',
+    'src',
+    'step',
+    'type',
+    'value',
+    'width',
+    'title',
+  ],
+  label: ['for'],
+  select: ['autocomplete', 'disabled', 'form', 'multiple', 'name', 'required', 'size'],
+  textarea: [
+    'autocomplete',
+    'cols',
+    'dirname',
+    'disabled',
+    'form',
+    'maxlength',
+    'minlength',
+    'name',
+    'placeholder',
+    'readonly',
+    'required',
+    'rows',
+    'wrap',
+  ],
 };
 
 const FORM_FIELDS = ['form', 'label', 'button', 'input', 'select', 'textarea'];
 const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
 
 function getInvalidAttributes(element) {
-  return Object.keys(element.attributes)
-    .filter(attributeName => {
-      return element.name && !(ATTRIBUTES[element.name].includes(attributeName) ||
+  return Object.keys(element.attributes).filter(attributeName => {
+    return (
+      element.name &&
+      !(
+        ATTRIBUTES[element.name].includes(attributeName) ||
         ATTRIBUTES.global.includes(attributeName) ||
         attributeName.startsWith('aria-') ||
         attributeName.startsWith('data-') ||
         // Allow inline event handlers.
-        attributeName.startsWith('on'));
-    });
+        attributeName.startsWith('on')
+      )
+    );
+  });
 }
 
 /**
@@ -51,15 +132,17 @@ export function hasInvalidAttributes(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
   const invalidFields = findDescendants(tree, FORM_FIELDS)
-    .map(node => ({name: node.name, invalidAttributes: getInvalidAttributes(node)}))
+    .map(node => ({ name: node.name, invalidAttributes: getInvalidAttributes(node) }))
     .filter(field => field.invalidAttributes.length);
 
   if (invalidFields.length) {
     issues.push({
-      details: 'Found element(s) with invalid attributes:<br>• ' +
+      details:
+        'Found element(s) with invalid attributes:<br>• ' +
         `${invalidFields.map(field => `${field.name}: ${field.invalidAttributes.join(', ')}`).join('<br>• ')}` +
         '<br>Consider using <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes" title="MDN article: Using data attributes">data attributes</a> instead of non-standard attributes.',
-      learnMore: 'Learn more: <a href="https://html.spec.whatwg.org/multipage/forms.html" target="_blank">HTML Living Standard: Forms</a>',
+      learnMore:
+        'Learn more: <a href="https://html.spec.whatwg.org/multipage/forms.html" target="_blank">HTML Living Standard: Forms</a>',
       title: 'Element attributes should be valid.',
       type: 'warning',
     });
@@ -81,9 +164,11 @@ export function hasIdOrName(tree) {
 
   if (invalidFields.length) {
     issues.push({
-      details: 'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
+      details:
+        'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
         `${invalidFields.map(node => stringifyFormElementAsCode(node)).join('<br>• ')}<br>(This may not be an error.)`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The HTML name attribute</a>',
+      learnMore:
+        'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The HTML name attribute</a>',
       title: 'Form fields should have an <code>id</code> or a <code>name</code>.',
       type: 'warning',
     });
@@ -107,9 +192,13 @@ export function hasUniqueIds(tree) {
 
   if (duplicateFields.length) {
     issues.push({
-      details: 'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
-        `${duplicateFields.map(fields => fields.map(field => stringifyFormElementAsCode(field)).join(', ')).join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active" target="_blank">ID attribute value must be unique</a>',
+      details:
+        'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
+        `${duplicateFields
+          .map(fields => fields.map(field => stringifyFormElementAsCode(field)).join(', '))
+          .join('<br>• ')}`,
+      learnMore:
+        'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active" target="_blank">ID attribute value must be unique</a>',
       title: 'Form fields must have unique <code>id</code> values.',
       type: 'error',
     });
@@ -138,9 +227,11 @@ export function hasUniqueNames(tree) {
 
   if (duplicates.length) {
     issues.push({
-      details: 'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
+      details:
+        'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
         `${duplicates.map(fields => fields.map(field => stringifyFormElementAsCode(field)).join(', ')).join('<br>• ')}`,
-      learnMore: 'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The input element name attribute</a>',
+      learnMore:
+        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The input element name attribute</a>',
       title: 'Fields in the same form must have unique <code>name</code> values.',
       type: 'error',
     });
@@ -154,10 +245,5 @@ export function hasUniqueNames(tree) {
  * @type {AuditHandler}
  */
 export function runAttributeAudits(tree) {
-  return [
-    ...hasInvalidAttributes(tree),
-    ...hasIdOrName(tree),
-    ...hasUniqueIds(tree),
-    ...hasUniqueNames(tree),
-  ];
+  return [...hasInvalidAttributes(tree), ...hasIdOrName(tree), ...hasUniqueIds(tree), ...hasUniqueNames(tree)];
 }
