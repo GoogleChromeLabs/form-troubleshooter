@@ -10,37 +10,37 @@ const IGNORE_ATTRIBUTES = ['autofill-information', 'autofill-prediction'];
 // Need to re-run the audits here every time the popup is opened.
 chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
-    if (request.message === 'popup opened' && window.parent === window) {
-      chrome.storage.local.clear(() => {
-        const error = chrome.runtime.lastError;
-        if (error) {
-          console.error('chrome.storage.local.clear() error in content-script.js:', error);
-        } else {
-          getTree(document)
-            .then(tree => {
-              chrome.storage.local.set({tree: tree}, () => {
-                chrome.runtime.sendMessage({broadcast: true, message: 'dom inspected'});
+    // only run on top most window/frame
+    if (window.parent === window) {
+      if (request.message === 'popup opened') {
+        chrome.storage.local.clear(() => {
+          const error = chrome.runtime.lastError;
+          if (error) {
+            console.error('chrome.storage.local.clear() error in content-script.js:', error);
+          } else {
+            getTree(document)
+              .then(tree => {
+                chrome.storage.local.set({tree: tree}, () => {
+                  chrome.runtime.sendMessage({message: 'stored element data'});
+                });
               });
-            });
-        }
-      });
-    } else if (request.message === 'inspect'
-        && ((request.name === window.name && request.url === window.location.href)
-          || (request.name && request.name === window.name) // in case the iframe gets redirected
-          || (request.url && request.url === window.location.href))) {
-      getTree(document)
-        .then(tree => {
-          sendResponse(tree);
+          }
         });
-      return true;
+      }
+    } else {
+      if (request.message === 'inspect'
+          && ((request.name === window.name && request.url === window.location.href)
+            || (request.name && request.name === window.name) // in case the iframe gets redirected
+            || (request.url && request.url === window.location.href))) {
+        getTree(document)
+          .then(tree => {
+            sendResponse(tree);
+          });
+        return true;
+      }
     }
   }
 );
-
-/**
- * Tree node type
- * @typedef {{name?: string, text?: string, type?: string, children?: TreeNode[], attributes?: {[key: string]: string}}} TreeNode
- */
 
 /**
  * Gets a simplified/JSON serializable representation of the DOM tree

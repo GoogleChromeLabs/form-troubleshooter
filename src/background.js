@@ -9,7 +9,6 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('received message background.js', message);
   if (message.broadcast) {
     chrome.tabs.sendMessage(sender.tab.id, message, response => {
       if (message.wait) {

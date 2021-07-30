@@ -47,12 +47,28 @@
   },
   "env": {
     "es6": true,
-    "browser": true
+    "browser": true,
+    "node": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "plugin:mocha/recommended",
+    "eslint:recommended"
+  ],
   "globals": {
   },
   "parserOptions": {
-    "ecmaVersion": 2017
-  }
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "mocha"
+  ],
+  "overrides": [
+    {
+      "files": ["*.spec.js"],
+      "rules": {
+        "no-unused-expressions": 0
+      }
+    }
+  ]
 }

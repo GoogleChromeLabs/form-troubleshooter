@@ -1,0 +1,41 @@
+{
+  "name": "form-troubleshooter",
+  "version": "0.0.1",
+  "description": "A Chrome extension to find and fix common form problems",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "clean": "rimraf build",
+    "lint": "eslint .",
+    "build": "npm run lint && npm run clean && rollup -c",
+    "test": "mocha --es-module-specifier-resolution=node --recursive src --extension spec.js",
+    "test:watch": "npm run test -- --parallel --watch --reporter min"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/GoogleChromeLabs/form-troubleshooter.git"
+  },
+  "keywords": [
+    "form",
+    "forms",
+    "autocomplete",
+    "autofill"
+  ],
+  "author": "samdutton",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/GoogleChromeLabs/form-troubleshooter/issues"
+  },
+  "homepage": "https://github.com/GoogleChromeLabs/form-troubleshooter#readme",
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "eslint": "^7.31.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "fs-extra": "^10.0.0",
+    "mocha": "^9.0.3",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.55.0"
+  }
+}

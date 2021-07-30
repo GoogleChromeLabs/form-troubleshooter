@@ -60,19 +60,18 @@ errors reported that appear to be incorrect.
 
 The extension checks the current page for form and form field elements each time it's opened.
 
-1. The extension icon is clicked to open [popup.html](popup.html).
-1. popup.js [sends a message](js/popup.js#L33) to [dom-inspector.js](js/dom-inspector.js#L13) that the popup has opened (`popup opened`).
-1. dom-inspector.js [traverses the DOM](js/dom-inspector.js#L50) including the shadow DOM and `iframe`s.
-1. dom-inspector.js [stores a DOM representation](js/dom-inspector.js#L21) using `chrome.storage` which will be used by content-script.js.
-1. dom-inspector.js [sends a message](js/dom-inspector.js#L22) via background.js that the DOM has been inspected (`dom inspected`).
-1. content-script.js [processes the DOM information](js/content-script.js#L11) for form and form field elements on the current page. 
-1. content-script.js [stores form data](js/content-script.js#L33) using `chrome.storage`.
-1. content-script.js [sends a message](js/content-script.js#L35) that element data has been stored.
-1. On [getting the message](js/popup.js#L42), popup.js [gets the data from chrome.storage](js/popup.js#L50).
-1. popup.js [runs the audits](js/popup.js#L54) defined in [audits.js](js/audits.js#L27), to check 
+1. The extension icon is clicked to open [popup.html](src/popup.html).
+1. popup.js [sends a message](src/js/popup.js#L36) to [content-script.js](src/js/content-script.js#L15) that the popup has opened (`popup opened`).
+1. content-script.js [traverses the DOM](src/js/content-script.js#L50) including the shadow DOM and `iframe`s.
+1. content-script.js [stores a DOM representation](src/js/content-script.js#L23) using `chrome.storage` which will be used by content-script.js.
+1. content-script.js [sends a message](src/js/content-script.js#L24) via background.js that the DOM has been inspected (`dom inspected`).
+1. content-script.js [stores form data](src/js/content-script.js#L23) using `chrome.storage`.
+1. content-script.js [sends a message](src/js/content-script.js#L24) that element data has been stored (`stored element data`).
+1. On [getting the message](src/js/popup.js#L42), popup.js [gets the data from chrome.storage](src/js/popup.js#L50).
+1. popup.js [runs the audits](src/js/popup.js#L56) defined in [audits.js](src/js/audits.js), to check 
 the form elements and attributes in the page.
-1. popup.js [displays an overview](js/popup.js#L58) of form and form field data in popup.html.
-1. audits.js [displays results](js/audits.js#L82) of the audits in popup.html.
+1. popup.js [displays an overview](src/js/popup.js#L59) of form and form field data in popup.html.
+1. popup.js [displays results](src/js/popup.js#L58) of the audits in popup.html.
 
 
 ## Feedback and feature requests
@@ -85,14 +84,14 @@ Feedback and audit suggestions welcome!
 
 ## TODO
 
-* Link to and/or highlight problematic elements.
-* Move code for displaying audit results [out of audits.js](js/audits.js#L59).
-* Move constants to external file.
-* Check for forms (or other elements) that don't have a closing tag.
-* Check for invalid `type` attribute values, for example `<input type="check">`.
-* Suggest alternatives to invalid attribute names, e.g. for `autcomplete`.
-* Convert `map(field => stringifyElement(field));` to a single function.
-* Sort out form field/element naming (labels and buttons are not fields).
+- [ ] Link to and/or highlight problematic elements.
+- [x] Move code for displaying audit results [out of audits.js](js/audits.js#L59).
+- [ ] Move constants to external file.
+- [ ] Check for forms (or other elements) that don't have a closing tag.
+- [ ] Check for invalid `type` attribute values, for example `<input type="check">`.
+- [ ] Suggest alternatives to invalid attribute names, e.g. for `autcomplete`.
+- [ ] Convert `map(field => stringifyElement(field));` to a single function.
+- [ ] Sort out form field/element naming (labels and buttons are not fields).
 
 ---
 

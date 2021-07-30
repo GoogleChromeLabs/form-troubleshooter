@@ -1,1 +1,6 @@
+build/
+node_modules/
+
+manifest.key.json
+
 *.sublime-*

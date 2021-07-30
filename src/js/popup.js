@@ -1,6 +1,10 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
+import {groupBy} from './array-util';
+import {runAudits} from './audits';
+import {findDescendants, getTreeNodeWithParents} from './tree-util';
+
 /*
 1. Each time the popup is opened, ask content-script.js to get
    form and form field data for the current page.
@@ -8,9 +12,7 @@ SPDX-License-Identifier: Apache-2.0 */
 3. Display form and form field data in popup.html.
 */
 
-/* global chrome, runAudits */
-
-let elementData;
+/* global chrome */
 
 const saveAsHTMLButton = document.querySelector('button');
 saveAsHTMLButton.onclick = saveAsHTML;
@@ -40,45 +42,56 @@ chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
     // console.log('message received in popup:', request.message);
     if (request.message === 'stored element data') {
-      getElementData();
+      processFormData();
     }
   }
 );
 
 // Get the data about forms and form fields that has been stored by content-script.js.
-function getElementData() {
-  chrome.storage.local.get(['elementData'], (result) => {
-    console.log('getElementData result:', result);
-    elementData = result.elementData;
+function processFormData() {
+  chrome.storage.local.get(['tree'], (result) => {
+    const tree = getTreeNodeWithParents(result.tree);
+
     // Now elementData is available, run the audits defined in audits.js.
-    runAudits();
-    let elementsNotFound = [];
-    // Use ELEMENTS to choose display order.
-    // Can't store a Map to share between content script and popup :(.
-    for (const elementName in ELEMENTS) {
-      const elementArray = elementData[elementName];
-      // console.log(elementName, elementArray);
-      if (elementArray.length > 0) {
-        // Display data about an individual form or form field element.
-        handleElementData(elementName, elementArray);
-      } else {
-        // To display a list of elements that weren't found on the page.
-        elementsNotFound.push(elementName);
-      }
-    }
-    // If no form or form field elemens were found...
-    if (elementsNotFound.length === Object.keys(ELEMENTS).length) {
-      overviewSummary.classList.add('inactive');
-      overviewSummary.textContent = 'No form or form field elements found.';
-    }
-    // If at least one form or form field element was found...
-    if (elementsNotFound.length < Object.keys(ELEMENTS).length) {
-      overviewSummary.textContent = 'Overview of form and form field elements';
-    }
-    if (elementsNotFound.length > 0) {
-      listElementsNotFound(elementsNotFound);
-    }
+    const items = runAudits(tree);
+
+    displayItems(items);
+    displaySummary(tree);
   });
+}
+
+function displaySummary(tree) {
+  let elementsNotFound = [];
+  const elementsByType = groupBy(findDescendants(tree, Object.keys(ELEMENTS)).filter(node => node.name), node => node.name);
+
+  // Use ELEMENTS to choose display order.
+  // Can't store a Map to share between content script and popup :(.
+  for (const elementName in ELEMENTS) {
+    const elementArray = elementsByType.get(elementName);
+    // const elementArray = elementData[elementName];
+    // console.log(elementName, elementArray);
+    if (elementArray && elementArray.length > 0) {
+      // Display data about an individual form or form field element.
+      handleElementData(elementName, elementArray);
+    } else {
+      // To display a list of elements that weren't found on the page.
+      elementsNotFound.push(elementName);
+    }
+  }
+
+  // If no form or form field elemens were found...
+  if (elementsNotFound.length === Object.keys(ELEMENTS).length) {
+    overviewSummary.classList.add('inactive');
+    overviewSummary.textContent = 'No form or form field elements found.';
+  }
+
+  // If at least one form or form field element was found...
+  if (elementsNotFound.length < Object.keys(ELEMENTS).length) {
+    overviewSummary.textContent = 'Overview of form and form field elements';
+  }
+  if (elementsNotFound.length > 0) {
+    listElementsNotFound(elementsNotFound);
+  }
 }
 
 // Display information about an individual form or form field element, as stored by content-script.js.
@@ -125,10 +138,16 @@ function createAttributeTable(elementName, elementArray) {
     // For each instance of the current element...
     tr = document.createElement('tr');
     // ...display the attribute value.
-    const attributes = Object.assign({}, element.attributes, element);
+    const attributes = Object.assign({}, element.attributes);
     for (const attributeName of ELEMENTS[elementName]) {
-      const attributeValue = attributes[attributeName] === null || attributes[attributeName] === undefined ? '—' :
-        attributes[attributeName] === '' ? '[empty]' : attributes[attributeName];
+      // eslint-disable-next-line eqeqeq
+      const attributeValue = attributes[attributeName] == null
+        ? '—'
+        : attributes[attributeName] === ''
+          ? attributeName === 'required'
+            ? true
+            : '[empty]'
+          : attributes[attributeName];
       addElement(tr, 'td', attributeValue);
     }
     // Add columns that aren't for attribute values. (See above for <th>.)
@@ -183,3 +202,45 @@ function addElement(parent, elementName, html) {
   parent.appendChild(el);
 }
 
+function displayItems(items) {
+  const numErrors = items.filter(item => item.type === 'error').length;
+  const numWarnings = items.filter(item => item.type === 'warning').length;
+  for (const item of items) {
+    displayItem(item);
+  }
+  if (numErrors > 0) {
+    const summary = document.querySelector('details#error summary');
+    summary.classList.remove('inactive');
+    summary.textContent = `${numErrors} error`;
+    if (numErrors > 1) {
+      summary.textContent += 's';
+    }
+  }
+  if (numWarnings > 0) {
+    const summary = document.querySelector('details#warning summary');
+    summary.classList.remove('inactive');
+    summary.textContent = `${numWarnings} warning`;
+    if (numWarnings > 1) {
+      summary.textContent += 's';
+    }
+  }
+}
+
+// Add a warning or an error to popup.html.
+function displayItem(item) {
+  // details will be details#error or details#warning
+  const details = document.getElementById(item.type);
+  const section = document.createElement('section');
+  const h2 = document.createElement('h2');
+  h2.innerHTML = item.title;
+  section.appendChild(h2);
+  const detailsDiv = document.createElement('div');
+  detailsDiv.classList.add('details');
+  detailsDiv.innerHTML = item.details;
+  section.appendChild(detailsDiv);
+  const learnMoreDiv = document.createElement('div');
+  learnMoreDiv.classList.add('learn-more');
+  learnMoreDiv.innerHTML = item.learnMore;
+  section.appendChild(learnMoreDiv);
+  details.appendChild(section);
+}
