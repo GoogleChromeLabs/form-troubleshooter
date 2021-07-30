@@ -109,9 +109,9 @@ export function hasAutocompleteAttributes(tree) {
 export function hasEmptyAutocomplete(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
-    // eslint-disable-next-line eqeqeq
-    .filter(node => node.attributes.autocomplete != null && node.attributes.autocomplete.trim() === '');
+  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.autocomplete != null && node.attributes.autocomplete.trim() === '',
+  );
 
   if (invalidFields.length) {
     issues.push({

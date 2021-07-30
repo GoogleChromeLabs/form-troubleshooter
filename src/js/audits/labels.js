@@ -108,7 +108,6 @@ export function hasLabelWithForAttribute(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
   const invalidFields = findDescendants(tree, ['label'])
-    // eslint-disable-next-line eqeqeq
     .filter(node => node.attributes.for == null)
     // Ignore labels that contain form fields: they don't need for attributes.
     // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label#:~:text=nest
@@ -136,9 +135,9 @@ export function hasLabelWithForAttribute(tree) {
 export function hasLabelWithEmptyForAttribute(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
-  const invalidFields = findDescendants(tree, ['label'])
-    // eslint-disable-next-line eqeqeq
-    .filter(node => node.attributes.for != null && node.attributes.for.trim() === '');
+  const invalidFields = findDescendants(tree, ['label']).filter(
+    node => node.attributes.for != null && node.attributes.for.trim() === '',
+  );
 
   if (invalidFields.length) {
     issues.push({

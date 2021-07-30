@@ -141,7 +141,6 @@ function createAttributeTable(elementName, elementArray) {
     // ...display the attribute value.
     const attributes = Object.assign({}, element.attributes);
     for (const attributeName of ELEMENTS[elementName]) {
-      // eslint-disable-next-line eqeqeq
       const attributeValue =
         attributes[attributeName] == null
           ? '—'
