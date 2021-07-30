@@ -60,7 +60,7 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { for: 'something' } }] });
       const result = hasInvalidAttributes(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain('form: for');
+      expect(result[0].details).to.contain('<code>form</code>: <code>for</code>');
       expect(result[0].type).to.equal('warning');
     });
 
@@ -194,6 +194,16 @@ describe('attributes', function () {
       });
       const result = hasInvalidAttributes(tree);
       expect(result).to.be.eql([]);
+    });
+
+    it('should return audit error when field contains invalid attribute (with suggestion)', function () {
+      const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { autcomplete: 'something' } }] });
+      const result = hasInvalidAttributes(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(
+        '<code>form</code>: <code>autcomplete</code> (did you mean <code>autocomplete</code>?)',
+      );
+      expect(result[0].type).to.equal('warning');
     });
   });
 

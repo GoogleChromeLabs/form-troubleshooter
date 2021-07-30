@@ -88,7 +88,7 @@ Feedback and audit suggestions welcome!
 - [x] Move constants to external file.
 - [ ] Check for forms (or other elements) that don't have a closing tag.
 - [ ] Check for invalid `type` attribute values, for example `<input type="check">`.
-- [ ] Suggest alternatives to invalid attribute names, e.g. for `autcomplete`.
+- [x] Suggest alternatives to invalid attribute names, e.g. for `autcomplete`.
 - [ ] Convert `map(field => stringifyElement(field));` to a single function.
 - [ ] Sort out form field/element naming (labels and buttons are not fields).
 

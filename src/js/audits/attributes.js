@@ -5,6 +5,7 @@ import { groupBy } from '../array-util';
 import { ATTRIBUTES, FORM_FIELDS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
 import { closestParent, findDescendants } from '../tree-util';
 import { stringifyFormElementAsCode } from './audit-util';
+import Fuse from 'fuse.js';
 
 function getInvalidAttributes(element) {
   return Object.keys(element.attributes).filter(attributeName => {
@@ -34,10 +35,27 @@ export function hasInvalidAttributes(tree) {
     .filter(field => field.invalidAttributes.length);
 
   if (invalidFields.length) {
+    const invalidFieldMessages = invalidFields.map(field => {
+      const suggestions = new Fuse([...new Set([...ATTRIBUTES.global, ...(ATTRIBUTES[field.name] || [])])], {
+        threshold: 0.2,
+      });
+
+      return `<code>${field.name}</code>: ${field.invalidAttributes
+        .map(attribute => {
+          let message = `<code>${attribute}</code>`;
+          const matches = suggestions.search(attribute);
+          const suggestion = matches[0] ? matches[0].item : null;
+          if (suggestion) {
+            message += ` (did you mean <code>${suggestion}</code>?)`;
+          }
+          return message;
+        })
+        .join(', ')}`;
+    });
     issues.push({
       details:
         'Found element(s) with invalid attributes:<br>• ' +
-        `${invalidFields.map(field => `${field.name}: ${field.invalidAttributes.join(', ')}`).join('<br>• ')}` +
+        `${invalidFieldMessages.join('<br>• ')}` +
         '<br>Consider using <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes" title="MDN article: Using data attributes">data attributes</a> instead of non-standard attributes.',
       learnMore:
         'Learn more: <a href="https://html.spec.whatwg.org/multipage/forms.html" target="_blank">HTML Living Standard: Forms</a>',
