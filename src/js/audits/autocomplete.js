@@ -118,10 +118,10 @@ export function hasValidAutocomplete(tree) {
       if (!AUTOCOMPLETE_TOKENS.includes(token) && !token.startsWith('section-')) {
         const matches = autocompleteSuggestions.search(token);
         const suggestion = matches[0] ? matches[0].item : null;
-        let message = stringifyFormElementAsCode(field);
+        let message = stringifyFormElementAsCode(field, token);
 
         if (suggestion) {
-          message += `, did you mean <code>${suggestion}</code> (instead of <code>${token}</code>)?`;
+          message += `, did you mean <code>${suggestion}</code>?`;
         }
 
         invalidFieldMessages.push(message);

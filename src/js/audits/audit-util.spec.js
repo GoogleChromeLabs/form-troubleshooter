@@ -56,5 +56,17 @@ describe('audit-util', function () {
       const result = stringifyFormElementAsCode(element);
       expect(result).to.equal('<code>&lt;label for="id"&gt;hello&lt;/label&gt;</code>');
     });
+
+    it('should render code with highlighted section in bold', function () {
+      const element = getTreeNodeWithParents({
+        name: 'label',
+        attributes: { for: 'id' },
+        children: [{ text: 'hello' }],
+      });
+      const result = stringifyFormElementAsCode(element, 'for="id"');
+      expect(result).to.equal(
+        '<code>&lt;label </code><strong><code>for="id"</code></strong><code>&gt;hello&lt;/label&gt;</code>',
+      );
+    });
   });
 });

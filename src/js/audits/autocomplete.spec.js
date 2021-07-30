@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { expect } from 'chai';
 import { getTreeNodeWithParents } from '../tree-util';
-import { wrapInCode } from './audit-util';
+import { escapeHtml, wrapInCode } from './audit-util';
 import {
   hasAutocompleteAttributes,
   hasAutocompleteOff,
@@ -105,7 +105,11 @@ describe('autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: 'stuff' } }] });
       const result = hasValidAutocomplete(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input autocomplete="stuff">'));
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>stuff</code></strong><code>${escapeHtml(
+          '">',
+        )}</code>`,
+      );
       expect(result[0].type).to.equal('error');
     });
 
@@ -115,7 +119,11 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input autocomplete="stuff username">'));
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>stuff</code></strong><code>${escapeHtml(
+          ' username">',
+        )}</code>`,
+      );
       expect(result[0].type).to.equal('error');
     });
 
@@ -166,7 +174,11 @@ describe('autocomplete', function () {
       const result = hasValidAutocomplete(tree);
       expect(result.length).to.equal(1);
       expect(result[0].details).to.contain(
-        `${wrapInCode('<input autocomplete="section-1 usrname">')}, did you mean ${wrapInCode('username')}`,
+        `<code>${escapeHtml(
+          '<input autocomplete="section-1 ',
+        )}</code><strong><code>usrname</code></strong><code>${escapeHtml('">')}</code>, did you mean ${wrapInCode(
+          'username',
+        )}`,
       );
       expect(result[0].type).to.equal('error');
     });
@@ -177,7 +189,11 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input autocomplete="section-1 sjdjdasd">'));
+      expect(result[0].details).to.contain(
+        `<code>${escapeHtml(
+          '<input autocomplete="section-1 ',
+        )}</code><strong><code>sjdjdasd</code></strong><code>${escapeHtml('">')}</code>`,
+      );
       expect(result[0].details).to.not.contain('did you mean');
       expect(result[0].type).to.equal('error');
     });

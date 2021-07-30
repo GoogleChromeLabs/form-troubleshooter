@@ -19,7 +19,7 @@ export function hasEmptyForms(tree) {
     issues.push({
       details:
         'Found form(s) not containing any form fields:<br>• ' +
-        `${emptyForms.map(stringifyFormElementAsCode).join('<br>• ')}`,
+        `${emptyForms.map(form => stringifyFormElementAsCode(form)).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" target="_blank">MDN: The HTML form element</a>.',
       title: 'Forms should contain form fields.',
