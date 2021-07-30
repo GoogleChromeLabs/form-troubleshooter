@@ -1,10 +1,11 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { INPUT_TYPES } from '../constants';
-import { findDescendants } from '../tree-util';
+import { INPUT_SELECT_TEXT_FIELDS, INPUT_TYPES } from '../constants';
+import { closestParent, findDescendants } from '../tree-util';
 import { stringifyFormElementAsCode } from './audit-util';
 import Fuse from 'fuse.js';
+import { groupBy } from '../array-util';
 
 /**
  * Input has a valid type value.
@@ -43,9 +44,39 @@ export function hasValidInputType(tree) {
 }
 
 /**
+ * Input has a label.
+ * @type {AuditHandler}
+ */
+export function inputHasLabel(tree) {
+  /** @type {AuditResult[]} */
+  const issues = [];
+  const labelsByFor = groupBy(
+    findDescendants(tree, ['label']).filter(node => node.attributes.for),
+    node => node.attributes.for,
+  );
+  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
+    .filter(node => !closestParent(node, 'label'))
+    .filter(node => !labelsByFor.has(node.attributes.id));
+
+  if (invalidFields.length) {
+    issues.push({
+      details: `Found input field(s) without a corresponding label:<br>• ${invalidFields
+        .map(field => stringifyFormElementAsCode(field))
+        .join('<br>• ')}`,
+      learnMore:
+        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" target="_blank">MDN: Labels</a>.',
+      title: 'Input fields should have labels.',
+      type: 'error',
+    });
+  }
+
+  return issues;
+}
+
+/**
  * Run all input audits.
  * @type {AuditHandler}
  */
 export function runInputAudits(tree) {
-  return [...hasValidInputType(tree)];
+  return [...hasValidInputType(tree), ...inputHasLabel(tree)];
 }
