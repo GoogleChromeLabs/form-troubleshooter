@@ -75,9 +75,7 @@ describe('labels', function () {
       });
       const result = hasUniqueLabels(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(
-        `${wrapInCode('<label>hello</label>')}, ${wrapInCode('<label>hello</label>')}`,
-      );
+      expect(result[0].details).to.contain(`${wrapInCode('<label>hello</label>')}`);
       expect(result[0].type).to.equal('warning');
     });
 
