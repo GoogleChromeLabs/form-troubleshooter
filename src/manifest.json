@@ -14,6 +14,12 @@
       "all_frames": true
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["css/highlight.css"],
+      "matches": ["*://*/*"]
+    }
+  ],
   "permissions": ["activeTab", "downloads", "storage", "tabs"],
   "action": {
     "default_popup": "popup.html",

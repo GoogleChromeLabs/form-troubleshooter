@@ -130,6 +130,27 @@ async function getTree(parent) {
   return tree;
 }
 
+/**
+ * Gets all shadow roots in a document
+ * @returns {ShadowRoot[]}
+ */
+function getShadowRoots() {
+  const queue = [...document.children];
+  const shadowRoots = [];
+  let item;
+
+  while ((item = queue.shift())) {
+    queue.push(...item.children);
+
+    if (item.shadowRoot) {
+      queue.push(...item.shadowRoot.children);
+      shadowRoots.push(item.shadowRoot);
+    }
+  }
+
+  return shadowRoots;
+}
+
 function sendMessageAndWait(message, timeoutDuration = 500) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -145,18 +166,45 @@ function sendMessageAndWait(message, timeoutDuration = 500) {
 function highlightElements(cssSelector, className, scroll) {
   clearHighlights(className);
 
-  const elements = Array.from(document.querySelectorAll(cssSelector));
+  let currentRoot = document;
+  let roots = cssSelector.split(' > #shadow-root > ');
+  const selector = roots[roots.length - 1];
+  roots = roots.slice(0, roots.length - 1);
+
+  for (const root of roots) {
+    const customElement = currentRoot.querySelector(root);
+    if (customElement && customElement.shadowRoot) {
+      currentRoot = customElement.shadowRoot;
+      injectStylesheet(currentRoot, 'form-troubleshooter-highlight-css', chrome.runtime.getURL('css/highlight.css'));
+    }
+  }
+
+  const elements = Array.from(currentRoot.querySelectorAll(selector));
   const firstElement = elements[0];
   if (firstElement && scroll) {
     firstElement.scrollIntoView({ behavior: 'smooth' });
   }
+
   elements.forEach(elem => {
     elem.classList.add(className);
   });
 }
 
 function clearHighlights(className) {
-  Array.from(document.querySelectorAll(`.${className}`)).forEach(elem => {
-    elem.classList.remove(className);
+  const roots = [document, ...getShadowRoots()];
+  roots.forEach(root => {
+    Array.from(root.querySelectorAll(`.${className}`)).forEach(elem => {
+      elem.classList.remove(className);
+    });
   });
+}
+
+function injectStylesheet(target, id, url) {
+  if (!target.querySelector(`#${id}`)) {
+    var elem = document.createElement('link');
+    elem.rel = 'stylesheet';
+    elem.id = id;
+    elem.setAttribute('href', url);
+    target.appendChild(elem);
+  }
 }

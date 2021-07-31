@@ -114,6 +114,10 @@ export function getPath(node) {
  * @returns {string}
  */
 function getPathSegment(node) {
+  if (node.type) {
+    return node.type;
+  }
+
   if (!node.name) {
     return '';
   }

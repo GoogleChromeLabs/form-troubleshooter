@@ -88,7 +88,7 @@ Feedback and audit suggestions welcome!
 
 - [ ] Link to and/or highlight problematic elements.
   - [x] Link to items in the regular DOM.
-  - [ ] Link to items in shadow DOM.
+  - [x] Link to items in shadow DOM.
   - [ ] Link to items in iframes.
 - [x] Move code for displaying audit results [out of audits.js](js/audits.js#L59).
 - [x] Move constants to external file.

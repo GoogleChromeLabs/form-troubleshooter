@@ -209,6 +209,7 @@ describe('tree-util', function () {
           { name: 'b', attributes: { position: '1' } },
           { name: 'b', attributes: { position: '2' } },
           { name: 'b', attributes: { position: '3' } },
+          { name: 'a-b', children: [{ type: '#shadow-root', children: [{ name: 'r' }, { name: 's' }] }] },
         ],
       });
     });
@@ -271,6 +272,12 @@ describe('tree-util', function () {
       const [node] = findDescendants(tree, ['u']);
       const result = getPath(node);
       expect(result).to.equal('/root/a/c[1]/u');
+    });
+
+    it('should get leaf node from shadow root', function () {
+      const [node] = findDescendants(tree, ['s']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/a-b/#shadow-root/s');
     });
   });
 

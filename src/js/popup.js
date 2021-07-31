@@ -67,6 +67,9 @@ document.addEventListener('mousemove', event => {
     if (!selector) {
       hoverPath = null;
       clearHighlight('form-troubleshooter-highlight-hover');
+    } else {
+      hoverPath = selector;
+      showHighlight(selector, 'form-troubleshooter-highlight-hover', false);
     }
   } else {
     // add highlight
@@ -86,12 +89,14 @@ document.addEventListener('mouseleave', event => {
 });
 
 function getSelector(el) {
-  const anchor = el.closest('.highlight-element');
-  if (anchor) {
-    const path = anchor.getAttribute('data-path');
+  if (el.closest) {
+    const anchor = el.closest('.highlight-element');
+    if (anchor) {
+      const path = anchor.getAttribute('data-path');
 
-    if (path) {
-      return pathToQuerySelector(path);
+      if (path) {
+        return pathToQuerySelector(path);
+      }
     }
   }
   return null;
