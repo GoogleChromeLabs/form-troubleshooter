@@ -40,10 +40,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.message === 'highlight') {
-    console.log('highlight', request.selector, document.querySelector(request.selector), window.location.href);
-    highlightElements(request.selector);
+    highlightElements(request.selector, request.className, request.scroll);
   } else if (request.message === 'clear highlight') {
-    clearHighlights();
+    clearHighlights(request.className);
   }
 });
 
@@ -143,19 +142,21 @@ function sendMessageAndWait(message, timeoutDuration = 500) {
   });
 }
 
-const highlightClassName = 'form-troubleshooter-highlight';
-function highlightElements(cssSelector) {
-  const firstElement = document.querySelector(cssSelector);
-  if (firstElement) {
+function highlightElements(cssSelector, className, scroll) {
+  clearHighlights(className);
+
+  const elements = Array.from(document.querySelectorAll(cssSelector));
+  const firstElement = elements[0];
+  if (firstElement && scroll) {
     firstElement.scrollIntoView({ behavior: 'smooth' });
   }
-  Array.from(document.querySelectorAll(cssSelector)).forEach(elem => {
-    elem.classList.add(highlightClassName);
+  elements.forEach(elem => {
+    elem.classList.add(className);
   });
 }
 
-function clearHighlights(cssSelector) {
-  Array.from(document.querySelectorAll(`.${highlightClassName}`)).forEach(elem => {
-    elem.classList.remove(highlightClassName);
+function clearHighlights(className) {
+  Array.from(document.querySelectorAll(`.${className}`)).forEach(elem => {
+    elem.classList.remove(className);
   });
 }

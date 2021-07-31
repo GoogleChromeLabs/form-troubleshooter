@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { groupBy } from './array-util';
 import { runAudits } from './audits';
 import { ELEMENTS } from './constants';
-import { findDescendants, getTextContent, getTreeNodeWithParents, pathToQuerySelector } from './tree-util';
+import { findDescendants, getPath, getTextContent, getTreeNodeWithParents, pathToQuerySelector } from './tree-util';
 
 /*
 1. Each time the popup is opened, ask content-script.js to get
@@ -30,16 +30,17 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   chrome.tabs.sendMessage(tabId, { message: 'popup opened' });
 
   window.addEventListener('blur', () => {
-    clearHighlight();
+    clearHighlight('form-troubleshooter-highlight');
+    clearHighlight('form-troubleshooter-highlight-hover');
   });
 });
 
-function showHighlight(selector) {
-  chrome.tabs.sendMessage(tabId, { message: 'highlight', selector });
+function showHighlight(selector, className, scrollIntoView) {
+  chrome.tabs.sendMessage(tabId, { message: 'highlight', selector, className, scroll: scrollIntoView });
 }
 
-function clearHighlight() {
-  chrome.tabs.sendMessage(tabId, { message: 'clear highlight' });
+function clearHighlight(className) {
+  chrome.tabs.sendMessage(tabId, { message: 'clear highlight', className });
 }
 
 // Listen for a message from the content script that
@@ -52,20 +53,49 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 document.addEventListener('click', event => {
-  /** @type {Element} */
-  const el = event.target;
-  const anchor = el.closest('a.highlight-element');
-  if (anchor) {
-    const path = anchor.getAttribute('data-path');
+  const selector = getSelector(event.target);
+  if (selector) {
+    showHighlight(selector, 'form-troubleshooter-highlight', true);
+  }
+});
 
-    clearHighlight();
-
-    if (path) {
-      const selector = pathToQuerySelector(path);
-      showHighlight(selector);
+let hoverPath;
+document.addEventListener('mousemove', event => {
+  if (hoverPath) {
+    // clear highlight
+    const selector = getSelector(event.target);
+    if (!selector) {
+      hoverPath = null;
+      clearHighlight('form-troubleshooter-highlight-hover');
+    }
+  } else {
+    // add highlight
+    const selector = getSelector(event.target);
+    if (selector) {
+      hoverPath = selector;
+      showHighlight(selector, 'form-troubleshooter-highlight-hover', false);
     }
   }
 });
+
+document.addEventListener('mouseleave', event => {
+  const selector = getSelector(event.target);
+  if (selector) {
+    clearHighlight('form-troubleshooter-highlight-hover');
+  }
+});
+
+function getSelector(el) {
+  const anchor = el.closest('.highlight-element');
+  if (anchor) {
+    const path = anchor.getAttribute('data-path');
+
+    if (path) {
+      return pathToQuerySelector(path);
+    }
+  }
+  return null;
+}
 
 // Get the data about forms and form fields that has been stored by content-script.js.
 function processFormData() {
@@ -160,6 +190,11 @@ function createAttributeTable(elementName, elementArray) {
   for (const element of elementArray) {
     // For each instance of the current element...
     tr = document.createElement('tr');
+    const path = getPath(element);
+    if (path) {
+      tr.className = 'highlight-element';
+      tr.setAttribute('data-path', path);
+    }
     // ...display the attribute value.
     const attributes = element.attributes;
     for (const attributeName of ELEMENTS[elementName]) {
