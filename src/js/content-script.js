@@ -38,6 +38,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return true;
     }
   }
+
+  if (request.message === 'highlight') {
+    console.log('highlight', request.selector, document.querySelector(request.selector), window.location.href);
+    highlightElements(request.selector);
+  } else if (request.message === 'clear highlight') {
+    clearHighlights();
+  }
 });
 
 /**
@@ -133,5 +140,22 @@ function sendMessageAndWait(message, timeoutDuration = 500) {
       clearTimeout(timeout);
       resolve(response);
     });
+  });
+}
+
+const highlightClassName = 'form-troubleshooter-highlight';
+function highlightElements(cssSelector) {
+  const firstElement = document.querySelector(cssSelector);
+  if (firstElement) {
+    firstElement.scrollIntoView({ behavior: 'smooth' });
+  }
+  Array.from(document.querySelectorAll(cssSelector)).forEach(elem => {
+    elem.classList.add(highlightClassName);
+  });
+}
+
+function clearHighlights(cssSelector) {
+  Array.from(document.querySelectorAll(`.${highlightClassName}`)).forEach(elem => {
+    elem.classList.remove(highlightClassName);
   });
 }

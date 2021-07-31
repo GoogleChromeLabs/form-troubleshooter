@@ -10,6 +10,7 @@
     {
       "matches": ["*://*/*"],
       "js": ["js/content-script.js"],
+      "css": ["css/highlight.css"],
       "all_frames": true
     }
   ],

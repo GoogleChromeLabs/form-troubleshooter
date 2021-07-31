@@ -2,7 +2,14 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { expect } from 'chai';
-import { closestParent, findDescendants, getTextContent, getTreeNodeWithParents } from './tree-util';
+import {
+  closestParent,
+  findDescendants,
+  getPath,
+  getTextContent,
+  getTreeNodeWithParents,
+  pathToQuerySelector,
+} from './tree-util';
 
 describe('tree-util', function () {
   describe('getTreeNodeWithParents', function () {
@@ -169,6 +176,128 @@ describe('tree-util', function () {
       const [node] = findDescendants(tree, ['g']);
       const result = closestParent(node, 'd');
       expect(result.name).to.equal('d');
+    });
+  });
+
+  describe('getPath', function () {
+    let tree;
+
+    beforeEach(function () {
+      tree = getTreeNodeWithParents({
+        name: 'root',
+        children: [
+          {
+            name: 'a',
+            attributes: { level: '1' },
+            children: [
+              { name: 'c', attributes: { position: '1' } },
+              { name: 'c', attributes: { position: '2' }, children: [{ name: 'q' }, { name: 'u' }] },
+              { name: 'c', attributes: { id: 'hasId', position: '3' }, children: [{ name: 'x' }, { name: 'y' }] },
+              {
+                name: 'd',
+                children: [
+                  { name: 'e', attributes: { id: 'mye' } },
+                  {
+                    name: 'a',
+                    attributes: { level: '2' },
+                    children: [{ name: 'g' }, { name: 'h' }],
+                  },
+                ],
+              },
+            ],
+          },
+          { name: 'b', attributes: { position: '1' } },
+          { name: 'b', attributes: { position: '2' } },
+          { name: 'b', attributes: { position: '3' } },
+        ],
+      });
+    });
+
+    it('should get root node', function () {
+      const result = getPath(tree);
+      expect(result).to.equal('/root');
+    });
+
+    it('should get root node without name', function () {
+      delete tree.name;
+      const result = getPath(tree);
+      expect(result).to.equal('/');
+    });
+
+    it('should get leaf node with id for tree without name', function () {
+      delete tree.name;
+      const [node] = findDescendants(tree, ['e']);
+      const result = getPath(node);
+      expect(result).to.equal('//a/d/e#mye');
+    });
+
+    it('should get leaf node with id', function () {
+      const [node] = findDescendants(tree, ['e']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/a/d/e#mye');
+    });
+
+    it('should get leaf node without id', function () {
+      const [node] = findDescendants(tree, ['h']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/a/d/a/h');
+    });
+
+    it('should get leaf node with parent that has id', function () {
+      const [node] = findDescendants(tree, ['y']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/a/c#hasId/y');
+    });
+
+    it('should get first leaf node with by index', function () {
+      const [node] = findDescendants(tree, ['b']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/b[0]');
+    });
+
+    it('should get second leaf node with by index', function () {
+      const [, node] = findDescendants(tree, ['b']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/b[1]');
+    });
+
+    it('should get last leaf node with by index', function () {
+      const [, , node] = findDescendants(tree, ['b']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/b[2]');
+    });
+
+    it('should get leaf node with indexed parent', function () {
+      const [node] = findDescendants(tree, ['u']);
+      const result = getPath(node);
+      expect(result).to.equal('/root/a/c[1]/u');
+    });
+  });
+
+  describe('pathToQuerySelector', function () {
+    it('should get root', function () {
+      const result = pathToQuerySelector('/root');
+      expect(result).to.equal('root');
+    });
+
+    it('should get path with position', function () {
+      const result = pathToQuerySelector('/root/abc[1]/a');
+      expect(result).to.equal('root > abc:nth-of-type(2) > a');
+    });
+
+    it('should get path with position (leaf)', function () {
+      const result = pathToQuerySelector('/root/abc[1]/a[0]');
+      expect(result).to.equal('root > abc:nth-of-type(2) > a:nth-of-type(1)');
+    });
+
+    it('should get path with id', function () {
+      const result = pathToQuerySelector('/root/abc#myabc/a');
+      expect(result).to.equal('root > abc#myabc > a');
+    });
+
+    it('should get path with id (leaf)', function () {
+      const result = pathToQuerySelector('/root/abc#myabc/a#link');
+      expect(result).to.equal('root > abc#myabc > a#link');
     });
   });
 });

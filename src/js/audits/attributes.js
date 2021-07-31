@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { groupBy } from '../array-util';
 import { ATTRIBUTES, FORM_FIELDS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
 import { closestParent, findDescendants } from '../tree-util';
-import { stringifyFormElementAsCode } from './audit-util';
+import { createLinkableElement } from './audit-util';
 import Fuse from 'fuse.js';
 
 function getInvalidAttributes(element) {
@@ -82,7 +82,7 @@ export function hasIdOrName(tree) {
     issues.push({
       details:
         'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
-        `${invalidFields.map(node => stringifyFormElementAsCode(node)).join('<br>• ')}<br>(This may not be an error.)`,
+        `${invalidFields.map(node => createLinkableElement(node)).join('<br>• ')}<br>(This may not be an error.)`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The HTML name attribute</a>',
       title: 'Form fields should have an <code>id</code> or a <code>name</code>.',
@@ -110,9 +110,7 @@ export function hasUniqueIds(tree) {
     issues.push({
       details:
         'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
-        `${duplicateFields
-          .map(fields => fields.map(field => stringifyFormElementAsCode(field)).join(', '))
-          .join('<br>• ')}`,
+        `${duplicateFields.map(fields => fields.map(field => createLinkableElement(field)).join(', ')).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active" target="_blank">ID attribute value must be unique</a>',
       title: 'Form fields must have unique <code>id</code> values.',
@@ -145,7 +143,7 @@ export function hasUniqueNames(tree) {
     issues.push({
       details:
         'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
-        `${duplicates.map(fields => fields.map(field => stringifyFormElementAsCode(field)).join(', ')).join('<br>• ')}`,
+        `${duplicates.map(fields => fields.map(field => createLinkableElement(field)).join(', ')).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The input element name attribute</a>',
       title: 'Fields in the same form must have unique <code>name</code> values.',

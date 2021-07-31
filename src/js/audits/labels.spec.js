@@ -245,9 +245,8 @@ describe('labels', function () {
       });
       const result = hasLabelWithUniqueForAttribute(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(
-        `${wrapInCode('<label for="input">hello</label>')}, ${wrapInCode('<label for="input">world</label>')}`,
-      );
+      expect(result[0].details).to.contain(`${wrapInCode('<label for="input">hello</label>')}`);
+      expect(result[0].details).to.contain(`${wrapInCode('<label for="input">world</label>')}`);
       expect(result[0].type).to.equal('error');
     });
 

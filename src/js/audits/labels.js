@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { groupBy } from '../array-util';
 import { closestParent, findDescendants, getTextContent } from '../tree-util';
-import { stringifyFormElementAsCode, wrapInCode } from './audit-util';
+import { createLinkableElement, wrapInCode } from './audit-util';
 
 const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
 
@@ -18,9 +18,7 @@ export function hasEmptyLabel(tree) {
 
   if (invalidFields.length) {
     issues.push({
-      details: `Found empty label(s):<br>• ${invalidFields
-        .map(field => stringifyFormElementAsCode(field))
-        .join('<br>• ')}`,
+      details: `Found empty label(s):<br>• ${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/empty-missing-form-label" target="_blank">Empty or Missing Form Label</a>',
       title: 'Labels must have text content.',
@@ -54,7 +52,7 @@ export function hasUniqueLabels(tree) {
       details:
         'Found labels in the same form with duplicate values:<br>• ' +
         `${duplicates
-          .map(fields => fields.map(field => stringifyFormElementAsCode(field.label)).join(', '))
+          .map(fields => fields.map(field => createLinkableElement(field.label)).join(', '))
           .join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Labels</a>',
@@ -85,7 +83,7 @@ export function hasLabelWithValidElements(tree) {
         `${invalidFields
           .map(
             field =>
-              `${stringifyFormElementAsCode(field.label)} contains the element ${field.invalid
+              `${createLinkableElement(field.label)} contains the element ${field.invalid
                 .map(invalid => wrapInCode(invalid.name))
                 .join(', ')}.`,
           )
@@ -117,7 +115,7 @@ export function hasLabelWithForAttribute(tree) {
     issues.push({
       details:
         'Found label(s) with no form field descendant, and with no <code>for</code> attribute:<br>• ' +
-        `${invalidFields.map(node => stringifyFormElementAsCode(node)).join('<br>• ')}`,
+        `${invalidFields.map(node => createLinkableElement(node)).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage" target="_blank">The HTML for attribute</a>',
       title: 'Labels must have a for attribute or contain a form field.',
@@ -143,7 +141,7 @@ export function hasLabelWithEmptyForAttribute(tree) {
     issues.push({
       details:
         'Found label(s) with an empty <code>for</code> attribute:<br>• ' +
-        `${invalidFields.map(field => stringifyFormElementAsCode(field)).join('<br>• ')}`,
+        `${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage" target="_blank">The HTML for attribute</a>',
       title: 'The for attribute of a label must not be empty.',
@@ -171,7 +169,7 @@ export function hasLabelWithUniqueForAttribute(tree) {
     issues.push({
       details:
         'Found labels with the same <code>for</code> attribute:<br>• ' +
-        duplicates.map(fields => fields.map(field => stringifyFormElementAsCode(field)).join(', ')).join('<br>• '),
+        duplicates.map(fields => fields.map(field => createLinkableElement(field)).join(', ')).join('<br>• '),
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Label</a>',
       title: 'The for attribute of a label must be unique.',
@@ -201,7 +199,7 @@ export function hasMatchingForLabel(tree) {
     issues.push({
       details:
         'The <code>for</code> attribute of the following label(s) does not match the id ' +
-        `of a form field:<br>• ${invalidFields.map(field => stringifyFormElementAsCode(field)).join('<br>• ')}`,
+        `of a form field:<br>• ${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage" target="_blank">The HTML for attribute</a>',
       title: 'The for attribute of a label must match the id of a form field.',

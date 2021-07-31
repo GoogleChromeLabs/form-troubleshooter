@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { groupBy } from './array-util';
 import { runAudits } from './audits';
 import { ELEMENTS } from './constants';
-import { findDescendants, getTextContent, getTreeNodeWithParents } from './tree-util';
+import { findDescendants, getTextContent, getTreeNodeWithParents, pathToQuerySelector } from './tree-util';
 
 /*
 1. Each time the popup is opened, ask content-script.js to get
@@ -21,11 +21,26 @@ saveAsHTMLButton.onclick = saveAsHTML;
 const overviewDetails = document.querySelector('details#overview');
 const overviewSummary = document.querySelector('#overview summary');
 
+let tabId;
+
 // Send a message to the content script to audit the current page.
 // Need to do this every time the popup is opened.
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-  chrome.tabs.sendMessage(tabs[0].id, { message: 'popup opened' });
+  tabId = tabs[0].id;
+  chrome.tabs.sendMessage(tabId, { message: 'popup opened' });
+
+  window.addEventListener('blur', () => {
+    clearHighlight();
+  });
 });
+
+function showHighlight(selector) {
+  chrome.tabs.sendMessage(tabId, { message: 'highlight', selector });
+}
+
+function clearHighlight() {
+  chrome.tabs.sendMessage(tabId, { message: 'clear highlight' });
+}
 
 // Listen for a message from the content script that
 // data has been stored for form and form field elements.
@@ -33,6 +48,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // console.log('message received in popup:', request.message);
   if (request.message === 'stored element data') {
     processFormData();
+  }
+});
+
+document.addEventListener('click', event => {
+  /** @type {Element} */
+  const el = event.target;
+  const anchor = el.closest('a.highlight-element');
+  if (anchor) {
+    const path = anchor.getAttribute('data-path');
+
+    clearHighlight();
+
+    if (path) {
+      const selector = pathToQuerySelector(path);
+      showHighlight(selector);
+    }
   }
 });
 

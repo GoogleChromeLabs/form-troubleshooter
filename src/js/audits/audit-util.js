@@ -1,7 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { getTextContent } from '../tree-util';
+import { getPath, getTextContent } from '../tree-util';
 
 const FORM_ATTRIBUTES_TO_INCLUDE = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder', 'type'];
 const END_TAGS_TO_INCLUDE = new Set(['label']);
@@ -61,4 +61,19 @@ export function wrapInCode(str, highlight = undefined) {
  */
 export function stringifyFormElementAsCode(node, highlight = undefined) {
   return wrapInCode(stringifyFormElement(node), highlight);
+}
+
+/**
+ * Create an anchor tag that can be used to highlight elements.
+ * @param {TreeNodeWithParent} node
+ * @param {string} highlight Part of the code to draw attention to
+ * @returns {string}
+ */
+export function createLinkableElement(node, highlight = undefined) {
+  const path = getPath(node);
+  const content = stringifyFormElementAsCode(node, highlight);
+  if (path) {
+    return `<a class="highlight-element" data-path="${path}">${content}</a>`;
+  }
+  return content;
 }

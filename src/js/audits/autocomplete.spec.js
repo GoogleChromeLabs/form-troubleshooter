@@ -176,10 +176,9 @@ describe('autocomplete', function () {
       expect(result[0].details).to.contain(
         `<code>${escapeHtml(
           '<input autocomplete="section-1 ',
-        )}</code><strong><code>usrname</code></strong><code>${escapeHtml('">')}</code>, did you mean ${wrapInCode(
-          'username',
-        )}?`,
+        )}</code><strong><code>usrname</code></strong><code>${escapeHtml('">')}</code>`,
       );
+      expect(result[0].details).to.contain(`did you mean ${wrapInCode('username')}?`);
       expect(result[0].type).to.equal('error');
     });
 
@@ -192,8 +191,9 @@ describe('autocomplete', function () {
       expect(result[0].details).to.contain(
         `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>delivery</code></strong><code>${escapeHtml(
           ' address-line1">',
-        )}</code>, did you mean ${wrapInCode('shipping')}?`,
+        )}</code>`,
       );
+      expect(result[0].details).to.contain(`did you mean ${wrapInCode('shipping')}?`);
       expect(result[0].type).to.equal('error');
     });
 
@@ -206,8 +206,9 @@ describe('autocomplete', function () {
       expect(result[0].details).to.contain(
         `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>zip</code></strong><code>${escapeHtml(
           '">',
-        )}</code>, did you mean ${wrapInCode('postal-code')}?`,
+        )}</code>`,
       );
+      expect(result[0].details).to.contain(`did you mean ${wrapInCode('postal-code')}?`);
       expect(result[0].type).to.equal('error');
     });
 
@@ -220,8 +221,9 @@ describe('autocomplete', function () {
       expect(result[0].details).to.contain(
         `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>zipcode</code></strong><code>${escapeHtml(
           '">',
-        )}</code>, did you mean ${wrapInCode('postal-code')}?`,
+        )}</code>`,
       );
+      expect(result[0].details).to.contain(`did you mean ${wrapInCode('postal-code')}?`);
       expect(result[0].type).to.equal('error');
     });
 
@@ -234,8 +236,9 @@ describe('autocomplete', function () {
       expect(result[0].details).to.contain(
         `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>state</code></strong><code>${escapeHtml(
           '">',
-        )}</code>, did you mean ${wrapInCode('address-level1')}?`,
+        )}</code>`,
       );
+      expect(result[0].details).to.contain(`did you mean ${wrapInCode('address-level1')}?`);
       expect(result[0].type).to.equal('error');
     });
 
