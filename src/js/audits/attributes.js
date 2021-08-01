@@ -31,7 +31,7 @@ export function hasInvalidAttributes(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
   const invalidFields = findDescendants(tree, FORM_FIELDS)
-    .map(node => ({ name: node.name, invalidAttributes: getInvalidAttributes(node) }))
+    .map(node => ({ node, name: node.name, invalidAttributes: getInvalidAttributes(node) }))
     .filter(field => field.invalidAttributes.length);
 
   if (invalidFields.length) {
@@ -40,9 +40,9 @@ export function hasInvalidAttributes(tree) {
         threshold: 0.2,
       });
 
-      return `<code>${field.name}</code>: ${field.invalidAttributes
+      return `${createLinkableElement(field.node)}: ${field.invalidAttributes
         .map(attribute => {
-          let message = `<code>${attribute}</code>`;
+          let message = `<strong><code>${attribute}</code></strong>`;
           const matches = suggestions.search(attribute);
           const suggestion = matches[0] ? matches[0].item : null;
           if (suggestion) {

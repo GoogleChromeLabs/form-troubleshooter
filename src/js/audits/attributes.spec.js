@@ -60,7 +60,8 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { for: 'something' } }] });
       const result = hasInvalidAttributes(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain('<code>form</code>: <code>for</code>');
+      expect(result[0].details).to.contain(wrapInCode('<form for="something">'));
+      expect(result[0].details).to.contain(': <strong><code>for</code></strong>');
       expect(result[0].type).to.equal('warning');
     });
 
@@ -200,8 +201,9 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { autcomplete: 'something' } }] });
       const result = hasInvalidAttributes(tree);
       expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(wrapInCode('<form>'));
       expect(result[0].details).to.contain(
-        '<code>form</code>: <code>autcomplete</code> (did you mean <code>autocomplete</code>?)',
+        ': <strong><code>autcomplete</code></strong> (did you mean <code>autocomplete</code>?)',
       );
       expect(result[0].type).to.equal('warning');
     });
