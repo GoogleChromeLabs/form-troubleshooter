@@ -24,24 +24,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           });
         }
       });
+    } else if (request.message === 'highlight') {
+      highlightElements(request.selector, request.className, request.scroll);
     }
   } else {
     if (
-      request.message === 'inspect' &&
-      ((request.name === window.name && request.url === window.location.href) ||
-        (request.name && request.name === window.name) || // in case the iframe gets redirected
-        (request.url && request.url === window.location.href))
+      (request.name === window.name && request.url === window.location.href) ||
+      (request.name && request.name === window.name) || // in case the iframe gets redirected
+      (request.url && request.url === window.location.href)
     ) {
-      getTree(document).then(tree => {
-        sendResponse(tree);
-      });
-      return true;
+      if (request.message === 'inspect') {
+        getTree(document).then(tree => {
+          sendResponse(tree);
+        });
+        return true;
+      }
+      if (request.message === 'highlight frame') {
+        highlightElements(request.selector, request.className, request.scroll);
+      }
     }
   }
 
-  if (request.message === 'highlight') {
-    highlightElements(request.selector, request.className, request.scroll);
-  } else if (request.message === 'clear highlight') {
+  if (request.message === 'clear highlight') {
     clearHighlights(request.className);
   }
 });
@@ -188,6 +192,36 @@ function highlightElements(cssSelector, className, scroll) {
   elements.forEach(elem => {
     elem.classList.add(className);
   });
+
+  highlightElementsInFrame(cssSelector, className, scroll);
+}
+
+function highlightElementsInFrame(cssSelector, className, scroll) {
+  const result = /(.+?) > #document > (.+)/.exec(cssSelector);
+  if (result) {
+    let [match, first, selector] = result;
+    if (match) {
+      const iframe = document.querySelector(first);
+      if (iframe) {
+        chrome.runtime.sendMessage({
+          broadcast: true,
+          message: 'clear highlight',
+          className,
+        });
+
+        chrome.runtime.sendMessage({
+          broadcast: true,
+          message: 'highlight frame',
+          name: iframe.name,
+          url: iframe.src,
+          selector,
+          className,
+          scroll,
+        });
+        iframe.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
 }
 
 function clearHighlights(className) {
