@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<!-- Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 -->
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Form troubleshooter</title>
+    <link rel="stylesheet" href="css/popup.css" />
+  </head>
+
+  <body>
+    <!-- Initially hidden, to avoid resize when content is added -->
+    <h1>Form troubleshooter</h1>
+
+    <main>
+      <details id="overview">
+        <summary></summary>
+      </details>
+
+      <details id="error">
+        <summary class="inactive">No errors.</summary>
+      </details>
+
+      <details id="warning">
+        <summary class="inactive">No warnings.</summary>
+      </details>
+    </main>
+
+    <button>Save as HTML</button>
+
+    <footer>
+      <h2>Improve this extension:</h2>
+      <p>
+        ⇒
+        <a
+          href="https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new"
+          title="New issue page on GitHub repo for this extension"
+          target="_blank"
+          >File a bug</a
+        >
+      </p>
+      <p>⇒ <a href="https://twitter.com/sw12" target="_blank">Message @sw12</a></p>
+    </footer>
+
+    <script src="js/popup.js"></script>
+  </body>
+</html>

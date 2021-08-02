@@ -1,1 +1,7 @@
+build/
+node_modules/
+
+manifest.key.json
+
 *.sublime-*
+.DS_Store

@@ -43,6 +43,12 @@ a:hover {
   text-decoration: underline;
 }
 
+a.highlight-element {
+  cursor: pointer;
+  color: #666;
+  text-decoration: underline;
+}
+
 body {
   /* Bit of a hack... Hides display instability. */
   animation: fadeIn 0.3s ease-in;

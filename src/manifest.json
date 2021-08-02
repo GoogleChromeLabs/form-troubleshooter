@@ -9,7 +9,15 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["js/content-script.js", "js/audits.js"]
+      "js": ["js/content-script.js"],
+      "css": ["css/highlight.css"],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["css/highlight.css"],
+      "matches": ["*://*/*"]
     }
   ],
   "permissions": ["activeTab", "downloads", "storage", "tabs"],
