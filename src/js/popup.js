@@ -102,16 +102,18 @@ function getSelector(el) {
   return null;
 }
 
-// Get the data about forms and form fields that has been stored by content-script.js.
+// Get the data about forms and form fields that has been stored by content-script.js
+// then display a summary, run audits, and display any audit issues found.
 function processFormData() {
   chrome.storage.local.get(['tree'], result => {
     const tree = getTreeNodeWithParents(result.tree);
-
-    // Now elementData is available, run the audits defined in audits.js.
-    const items = runAudits(tree);
-
-    displayItems(items);
+    
+    // Display a summary of forms and form fields.
     displaySummary(tree);
+
+    // Run the audits defined in audits.js and display results.
+    const auditIssues = runAudits(tree);
+    displayAuditIssues(auditIssues);
   });
 }
 
@@ -236,6 +238,51 @@ function createAttributeTable(elementName, elementArray) {
   return table;
 }
 
+// In popup.html, display errors and warnings for any issues found by runAudits().
+// Each of the items represents a single issue with an element or attribute.
+function displayAuditIssues(items) {
+  const numErrors = items.filter(item => item.type === 'error').length;
+  const numWarnings = items.filter(item => item.type === 'warning').length;
+  for (const item of items) {
+    displayAuditIssue(item);
+  }
+  if (numErrors > 0) {
+    const summary = document.querySelector('details#error summary');
+    summary.classList.remove('inactive');
+    summary.textContent = `${numErrors} error`;
+    if (numErrors > 1) {
+      summary.textContent += 's';
+    }
+  }
+  if (numWarnings > 0) {
+    const summary = document.querySelector('details#warning summary');
+    summary.classList.remove('inactive');
+    summary.textContent = `${numWarnings} warning`;
+    if (numWarnings > 1) {
+      summary.textContent += 's';
+    }
+  }
+}
+
+// Add a warning or an error to popup.html.
+function displayAuditIssue(item) {
+  // details will be details#error or details#warning
+  const details = document.getElementById(item.type);
+  const section = document.createElement('section');
+  const h2 = document.createElement('h2');
+  h2.innerHTML = item.title;
+  section.appendChild(h2);
+  const detailsDiv = document.createElement('div');
+  detailsDiv.classList.add('details');
+  detailsDiv.innerHTML = item.details;
+  section.appendChild(detailsDiv);
+  const learnMoreDiv = document.createElement('div');
+  learnMoreDiv.classList.add('learn-more');
+  learnMoreDiv.innerHTML = item.learnMore;
+  section.appendChild(learnMoreDiv);
+  details.appendChild(section);
+}
+
 // Save results locally as an HTML file.
 function saveAsHTML() {
   let headerHTML;
@@ -272,47 +319,4 @@ function addElement(parent, elementName, html) {
   const el = document.createElement(elementName);
   el.innerHTML = html;
   parent.appendChild(el);
-}
-
-function displayItems(items) {
-  const numErrors = items.filter(item => item.type === 'error').length;
-  const numWarnings = items.filter(item => item.type === 'warning').length;
-  for (const item of items) {
-    displayItem(item);
-  }
-  if (numErrors > 0) {
-    const summary = document.querySelector('details#error summary');
-    summary.classList.remove('inactive');
-    summary.textContent = `${numErrors} error`;
-    if (numErrors > 1) {
-      summary.textContent += 's';
-    }
-  }
-  if (numWarnings > 0) {
-    const summary = document.querySelector('details#warning summary');
-    summary.classList.remove('inactive');
-    summary.textContent = `${numWarnings} warning`;
-    if (numWarnings > 1) {
-      summary.textContent += 's';
-    }
-  }
-}
-
-// Add a warning or an error to popup.html.
-function displayItem(item) {
-  // details will be details#error or details#warning
-  const details = document.getElementById(item.type);
-  const section = document.createElement('section');
-  const h2 = document.createElement('h2');
-  h2.innerHTML = item.title;
-  section.appendChild(h2);
-  const detailsDiv = document.createElement('div');
-  detailsDiv.classList.add('details');
-  detailsDiv.innerHTML = item.details;
-  section.appendChild(detailsDiv);
-  const learnMoreDiv = document.createElement('div');
-  learnMoreDiv.classList.add('learn-more');
-  learnMoreDiv.innerHTML = item.learnMore;
-  section.appendChild(learnMoreDiv);
-  details.appendChild(section);
 }
