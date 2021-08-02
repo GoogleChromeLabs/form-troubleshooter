@@ -2,3 +2,5 @@ node_modules/
 build/
 
 CHANGELOG.md
+
+manifest.version.json

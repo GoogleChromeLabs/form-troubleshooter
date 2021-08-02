@@ -1,0 +1,5 @@
+# https://github.com/apps/release-please
+primaryBranch: main
+releaseType: node
+handleGHRelease: true
+bumpMinorPreMajor: false

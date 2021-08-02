@@ -1,6 +1,6 @@
 {
   "name": "form-troubleshooter",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "A Chrome extension to find and fix common form problems",
   "type": "module",
   "directories": {
@@ -10,6 +10,7 @@
     "clean": "rimraf build",
     "lint": "eslint . && npm run pretty:check",
     "build": "npm run lint && npm run clean && rollup -c",
+    "build:watch": "npm run build -- --watch --configDev",
     "pretty": "prettier . --write --loglevel warn",
     "pretty:check": "prettier . --check",
     "test": "mocha --es-module-specifier-resolution=node --recursive src --extension spec.js",
