@@ -156,7 +156,8 @@ describe('labels', function () {
       const result = hasLabelWithValidElements(tree);
       expect(result.length).to.equal(1);
       expect(result[0].details).to.contain(wrapInCode('<label>hello anchor heading</label>'));
-      expect(result[0].details).to.contain(`${wrapInCode('a')}, ${wrapInCode('h1')}`);
+      expect(result[0].details).to.contain(wrapInCode('a'));
+      expect(result[0].details).to.contain(wrapInCode('h1'));
       expect(result[0].type).to.equal('warning');
     });
   });

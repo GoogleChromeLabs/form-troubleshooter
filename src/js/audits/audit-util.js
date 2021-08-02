@@ -22,15 +22,18 @@ export function escapeHtml(html) {
  * @returns {string}
  */
 export function stringifyFormElement(node) {
-  let attributes = Object.entries(node.attributes)
+  const attributes = Object.entries(node.attributes)
     .filter(entry => FORM_ATTRIBUTES_TO_INCLUDE.includes(entry[0]))
     // Include empty attributes, e.g. for="", but not missing attributes.
-    .filter(entry => node[entry[0]] !== null)
+    .filter(entry => node[entry[0]] !== null);
+  const attributesString = attributes
     .map(([name, value]) => {
       return `${name}="${value}"`;
     })
     .join(' ');
-  let str = `<${node.name}${attributes ? ' ' + attributes : ''} ...>`;
+
+  const hasHiddenAttributes = Object.entries(node.attributes).length > attributes.length;
+  let str = `<${node.name}${attributesString ? ' ' + attributesString : ''}${hasHiddenAttributes ? ' ...' : ''}>`;
   const textContent = getTextContent(node);
   if (textContent || END_TAGS_TO_INCLUDE.has(node.name)) {
     str += `${textContent}</${node.name}>`;

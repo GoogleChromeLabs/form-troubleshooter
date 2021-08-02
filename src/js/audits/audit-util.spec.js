@@ -35,6 +35,12 @@ describe('audit-util', function () {
       expect(result).to.equal('<button id="__id" name="__name">');
     });
 
+    it('should render button with additional attributes attributes', function () {
+      const element = getTreeNodeWithParents({ name: 'button', attributes: { id: '__id', additional: 'true' } });
+      const result = stringifyFormElement(element);
+      expect(result).to.equal('<button id="__id" ...>');
+    });
+
     it('should render button with attributes and text', function () {
       const element = getTreeNodeWithParents({
         name: 'button',

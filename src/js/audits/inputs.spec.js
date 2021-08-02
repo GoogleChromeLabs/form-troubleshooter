@@ -19,7 +19,7 @@ describe('inputs', function () {
       const result = hasValidInputType(tree);
       expect(result.length).to.equal(1);
       expect(result[0].details).to.contain(wrapInCode('<input type="check">'));
-      expect(result[0].details).to.contain('did you mean <code>checkbox</code>');
+      expect(result[0].details).to.contain('Did you mean <code>checkbox</code>');
       expect(result[0].type).to.equal('error');
     });
 
