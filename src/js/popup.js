@@ -107,7 +107,7 @@ function getSelector(el) {
 function processFormData() {
   chrome.storage.local.get(['tree'], result => {
     const tree = getTreeNodeWithParents(result.tree);
-    
+
     // Display a summary of forms and form fields.
     displaySummary(tree);
 

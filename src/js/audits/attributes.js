@@ -50,7 +50,7 @@ export function hasInvalidAttributes(tree) {
           }
           return message;
         })
-        .join(', ')}`;
+        .join('<br>&nbsp;&nbsp;&nbsp;')}`;
     });
     issues.push({
       details:
@@ -110,7 +110,9 @@ export function hasUniqueIds(tree) {
     issues.push({
       details:
         'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
-        `${duplicateFields.map(fields => fields.map(field => createLinkableElement(field)).join(', ')).join('<br>• ')}`,
+        `${duplicateFields
+          .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
+          .join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active" target="_blank">ID attribute value must be unique</a>',
       title: 'Form fields must have unique <code>id</code> values.',
@@ -143,7 +145,9 @@ export function hasUniqueNames(tree) {
     issues.push({
       details:
         'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
-        `${duplicates.map(fields => fields.map(field => createLinkableElement(field)).join(', ')).join('<br>• ')}`,
+        `${duplicates
+          .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
+          .join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The input element name attribute</a>',
       title: 'Fields in the same form must have unique <code>name</code> values.',

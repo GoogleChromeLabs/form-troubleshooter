@@ -82,11 +82,12 @@ export function hasAutocompleteOff(tree) {
           .map(field => createLinkableElement(field))
           .join('<br>• ')}<br>Although <code>autocomplete="off"</code> is
           <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-off"
-          title="HTML spec autocomplete attribute information">valid HTML</a>, most browsers ignore
-          it: setting <code>autocomplete="off"</code> does not disable autofill.`,
+          title="HTML spec autocomplete attribute information">valid HTML</a> and has legitimate use 
+          cases, it can be problematic for users (forcing them to reenter data) and may not work as 
+          expected (such as with autofill behaviour in name, address and payment forms).`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values" target="_blank">The HTML autocomplete attribute: Values</a>',
-      title: 'Form fields should not use autocomplete="off".',
+      title: 'Consider avoiding autocomplete="off".',
       type: 'warning',
     });
   }

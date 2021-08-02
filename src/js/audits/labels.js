@@ -52,7 +52,7 @@ export function hasUniqueLabels(tree) {
       details:
         'Found labels in the same form with duplicate values:<br>• ' +
         `${duplicates
-          .map(fields => fields.map(field => createLinkableElement(field.label)).join(', '))
+          .map(fields => fields.map(field => createLinkableElement(field.label)).join('<br>&nbsp;&nbsp;&nbsp;'))
           .join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Labels</a>',
@@ -85,7 +85,7 @@ export function hasLabelWithValidElements(tree) {
             field =>
               `${createLinkableElement(field.label)} contains the element ${field.invalid
                 .map(invalid => wrapInCode(invalid.name))
-                .join(', ')}.`,
+                .join('<br>&nbsp;&nbsp;&nbsp;')}.`,
           )
           .join('<br>• ')}`,
       learnMore:
@@ -169,7 +169,9 @@ export function hasLabelWithUniqueForAttribute(tree) {
     issues.push({
       details:
         'Found labels with the same <code>for</code> attribute:<br>• ' +
-        duplicates.map(fields => fields.map(field => createLinkableElement(field)).join(', ')).join('<br>• '),
+        duplicates
+          .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
+          .join('<br>• '),
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Label</a>',
       title: 'The for attribute of a label must be unique.',

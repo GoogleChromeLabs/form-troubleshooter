@@ -30,7 +30,7 @@ export function stringifyFormElement(node) {
       return `${name}="${value}"`;
     })
     .join(' ');
-  let str = `<${node.name}${attributes ? ' ' + attributes : ''}>`;
+  let str = `<${node.name}${attributes ? ' ' + attributes : ''} ...>`;
   const textContent = getTextContent(node);
   if (textContent || END_TAGS_TO_INCLUDE.has(node.name)) {
     str += `${textContent}</${node.name}>`;

@@ -26,7 +26,7 @@ export function hasValidInputType(tree) {
       let message = createLinkableElement(field);
 
       if (suggestion) {
-        message += `, did you mean <code>${suggestion}</code>?`;
+        message += `<br>Did you mean <code>${suggestion}</code>?`;
       }
 
       return message;

@@ -31,8 +31,8 @@ need to have [Node.js 12 or later](https://nodejs.org/en/) to build the extensio
 
 ## Usage
 
-Visit a page you want to check, then click the extension icon. The extension retrieves and audits form elements 
-and attributes every time the icon is clicked.
+Visit a page you want to check, then click the extension icon. The extension retrieves and audits form elements and
+attributes every time the icon is clicked.
 
 The extension popup has three sections:
 
@@ -47,8 +47,8 @@ You can try out the extension on the test page [form-problems.glitch.me](https:/
 ## Caveats
 
 - The extension is designed to be used as a tool, not to confirm whether code is 'right' or 'wrong'. Form usage is often
-  complex (especially for high-traffic sites) so it's difficult to provide form code validation that is appropriate across a
-  variety of sites.
+  complex (especially for high-traffic sites) so it's difficult to provide form code validation that is appropriate
+  across a variety of sites.
 - Some errors found by the extension may represent known problems, or be triggered by 'incorrect' code that is justified
   for reasons outside the scope of the extension. In particular, many high-traffic sites use form code in a variety of
   ways to function at scale and integrate with legacy and third-party systems. The same code may not be appropriate for

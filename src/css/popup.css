@@ -45,8 +45,6 @@ a:hover {
 
 a.highlight-element {
   cursor: pointer;
-  color: #666;
-  text-decoration: underline;
 }
 
 body {
