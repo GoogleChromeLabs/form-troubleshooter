@@ -169,7 +169,7 @@ describe('labels', function () {
       expect(result).to.be.eql([]);
     });
 
-    it('should not return audit error when label input element', function () {
+    it('should not return audit error when label has input element', function () {
       const tree = getTreeNodeWithParents({
         children: [
           {
@@ -185,6 +185,30 @@ describe('labels', function () {
       });
       const result = hasLabelWithForAttribute(tree);
       expect(result).to.be.eql([]);
+    });
+
+    it('should not return audit error when label has input with aria-labelledby', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label' }, children: [{ text: 'username' }] },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label' } },
+        ],
+      });
+      const result = hasLabelWithForAttribute(tree);
+      expect(result).to.be.eql([]);
+    });
+
+    it('should return audit error when label has no matching input with aria-labelledby', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label1' }, children: [{ text: 'username' }] },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label2' } },
+        ],
+      });
+      const result = hasLabelWithForAttribute(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(wrapInCode('<label id="label1">username</label>'));
+      expect(result[0].type).to.equal('error');
     });
 
     it('should return audit error for label without for attribute', function () {
