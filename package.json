@@ -2,14 +2,15 @@
   "name": "form-troubleshooter",
   "version": "0.0.4",
   "description": "A Chrome extension to find and fix common form problems",
-  "type": "module",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "clean": "rimraf build",
     "lint": "eslint . && npm run pretty:check",
+    "dev": "preact watch",
     "build": "npm run lint && npm run clean && rollup -c",
+    "build:preact": "NODE_ENV=development preact build",
     "build:watch": "npm run build -- --watch --configDev",
     "pretty": "prettier . --write --loglevel warn",
     "pretty:check": "prettier . --check",
@@ -33,19 +34,37 @@
   },
   "homepage": "https://github.com/GoogleChromeLabs/form-troubleshooter#readme",
   "devDependencies": {
+    "@types/enzyme": "^3.10.5",
+    "@types/jest": "^26.0.8",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
     "chai": "^4.3.4",
-    "eslint": "^7.31.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-preact-pure": "^3.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-preact": "^1.1.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-prettier": "^3.4.0",
     "fs-extra": "^10.0.0",
+    "jest": "^26.2.2",
+    "jest-preset-preact": "^4.0.3",
     "mocha": "^9.0.3",
+    "preact-cli": "^3.0.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.55.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "sirv-cli": "^1.0.0-next.3",
+    "typescript": "^4.3.5"
   },
   "dependencies": {
-    "fuse.js": "^6.4.6"
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
+    "@types/chrome": "^0.0.153",
+    "fuse.js": "^6.4.6",
+    "preact": "^10.5.14",
+    "preact-render-to-string": "^5.1.19",
+    "preact-router": "^3.2.1"
   }
 }

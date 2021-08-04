@@ -1,9 +1,12 @@
 {
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
   "rules": {
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-unused-vars": [2, { "args": "none" }],
     "brace-style": [2, "1tbs", { "allowSingleLine": false }],
     "camelcase": [2, { "properties": "always" }],
     "curly": 2,
@@ -31,7 +34,12 @@
     "browser": true,
     "node": true
   },
-  "extends": ["plugin:mocha/recommended", "eslint:recommended", "plugin:prettier/recommended"],
+  "extends": [
+    "preact",
+    "plugin:mocha/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "globals": {},
   "plugins": ["mocha"],
   "overrides": [
@@ -41,5 +49,6 @@
         "no-unused-expressions": 0
       }
     }
-  ]
+  ],
+  "ignorePatterns": ["build/"]
 }
