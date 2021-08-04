@@ -1,2 +1,3 @@
 build/
 scripts/version.js
+rollup.config.js

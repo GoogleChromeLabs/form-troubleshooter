@@ -8,19 +8,21 @@ import AuditSummary from './summary';
 import { Tab, Tabs } from '@material-ui/core';
 import { useEffect, useState } from 'preact/hooks';
 import Details from '../routes/details';
+import { getTreeNodeWithParents } from '../lib/tree-util';
+import { runAudits } from '../lib/audits';
 
 const tabs = [
   {
     name: 'Recommendations',
-    route: '/recommendations',
+    route: '/recommendations.html',
   },
   {
     name: 'Common mistakes',
-    route: '/mistakes',
+    route: '/mistakes.html',
   },
   {
     name: 'Form details',
-    route: '/details',
+    route: '/details.html',
   },
 ];
 
@@ -32,7 +34,7 @@ const App: FunctionalComponent = () => {
       0,
     ),
   );
-  const [auditResults] = useState({
+  const [auditResults, setAuditResuits] = useState({
     score: 0.78,
     results: [
       {
@@ -62,7 +64,8 @@ const App: FunctionalComponent = () => {
     chrome?.runtime?.onMessage.addListener((request, sender, sendResponse) => {
       if (request.message === 'stored element data') {
         chrome.storage.local.get(['tree'], result => {
-          console.log('tree', result.tree);
+          const tree = getTreeNodeWithParents(result.tree);
+          setAuditResuits(runAudits(tree));
         });
       }
     });
@@ -90,10 +93,11 @@ const App: FunctionalComponent = () => {
         </Tabs>
       </div>
       <Router>
-        <Redirect path="/" to="/recommendations" />
-        <Route path="/recommendations" component={Results} results={recommendations} />
-        <Route path="/mistakes/" component={Results} results={commonMistakes} />
-        <Route path="/details/" component={Details} />
+        <Redirect path="/" to="/recommendations.html" />
+        <Redirect path="/index.html" to="/recommendations.html" />
+        <Route path="/recommendations.html" component={Results} results={recommendations} />
+        <Route path="/mistakes.html" component={Results} results={commonMistakes} />
+        <Route path="/details.html" component={Details} />
         <NotFoundPage default />
       </Router>
     </div>
