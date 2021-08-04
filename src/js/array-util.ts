@@ -1,12 +1,8 @@
 /**
  * Groups items in an array by the specified group by function.
- * @template T, S
- * @param {T[]} array
- * @param {(item: T) => S} groupByFn
- * @returns {Map<S, T[]>}
  */
-export function groupBy(array, groupByFn = item => item) {
-  const map = new Map();
+export function groupBy<T, S>(array: T[], groupByFn: (item: T) => S = (item: T) => item as unknown as S): Map<S, T[]> {
+  const map = new Map<S, T[]>();
 
   array.forEach(item => {
     const key = groupByFn(item);

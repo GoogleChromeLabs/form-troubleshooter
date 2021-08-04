@@ -9,23 +9,19 @@ const END_TAGS_TO_INCLUDE = new Set(['label']);
 /**
  * Escapes a string as HTML.
  * Note that this isn't complete and other characters should be added as required.
- * @param {string} html
- * @returns string
  */
-export function escapeHtml(html) {
+export function escapeHtml(html: string): string {
   return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 /**
  * Create a representation of a form element.
- * @param {TreeNodeWithParent} node
- * @returns {string}
  */
-export function stringifyFormElement(node) {
+export function stringifyFormElement(node: TreeNodeWithParent): string {
   const attributes = Object.entries(node.attributes)
     .filter(entry => FORM_ATTRIBUTES_TO_INCLUDE.includes(entry[0]))
     // Include empty attributes, e.g. for="", but not missing attributes.
-    .filter(entry => node[entry[0]] !== null);
+    .filter(entry => node.attributes[entry[0]] !== null);
   const attributesString = attributes
     .map(([name, value]) => {
       return `${name}="${value}"`;
@@ -33,9 +29,9 @@ export function stringifyFormElement(node) {
     .join(' ');
 
   const hasHiddenAttributes = Object.entries(node.attributes).length > attributes.length;
-  let str = `<${node.name}${attributesString ? ' ' + attributesString : ''}${hasHiddenAttributes ? ' ...' : ''}>`;
+  let str = `<${node.name}${attributesString ? ` ${attributesString}` : ''}${hasHiddenAttributes ? ' ...' : ''}>`;
   const textContent = getTextContent(node);
-  if (textContent || END_TAGS_TO_INCLUDE.has(node.name)) {
+  if (textContent || END_TAGS_TO_INCLUDE.has(node.name!)) {
     str += `${textContent}</${node.name}>`;
   }
 
@@ -46,9 +42,8 @@ export function stringifyFormElement(node) {
  * Escapes and wraps a string in `code`.
  * @param {string} str
  * @param {string} highlight Part of the code to draw attention to
- * @returns {string}
  */
-export function wrapInCode(str, highlight = undefined) {
+export function wrapInCode(str: string, highlight: string | undefined = undefined): string {
   let value = escapeHtml(str);
   if (highlight) {
     value = value.replace(highlight, `</code><strong><code>${highlight}</code></strong><code>`);
@@ -60,9 +55,11 @@ export function wrapInCode(str, highlight = undefined) {
  * Create a representation of a form element wrapping it in `code`.
  * @param {TreeNodeWithParent} node
  * @param {string} highlight Part of the code to draw attention to
- * @returns {string}
  */
-export function stringifyFormElementAsCode(node, highlight = undefined) {
+export function stringifyFormElementAsCode(
+  node: TreeNodeWithParent,
+  highlight: string | undefined = undefined,
+): string {
   return wrapInCode(stringifyFormElement(node), highlight);
 }
 
@@ -70,9 +67,8 @@ export function stringifyFormElementAsCode(node, highlight = undefined) {
  * Create an anchor tag that can be used to highlight elements.
  * @param {TreeNodeWithParent} node
  * @param {string} highlight Part of the code to draw attention to
- * @returns {string}
  */
-export function createLinkableElement(node, highlight = undefined) {
+export function createLinkableElement(node: TreeNodeWithParent, highlight: string | undefined = undefined): string {
   const path = getPath(node);
   const content = stringifyFormElementAsCode(node, highlight);
   if (path) {

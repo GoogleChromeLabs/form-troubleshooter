@@ -7,8 +7,8 @@ import { closestParent, findDescendants } from '../tree-util';
 import { createLinkableElement } from './audit-util';
 import Fuse from 'fuse.js';
 
-function getInvalidAttributes(element) {
-  return Object.keys(element.attributes).filter(attributeName => {
+function getInvalidAttributes(element: TreeNode) {
+  return Object.keys(element.attributes!).filter(attributeName => {
     return (
       element.name &&
       !(
@@ -25,18 +25,16 @@ function getInvalidAttributes(element) {
 
 /**
  * Form fields have valid attributes as defined in ATTRIBUTES.
- * @type {AuditHandler}
  */
-export function hasInvalidAttributes(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, FORM_FIELDS)
     .map(node => ({ node, name: node.name, invalidAttributes: getInvalidAttributes(node) }))
     .filter(field => field.invalidAttributes.length);
 
   if (invalidFields.length) {
     const invalidFieldMessages = invalidFields.map(field => {
-      const suggestions = new Fuse([...new Set([...ATTRIBUTES.global, ...(ATTRIBUTES[field.name] || [])])], {
+      const suggestions = new Fuse(Array.from(new Set([...ATTRIBUTES.global, ...(ATTRIBUTES[field.name!] || [])])), {
         threshold: 0.2,
       });
 
@@ -69,11 +67,9 @@ export function hasInvalidAttributes(tree) {
 
 /**
  * Form fields have either an id or a name attribute.
- * @type {AuditHandler}
  */
-export function hasIdOrName(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasIdOrName(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
     .filter(node => node.attributes.type !== 'submit' && node.attributes.type !== 'file')
     .filter(node => !node.attributes.id && !node.attributes.name);
@@ -95,11 +91,9 @@ export function hasIdOrName(tree) {
 
 /**
  * Element id values are unique.
- * @type {AuditHandler}
  */
-export function hasUniqueIds(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const fieldsById = groupBy(
     findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id),
     node => node.attributes.id,
@@ -125,11 +119,9 @@ export function hasUniqueIds(tree) {
 
 /**
  * Element name values within the same form are unique.
- * @type {AuditHandler}
  */
-export function hasUniqueNames(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const fieldsByForm = groupBy(
     findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
       .filter(node => node.attributes.name)
@@ -160,8 +152,7 @@ export function hasUniqueNames(tree) {
 
 /**
  * Rull all attribute audits.
- * @type {AuditHandler}
  */
-export function runAttributeAudits(tree) {
+export function runAttributeAudits(tree: TreeNodeWithParent): AuditResult[] {
   return [...hasInvalidAttributes(tree), ...hasIdOrName(tree), ...hasUniqueIds(tree), ...hasUniqueNames(tree)];
 }

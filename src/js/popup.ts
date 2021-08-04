@@ -15,18 +15,18 @@ import { findDescendants, getPath, getTextContent, getTreeNodeWithParents, pathT
 
 /* global chrome */
 
-const saveAsHTMLButton = document.querySelector('button');
+const saveAsHTMLButton = document.querySelector('button')!;
 saveAsHTMLButton.onclick = saveAsHTML;
 
-const overviewDetails = document.querySelector('details#overview');
-const overviewSummary = document.querySelector('#overview summary');
+const overviewDetails = document.querySelector('details#overview')!;
+const overviewSummary = document.querySelector('#overview summary')!;
 
-let tabId;
+let tabId: number;
 
 // Send a message to the content script to audit the current page.
 // Need to do this every time the popup is opened.
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-  tabId = tabs[0].id;
+  tabId = tabs[0].id!;
   chrome.tabs.sendMessage(tabId, { message: 'popup opened' });
 
   window.addEventListener('blur', () => {
@@ -35,11 +35,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   });
 });
 
-function showHighlight(selector, className, scrollIntoView) {
+function showHighlight(selector: string, className: string, scrollIntoView: boolean) {
   chrome.tabs.sendMessage(tabId, { message: 'highlight', selector, className, scroll: scrollIntoView });
 }
 
-function clearHighlight(className) {
+function clearHighlight(className: string) {
   chrome.tabs.sendMessage(tabId, { message: 'clear highlight', className });
 }
 
@@ -53,17 +53,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 document.addEventListener('click', event => {
-  const selector = getSelector(event.target);
+  const selector = getSelector(event.target as Element);
   if (selector) {
     showHighlight(selector, 'form-troubleshooter-highlight', true);
   }
 });
 
-let hoverPath;
+let hoverPath: string | null;
 document.addEventListener('mousemove', event => {
   if (hoverPath) {
     // clear highlight
-    const selector = getSelector(event.target);
+    const selector = getSelector(event.target as Element);
     if (!selector) {
       hoverPath = null;
       clearHighlight('form-troubleshooter-highlight-hover');
@@ -73,7 +73,7 @@ document.addEventListener('mousemove', event => {
     }
   } else {
     // add highlight
-    const selector = getSelector(event.target);
+    const selector = getSelector(event.target as Element);
     if (selector) {
       hoverPath = selector;
       showHighlight(selector, 'form-troubleshooter-highlight-hover', false);
@@ -82,13 +82,13 @@ document.addEventListener('mousemove', event => {
 });
 
 document.addEventListener('mouseleave', event => {
-  const selector = getSelector(event.target);
+  const selector = getSelector(event.target as Element);
   if (selector) {
     clearHighlight('form-troubleshooter-highlight-hover');
   }
 });
 
-function getSelector(el) {
+function getSelector(el: Element) {
   if (el.closest) {
     const anchor = el.closest('.highlight-element');
     if (anchor) {
@@ -117,8 +117,8 @@ function processFormData() {
   });
 }
 
-function displaySummary(tree) {
-  let elementsNotFound = [];
+function displaySummary(tree: TreeNodeWithParent) {
+  const elementsNotFound: string[] = [];
   const elementsByType = groupBy(
     findDescendants(tree, Object.keys(ELEMENTS)).filter(node => node.name),
     node => node.name,
@@ -155,7 +155,7 @@ function displaySummary(tree) {
 }
 
 // Display information about an individual form or form field element, as stored by content-script.js.
-function handleElementData(elementName, elementArray) {
+function handleElementData(elementName: string, elementArray: TreeNodeWithParent[]) {
   const section = document.createElement('section');
   const h2 = document.createElement('h2');
   h2.textContent = elementName;
@@ -169,7 +169,7 @@ function handleElementData(elementName, elementArray) {
 }
 
 // Display a list of names for form or form field elements not found on the current page.
-function listElementsNotFound(elementsNotFound) {
+function listElementsNotFound(elementsNotFound: string[]) {
   addElement(overviewDetails, 'div', `Element(s) not found: <code>${elementsNotFound.join('</code>, <code>')}</code>.`);
 }
 
@@ -178,20 +178,12 @@ function listElementsNotFound(elementsNotFound) {
 // Each row represents an instance of the current element,
 // i.e. a button, form, input, label, select or textarea.
 // Each row displays the attribute values for an instance of an element.
-function createAttributeTable(elementName, elementArray) {
+function createAttributeTable(elementName: string, elementArray: TreeNodeWithParent[]) {
   const table = document.createElement('table');
   let tr = document.createElement('tr');
   // Add a column heading for each attribute appropriate for the current element.
   for (const attributeName of ELEMENTS[elementName]) {
     addElement(tr, 'th', attributeName);
-  }
-  // Add columns that aren't for attribute values. (See below for <td>.)
-  switch (elementName) {
-    case 'for':
-      addElement(tr, 'th', 'Field');
-      break;
-    default:
-      break;
   }
   table.append(tr);
   for (const element of elementArray) {
@@ -222,17 +214,6 @@ function createAttributeTable(elementName, elementArray) {
 
       addElement(tr, 'td', attributeValue);
     }
-
-    // Add columns that aren't for attribute values. (See above for <th>.)
-    switch (elementName) {
-      // Each for attribute should have an associated field.
-      // The field id or name provided by content-script.js should match the for value.
-      case 'for':
-        addElement(tr, 'td', element.field);
-        break;
-      default:
-        break;
-    }
     table.appendChild(tr);
   }
   return table;
@@ -240,14 +221,14 @@ function createAttributeTable(elementName, elementArray) {
 
 // In popup.html, display errors and warnings for any issues found by runAudits().
 // Each of the items represents a single issue with an element or attribute.
-function displayAuditIssues(items) {
+function displayAuditIssues(items: AuditResult[]) {
   const numErrors = items.filter(item => item.type === 'error').length;
   const numWarnings = items.filter(item => item.type === 'warning').length;
   for (const item of items) {
     displayAuditIssue(item);
   }
   if (numErrors > 0) {
-    const summary = document.querySelector('details#error summary');
+    const summary = document.querySelector('details#error summary')!;
     summary.classList.remove('inactive');
     summary.textContent = `${numErrors} error`;
     if (numErrors > 1) {
@@ -255,7 +236,7 @@ function displayAuditIssues(items) {
     }
   }
   if (numWarnings > 0) {
-    const summary = document.querySelector('details#warning summary');
+    const summary = document.querySelector('details#warning summary')!;
     summary.classList.remove('inactive');
     summary.textContent = `${numWarnings} warning`;
     if (numWarnings > 1) {
@@ -265,9 +246,9 @@ function displayAuditIssues(items) {
 }
 
 // Add a warning or an error to popup.html.
-function displayAuditIssue(item) {
+function displayAuditIssue(item: AuditResult) {
   // details will be details#error or details#warning
-  const details = document.getElementById(item.type);
+  const details = document.getElementById(item.type)!;
   const section = document.createElement('section');
   const h2 = document.createElement('h2');
   h2.innerHTML = item.title;
@@ -278,14 +259,14 @@ function displayAuditIssue(item) {
   section.appendChild(detailsDiv);
   const learnMoreDiv = document.createElement('div');
   learnMoreDiv.classList.add('learn-more');
-  learnMoreDiv.innerHTML = item.learnMore;
+  learnMoreDiv.innerHTML = item.learnMore ?? '';
   section.appendChild(learnMoreDiv);
   details.appendChild(section);
 }
 
 // Save results locally as an HTML file.
 function saveAsHTML() {
-  let headerHTML;
+  let headerHTML: string;
   chrome.tabs.query({ active: true, currentWindow: true }).then(tabs => {
     headerHTML =
       '<header><h1>Form audit<br>' +
@@ -302,12 +283,12 @@ function saveAsHTML() {
         'h1 {border-bottom: 2px solid #eee; font-size: 32px; margin: 0 0 60px 0; ' +
         'overflow: hidden; padding: 0 0 18px 0; text-overflow: ellipsis; white-space: nowrap}';
       const css = `<style>${text}\n${extras}</style>`;
-      const mainHTML = `<main>${document.querySelector('main').innerHTML}</main>`;
-      const footerHTML = `<footer>${document.querySelector('footer').innerHTML}</footer>`;
+      const mainHTML = `<main>${document.querySelector('main')?.innerHTML}</main>`;
+      const footerHTML = `<footer>${document.querySelector('footer')?.innerHTML}</footer>`;
       const blob = new Blob([css, headerHTML, mainHTML, footerHTML], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       chrome.downloads.download({
-        url: url,
+        url,
         filename: 'form-audit.html',
       });
     });
@@ -315,7 +296,7 @@ function saveAsHTML() {
 
 /* Utility functions */
 
-function addElement(parent, elementName, html) {
+function addElement(parent: Element, elementName: string, html: string) {
   const el = document.createElement(elementName);
   el.innerHTML = html;
   parent.appendChild(el);

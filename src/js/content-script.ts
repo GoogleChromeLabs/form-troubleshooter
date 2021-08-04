@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           console.error('chrome.storage.local.clear() error in content-script.js:', error);
         } else {
           getTree(document).then(tree => {
-            chrome.storage.local.set({ tree: tree }, () => {
+            chrome.storage.local.set({ tree }, () => {
               chrome.runtime.sendMessage({ message: 'stored element data' });
             });
           });
@@ -27,21 +27,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'highlight') {
       highlightElements(request.selector, request.className, request.scroll);
     }
-  } else {
-    if (
-      (request.name === window.name && request.url === window.location.href) ||
-      (request.name && request.name === window.name) || // in case the iframe gets redirected
-      (request.url && request.url === window.location.href)
-    ) {
-      if (request.message === 'inspect') {
-        getTree(document).then(tree => {
-          sendResponse(tree);
-        });
-        return true;
-      }
-      if (request.message === 'highlight frame') {
-        highlightElements(request.selector, request.className, request.scroll);
-      }
+  } else if (
+    (request.name === window.name && request.url === window.location.href) ||
+    (request.name && request.name === window.name) || // in case the iframe gets redirected
+    (request.url && request.url === window.location.href)
+  ) {
+    if (request.message === 'inspect') {
+      getTree(document).then(tree => {
+        sendResponse(tree);
+      });
+      return true;
+    }
+    if (request.message === 'highlight frame') {
+      highlightElements(request.selector, request.className, request.scroll);
     }
   }
 
@@ -52,21 +50,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 /**
  * Gets a simplified/JSON serializable representation of the DOM tree
- * @param {Element} parent
- * @returns {TreeNode}
  */
-async function getTree(parent) {
-  const tree = {};
+async function getTree(parent: Element | Document): Promise<TreeNode> {
+  const tree: TreeNode = {};
   const queue = [...parent.childNodes].map(child => ({
     element: child,
     node: tree,
   }));
-  let item;
+  let item:
+    | {
+        element: ChildNode;
+        node: TreeNode;
+      }
+    | undefined;
 
   while ((item = queue.shift())) {
-    const node = {};
+    const node: TreeNode = {};
 
-    if (item.element.nodeType === Node.TEXT_NODE && item.element.nodeValue.trim()) {
+    if (item.element.nodeType === Node.TEXT_NODE && item.element.nodeValue?.trim()) {
       node.text = item.element.nodeValue;
     } else if (item.element instanceof Element) {
       node.name = item.element.tagName.toLowerCase();
@@ -95,7 +96,7 @@ async function getTree(parent) {
       );
     }
 
-    if (item.element.shadowRoot) {
+    if ((item.element as any).shadowRoot) {
       const shadowNode = {
         type: '#shadow-root',
         children: [],
@@ -105,7 +106,7 @@ async function getTree(parent) {
       }
       node.children.push(shadowNode);
       queue.push(
-        ...[...item.element.shadowRoot.childNodes].map(child => ({
+        ...[...(item.element as any).shadowRoot.childNodes].map(child => ({
           element: child,
           node: shadowNode,
         })),
@@ -113,14 +114,14 @@ async function getTree(parent) {
     }
 
     if (item.element instanceof HTMLIFrameElement) {
-      const iframeContent = await sendMessageAndWait({
+      const iframeContent: TreeNode = await sendMessageAndWait({
         broadcast: true,
         wait: true,
         message: 'inspect',
         name: item.element.name,
         url: item.element.src,
       });
-      const iframeNode = {
+      const iframeNode: TreeNode = {
         type: '#document',
         children: [iframeContent],
       };
@@ -155,7 +156,7 @@ function getShadowRoots() {
   return shadowRoots;
 }
 
-function sendMessageAndWait(message, timeoutDuration = 500) {
+function sendMessageAndWait<T>(message: any, timeoutDuration = 500): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       reject(new Error('Timeout duration exceeded'));
@@ -167,16 +168,16 @@ function sendMessageAndWait(message, timeoutDuration = 500) {
   });
 }
 
-function highlightElements(cssSelector, className, scroll) {
+function highlightElements(cssSelector: string, className: string, scroll: boolean) {
   clearHighlights(className);
 
-  let currentRoot = document;
+  let currentRoot: Document | ShadowRoot = document;
   let roots = cssSelector.split(' > #shadow-root > ');
   const selector = roots[roots.length - 1];
   roots = roots.slice(0, roots.length - 1);
 
   for (const root of roots) {
-    const customElement = currentRoot.querySelector(root);
+    const customElement: Element | null = currentRoot.querySelector(root);
     if (customElement && customElement.shadowRoot) {
       currentRoot = customElement.shadowRoot;
       injectStylesheet(currentRoot, 'form-troubleshooter-highlight-css', chrome.runtime.getURL('css/highlight.css'));
@@ -196,12 +197,12 @@ function highlightElements(cssSelector, className, scroll) {
   highlightElementsInFrame(cssSelector, className, scroll);
 }
 
-function highlightElementsInFrame(cssSelector, className, scroll) {
+function highlightElementsInFrame(cssSelector: string, className: string, scroll: boolean) {
   const result = /(.+?) > #document > (.+)/.exec(cssSelector);
   if (result) {
-    let [match, first, selector] = result;
+    const [match, first, selector] = result;
     if (match) {
-      const iframe = document.querySelector(first);
+      const iframe = document.querySelector(first) as HTMLIFrameElement;
       if (iframe) {
         chrome.runtime.sendMessage({
           broadcast: true,
@@ -224,7 +225,7 @@ function highlightElementsInFrame(cssSelector, className, scroll) {
   }
 }
 
-function clearHighlights(className) {
+function clearHighlights(className: string) {
   const roots = [document, ...getShadowRoots()];
   roots.forEach(root => {
     Array.from(root.querySelectorAll(`.${className}`)).forEach(elem => {
@@ -233,9 +234,9 @@ function clearHighlights(className) {
   });
 }
 
-function injectStylesheet(target, id, url) {
+function injectStylesheet(target: Document | ShadowRoot, id: string, url: string) {
   if (!target.querySelector(`#${id}`)) {
-    var elem = document.createElement('link');
+    const elem = document.createElement('link');
     elem.rel = 'stylesheet';
     elem.id = id;
     elem.setAttribute('href', url);

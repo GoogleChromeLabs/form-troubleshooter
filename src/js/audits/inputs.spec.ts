@@ -1,7 +1,6 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { expect } from 'chai';
 import { wrapInCode } from './audit-util';
 import { getTreeNodeWithParents } from '../tree-util';
 import { hasValidInputType, inputHasAriaLabel, inputHasLabel } from './inputs';
@@ -11,25 +10,25 @@ describe('inputs', function () {
     it('should not return audit error when input contains valid type', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'text' } }] });
       const result = hasValidInputType(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when input contains invalid type', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'check' } }] });
       const result = hasValidInputType(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input type="check">'));
-      expect(result[0].details).to.contain('Did you mean <code>checkbox</code>');
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<input type="check">'));
+      expect(result[0].details).toContain('Did you mean <code>checkbox</code>');
+      expect(result[0].type).toEqual('error');
     });
 
     it('should return audit error when input contains invalid type without suggestion', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'radiobutton' } }] });
       const result = hasValidInputType(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input type="radiobutton">'));
-      expect(result[0].details).not.to.contain('did you mean');
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<input type="radiobutton">'));
+      expect(result[0].details).not.toContain('did you mean');
+      expect(result[0].type).toEqual('error');
     });
   });
 
@@ -39,7 +38,7 @@ describe('inputs', function () {
         children: [{ name: 'label', children: [{ text: 'text' }, { name: 'input', attributes: { type: 'text' } }] }],
       });
       const result = inputHasLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when input label identified by for', function () {
@@ -50,7 +49,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when input contains invalid type without suggestion', function () {
@@ -61,9 +60,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input id="input" type="text">'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<input id="input" type="text">'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should return audit error when select contains invalid type without suggestion', function () {
@@ -74,9 +73,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<select id="select">'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<select id="select">'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should return audit error when textarea contains invalid type without suggestion', function () {
@@ -87,9 +86,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<textarea id="textarea">'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<textarea id="textarea">'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should not return audit error when input has uses aria-labelledby', function () {
@@ -100,7 +99,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
   });
 
@@ -113,7 +112,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasAriaLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when input has uses aria-labelledby', function () {
@@ -124,7 +123,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasAriaLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when input has aria-labelledby but does not match label', function () {
@@ -135,9 +134,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasAriaLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<input type="text" ...>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<input type="text" ...>'));
+      expect(result[0].type).toEqual('error');
     });
   });
 });

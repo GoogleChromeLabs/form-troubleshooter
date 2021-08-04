@@ -9,11 +9,9 @@ import Fuse from 'fuse.js';
 /**
  * Form fields have autocomplete attributes when appropriate.
  * Empty autocomplete are handled in hasEmptyAutocomplete().
- * @type {AuditHandler}
  */
-export function hasAutocompleteAttributes(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node =>
       !node.attributes.autocomplete &&
@@ -39,11 +37,9 @@ export function hasAutocompleteAttributes(tree) {
 
 /**
  * Form fields do not have autocomplete with empty value.
- * @type {AuditHandler}
  */
-export function hasEmptyAutocomplete(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node => node.attributes.autocomplete != null && node.attributes.autocomplete.trim() === '',
   );
@@ -65,11 +61,9 @@ export function hasEmptyAutocomplete(tree) {
 
 /**
  * Form fields do not have autocomplete with value 'off'.
- * @type {AuditHandler}
  */
-export function hasAutocompleteOff(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node => node.attributes.autocomplete && node.attributes.autocomplete.trim() === 'off',
   );
@@ -82,8 +76,8 @@ export function hasAutocompleteOff(tree) {
           .map(field => createLinkableElement(field))
           .join('<br>• ')}<br>Although <code>autocomplete="off"</code> is
           <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-off"
-          title="HTML spec autocomplete attribute information">valid HTML</a> and has legitimate use 
-          cases, it can be problematic for users (forcing them to reenter data) and may not work as 
+          title="HTML spec autocomplete attribute information">valid HTML</a> and has legitimate use
+          cases, it can be problematic for users (forcing them to reenter data) and may not work as
           expected (such as with autofill behaviour in name, address and payment forms).`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete#values" target="_blank">The HTML autocomplete attribute: Values</a>',
@@ -99,9 +93,8 @@ export function hasAutocompleteOff(tree) {
  * Form autocomplete atttribute values are valid.
  * @type {AuditHandler}
  */
-export function hasValidAutocomplete(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
   const invalidFieldMessages = [];
   const autocompleteSuggestions = new Fuse([...AUTOCOMPLETE_TOKENS, ...Object.keys(AUTOCOMPLETE_ALIASES)], {
@@ -152,9 +145,8 @@ export function hasValidAutocomplete(tree) {
 
 /**
  * Rull all attribute audits.
- * @type {AuditHandler}
  */
-export function runAutocompleteAudits(tree) {
+export function runAutocompleteAudits(tree: TreeNodeWithParent): AuditResult[] {
   return [
     ...hasAutocompleteAttributes(tree),
     ...hasEmptyAutocomplete(tree),

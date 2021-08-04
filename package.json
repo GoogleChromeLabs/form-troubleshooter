@@ -15,7 +15,8 @@
     "pretty": "prettier . --write --loglevel warn",
     "pretty:check": "prettier . --check",
     "test": "mocha --es-module-specifier-resolution=node --recursive src --extension spec.js",
-    "test:watch": "npm run test -- --parallel --watch --reporter min"
+    "test:watch": "npm run test -- --parallel --watch --reporter min",
+    "test:jest": "jest"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
   },
   "homepage": "https://github.com/GoogleChromeLabs/form-troubleshooter#readme",
   "devDependencies": {
+    "@types/chai": "^4.2.21",
     "@types/enzyme": "^3.10.5",
     "@types/jest": "^26.0.8",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
@@ -66,5 +68,12 @@
     "preact": "^10.5.14",
     "preact-render-to-string": "^5.1.19",
     "preact-router": "^3.2.1"
+  },
+  "jest": {
+    "preset": "jest-preset-preact",
+    "setupFiles": [
+      "<rootDir>/tests/__mocks__/browserMocks.ts",
+      "<rootDir>/tests/__mocks__/setupTests.ts"
+    ]
   }
 }

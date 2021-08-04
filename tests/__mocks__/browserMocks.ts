@@ -3,7 +3,7 @@
  * An example how to mock localStorage is given below 👇
  */
 
-/* 
+/*
 // Mocks localStorage
 const localStorageMock = (function() {
 	let store = {};

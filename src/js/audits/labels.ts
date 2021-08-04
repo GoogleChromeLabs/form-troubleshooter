@@ -9,11 +9,9 @@ const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
 
 /**
  * All labels have textContent (i.e. are not empty).
- * @type {AuditHandler}
  */
-export function hasEmptyLabel(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, ['label']).filter(node => !getTextContent(node));
 
   if (invalidFields.length) {
@@ -31,11 +29,9 @@ export function hasEmptyLabel(tree) {
 
 /**
  * In the same form, all label values are unique, i.e. no labels have duplicate textContent.
- * @type {AuditHandler}
  */
-export function hasUniqueLabels(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const labelsByForm = groupBy(
     findDescendants(tree, ['label'])
       .map(node => ({ label: node, text: getTextContent(node) }))
@@ -67,11 +63,9 @@ export function hasUniqueLabels(tree) {
 /**
  * Labels do not contain interactive elements or headings.
  * See https://developer.mozilla.org/docs/Web/HTML/Element/label#accessibility_concerns.
- * @type {AuditHandler}
  */
-export function hasLabelWithValidElements(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, ['label'])
     .map(node => ({ label: node, invalid: findDescendants(node, ['a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']) }))
     .filter(field => field.invalid.length);
@@ -84,7 +78,7 @@ export function hasLabelWithValidElements(tree) {
           .map(
             field =>
               `${createLinkableElement(field.label)} contains the element ${field.invalid
-                .map(invalid => wrapInCode(invalid.name))
+                .map(invalid => wrapInCode(invalid.name!))
                 .join('<br>&nbsp;&nbsp;&nbsp;')}.`,
           )
           .join('<br>• ')}`,
@@ -100,11 +94,9 @@ export function hasLabelWithValidElements(tree) {
 
 /**
  * All labels should have a for attribute.
- * @type {AuditHandler}
  */
-export function hasLabelWithForAttribute(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasLabelWithForAttribute(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const fieldsByAria = groupBy(
     findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes['aria-labelledby']),
     node => node.attributes['aria-labelledby'],
@@ -135,9 +127,8 @@ export function hasLabelWithForAttribute(tree) {
  * No for attribute values are empty.
  * @type {AuditHandler}
  */
-export function hasLabelWithEmptyForAttribute(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasLabelWithEmptyForAttribute(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, ['label']).filter(
     node => node.attributes.for != null && node.attributes.for.trim() === '',
   );
@@ -159,11 +150,9 @@ export function hasLabelWithEmptyForAttribute(tree) {
 
 /**
  * All for attributes are unique.
- * @type {AuditHandler}
  */
-export function hasLabelWithUniqueForAttribute(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const labelsByFor = groupBy(
     findDescendants(tree, ['label']).filter(node => node.attributes.for),
     node => node.attributes.for,
@@ -172,11 +161,9 @@ export function hasLabelWithUniqueForAttribute(tree) {
 
   if (duplicates.length) {
     issues.push({
-      details:
-        'Found labels with the same <code>for</code> attribute:<br>• ' +
-        duplicates
-          .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
-          .join('<br>• '),
+      details: `Found labels with the same <code>for</code> attribute:<br>• ${duplicates
+        .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
+        .join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/duplicate-form-label/" target="_blank">Duplicate Form Label</a>',
       title: 'The for attribute of a label must be unique.',
@@ -189,11 +176,9 @@ export function hasLabelWithUniqueForAttribute(tree) {
 
 /**
  * All for attributes match the id of a form field.
- * @type {AuditHandler}
  */
-export function hasMatchingForLabel(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasMatchingForLabel(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const inputsById = groupBy(
     findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id),
     node => node.attributes.id,
@@ -219,9 +204,8 @@ export function hasMatchingForLabel(tree) {
 
 /**
  * Rull all attribute audits.
- * @type {AuditHandler}
  */
-export function runLabelAudits(tree) {
+export function runLabelAudits(tree: TreeNodeWithParent): AuditResult[] {
   return [
     ...hasEmptyLabel(tree),
     ...hasUniqueLabels(tree),

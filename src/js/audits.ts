@@ -13,7 +13,7 @@ import { runLabelAudits } from './audits/labels';
 // Called by popup.js after it sets the value of elementData, using data about
 // elements on the current page stored by content-script.js using chrome.storage.
 
-export function runAudits(tree) {
+export function runAudits(tree: TreeNodeWithParent): AuditResult[] {
   return [
     ...runFormAudits(tree),
     ...runAttributeAudits(tree),

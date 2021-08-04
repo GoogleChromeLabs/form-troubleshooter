@@ -69,7 +69,7 @@ export const AUTOCOMPLETE_TOKENS = [
 ];
 
 // Common autocomplete mistakes and their suggestions
-export const AUTOCOMPLETE_ALIASES = {
+export const AUTOCOMPLETE_ALIASES: { [key: string]: string } = {
   'cc-cvv': 'cc-csc',
   'delivery': 'shipping',
   'state': 'address-level1',
@@ -78,7 +78,7 @@ export const AUTOCOMPLETE_ALIASES = {
 };
 
 // Keys are used to order sections displayed in popup.
-export const ELEMENTS = {
+export const ELEMENTS: { [key: string]: string[] } = {
   form: ['id', 'class', 'name', 'action', 'method'],
   input: ['id', 'class', 'name', 'autocomplete', 'placeholder', 'required', 'type'],
   select: ['id', 'class', 'name', 'autocomplete', 'required'],
@@ -90,7 +90,7 @@ export const ELEMENTS = {
 // From https://html.spec.whatwg.org/multipage/forms.html. Added 'role'.
 // 'autofill-information' and 'autofill-prediction' are for use with chrome://flags/#show-autofill-type-predictions.
 // aria-* and data-* are handled in getInvalidAttributes().
-export const ATTRIBUTES = {
+export const ATTRIBUTES: { [key: string]: string[] } = {
   global: [
     'accesskey',
     'autocapitalize',

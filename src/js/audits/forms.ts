@@ -8,11 +8,9 @@ const FORM_FIELDS = ['button', 'input', 'select', 'textarea'];
 
 /**
  * All form elements should contain at least one form field element.
- * @type {AuditHandler}
  */
-export function hasEmptyForms(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasEmptyForms(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const emptyForms = findDescendants(tree, ['form']).filter(form => findDescendants(form, FORM_FIELDS).length === 0);
 
   if (emptyForms.length) {
@@ -34,6 +32,6 @@ export function hasEmptyForms(tree) {
  * Run all form audits.
  * @type {AuditHandler}
  */
-export function runFormAudits(tree) {
+export function runFormAudits(tree: TreeNodeWithParent): AuditResult[] {
   return [...hasEmptyForms(tree)];
 }

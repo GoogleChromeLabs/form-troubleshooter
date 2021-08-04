@@ -1,7 +1,6 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { expect } from 'chai';
 import { getTreeNodeWithParents } from '../tree-util';
 import { wrapInCode } from './audit-util';
 import {
@@ -19,7 +18,7 @@ describe('labels', function () {
     it('should not return audit error when label has text', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ text: 'hello' }] }] });
       const result = hasEmptyLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when label has children with text', function () {
@@ -27,23 +26,23 @@ describe('labels', function () {
         children: [{ name: 'label', children: [{ name: 'span', children: [{ text: 'hello' }] }] }],
       });
       const result = hasEmptyLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when label has no text', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label' }] });
       const result = hasEmptyLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label></label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label></label>'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should return audit error when label has no children with text', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ name: 'span' }] }] });
       const result = hasEmptyLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label></label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label></label>'));
+      expect(result[0].type).toEqual('error');
     });
   });
 
@@ -51,13 +50,13 @@ describe('labels', function () {
     it('should not return audit error when with single label', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ text: 'hello' }] }] });
       const result = hasUniqueLabels(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when with multiple empty labels', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label' }, { name: 'label' }] });
       const result = hasUniqueLabels(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when with duplicate labels', function () {
@@ -74,9 +73,9 @@ describe('labels', function () {
         ],
       });
       const result = hasUniqueLabels(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(`${wrapInCode('<label>hello</label>')}`);
-      expect(result[0].type).to.equal('warning');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(`${wrapInCode('<label>hello</label>')}`);
+      expect(result[0].type).toEqual('warning');
     });
 
     it('should not return audit error when with multiple unique labels', function () {
@@ -93,7 +92,7 @@ describe('labels', function () {
         ],
       });
       const result = hasUniqueLabels(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when with multiple labels in different forms', function () {
@@ -120,7 +119,7 @@ describe('labels', function () {
         ],
       });
       const result = hasUniqueLabels(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
   });
 
@@ -128,7 +127,7 @@ describe('labels', function () {
     it('should not return audit error with text label', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ text: 'hello' }] }] });
       const result = hasLabelWithValidElements(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when label contains anchor tag', function () {
@@ -154,11 +153,11 @@ describe('labels', function () {
         ],
       });
       const result = hasLabelWithValidElements(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label>hello anchor heading</label>'));
-      expect(result[0].details).to.contain(wrapInCode('a'));
-      expect(result[0].details).to.contain(wrapInCode('h1'));
-      expect(result[0].type).to.equal('warning');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label>hello anchor heading</label>'));
+      expect(result[0].details).toContain(wrapInCode('a'));
+      expect(result[0].details).toContain(wrapInCode('h1'));
+      expect(result[0].type).toEqual('warning');
     });
   });
 
@@ -166,7 +165,7 @@ describe('labels', function () {
     it('should not return audit error for label with for attribute', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', attributes: { for: 'input' } }] });
       const result = hasLabelWithForAttribute(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when label has input element', function () {
@@ -184,7 +183,7 @@ describe('labels', function () {
         ],
       });
       const result = hasLabelWithForAttribute(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should not return audit error when label has input with aria-labelledby', function () {
@@ -195,7 +194,7 @@ describe('labels', function () {
         ],
       });
       const result = hasLabelWithForAttribute(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error when label has no matching input with aria-labelledby', function () {
@@ -206,17 +205,17 @@ describe('labels', function () {
         ],
       });
       const result = hasLabelWithForAttribute(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label id="label1">username</label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label id="label1">username</label>'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should return audit error for label without for attribute', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ text: 'hello' }] }] });
       const result = hasLabelWithForAttribute(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label>hello</label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label>hello</label>'));
+      expect(result[0].type).toEqual('error');
     });
   });
 
@@ -226,7 +225,7 @@ describe('labels', function () {
         children: [{ name: 'label', attributes: { for: 'input' }, children: [{ text: 'hello' }] }],
       });
       const result = hasLabelWithEmptyForAttribute(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error for label with empty for attribute', function () {
@@ -234,9 +233,9 @@ describe('labels', function () {
         children: [{ name: 'label', attributes: { for: '' }, children: [{ text: 'hello' }] }],
       });
       const result = hasLabelWithEmptyForAttribute(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label for="">hello</label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label for="">hello</label>'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should return audit error for label with empty for attribute (whitespace)', function () {
@@ -244,9 +243,9 @@ describe('labels', function () {
         children: [{ name: 'label', attributes: { for: ' ' }, children: [{ text: 'hello' }] }],
       });
       const result = hasLabelWithEmptyForAttribute(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label for=" ">hello</label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label for=" ">hello</label>'));
+      expect(result[0].type).toEqual('error');
     });
   });
 
@@ -256,7 +255,7 @@ describe('labels', function () {
         children: [{ name: 'label', attributes: { for: 'input' }, children: [{ text: 'hello' }] }],
       });
       const result = hasLabelWithUniqueForAttribute(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error for multiple labels with the same for attribute', function () {
@@ -267,10 +266,10 @@ describe('labels', function () {
         ],
       });
       const result = hasLabelWithUniqueForAttribute(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(`${wrapInCode('<label for="input">hello</label>')}`);
-      expect(result[0].details).to.contain(`${wrapInCode('<label for="input">world</label>')}`);
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(`${wrapInCode('<label for="input">hello</label>')}`);
+      expect(result[0].details).toContain(`${wrapInCode('<label for="input">world</label>')}`);
+      expect(result[0].type).toEqual('error');
     });
 
     it('should not return audit error for mutliple labels with different for attribute', function () {
@@ -281,7 +280,7 @@ describe('labels', function () {
         ],
       });
       const result = hasLabelWithUniqueForAttribute(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
   });
 
@@ -289,7 +288,7 @@ describe('labels', function () {
     it('should not return audit error for label without for attribute', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ text: 'hello' }] }] });
       const result = hasMatchingForLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
 
     it('should return audit error for multiple labels without matching inputs', function () {
@@ -300,10 +299,10 @@ describe('labels', function () {
         ],
       });
       const result = hasMatchingForLabel(tree);
-      expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<label for="input1">hello</label>'));
-      expect(result[0].details).to.contain(wrapInCode('<label for="input2">world</label>'));
-      expect(result[0].type).to.equal('error');
+      expect(result.length).toEqual(1);
+      expect(result[0].details).toContain(wrapInCode('<label for="input1">hello</label>'));
+      expect(result[0].details).toContain(wrapInCode('<label for="input2">world</label>'));
+      expect(result[0].type).toEqual('error');
     });
 
     it('should not return audit error for label with matching input', function () {
@@ -314,7 +313,7 @@ describe('labels', function () {
         ],
       });
       const result = hasMatchingForLabel(tree);
-      expect(result).to.be.eql([]);
+      expect(result).toEqual([]);
     });
   });
 });

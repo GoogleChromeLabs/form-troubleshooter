@@ -9,11 +9,9 @@ import { groupBy } from '../array-util';
 
 /**
  * Input has a valid type value.
- * @type {AuditHandler}
  */
-export function hasValidInputType(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, ['input']).filter(
     node => node.attributes.type && !INPUT_TYPES.includes(node.attributes.type),
   );
@@ -45,11 +43,9 @@ export function hasValidInputType(tree) {
 
 /**
  * Input has a label.
- * @type {AuditHandler}
  */
-export function inputHasLabel(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function inputHasLabel(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const labelsByFor = groupBy(
     findDescendants(tree, ['label']).filter(node => node.attributes.for),
     node => node.attributes.for,
@@ -76,11 +72,9 @@ export function inputHasLabel(tree) {
 
 /**
  * Input has a aria-labelledby label.
- * @type {AuditHandler}
  */
-export function inputHasAriaLabel(tree) {
-  /** @type {AuditResult[]} */
-  const issues = [];
+export function inputHasAriaLabel(tree: TreeNodeWithParent): AuditResult[] {
+  const issues: AuditResult[] = [];
   const labelsById = groupBy(
     findDescendants(tree, ['label']).filter(node => node.attributes.id),
     node => node.attributes.id,
@@ -106,8 +100,7 @@ export function inputHasAriaLabel(tree) {
 
 /**
  * Run all input audits.
- * @type {AuditHandler}
  */
-export function runInputAudits(tree) {
+export function runInputAudits(tree: TreeNodeWithParent): AuditResult[] {
   return [...hasValidInputType(tree), ...inputHasLabel(tree), ...inputHasAriaLabel(tree)];
 }

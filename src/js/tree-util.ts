@@ -5,14 +5,11 @@ import { groupBy } from './array-util';
 
 /**
  * Copies a tree, adding parent relationships
- *
- * @param {TreeNode} parent
- * @returns {TreeNodeWithParent}
  */
-export function getTreeNodeWithParents(parent) {
-  const root = Object.assign({ attributes: {} }, parent);
-  const queue = [root];
-  let item;
+export function getTreeNodeWithParents(parent?: TreeNode): TreeNodeWithParent {
+  const root = Object.assign({ attributes: {} }, parent) as TreeNodeWithParent;
+  const queue: TreeNodeWithParent[] = [root];
+  let item: TreeNodeWithParent | undefined;
 
   while ((item = queue.shift())) {
     if (item.children) {
@@ -28,18 +25,14 @@ export function getTreeNodeWithParents(parent) {
 
 /**
  * Finds descendants of a given node by tagName
- *
- * @param {TreeNode} parent
- * @param {string[]} tagNames
- * @returns {TreeNodeWithParent[]}
  */
-export function findDescendants(parent, tagNames) {
+export function findDescendants(parent: TreeNodeWithParent, tagNames: string[]): TreeNodeWithParent[] {
   const queue = [...(parent.children || [])];
   const results = [];
-  let item;
+  let item: TreeNodeWithParent | undefined;
 
   while ((item = queue.shift())) {
-    if (tagNames.some(t => t === item.name)) {
+    if (tagNames.some(t => t === item!.name)) {
       results.push(item);
     }
     if (item.children) {
@@ -52,11 +45,8 @@ export function findDescendants(parent, tagNames) {
 
 /**
  * Gets text content recursively for a given node
- *
- * @param {TreeNode} parent
- * @returns {string}
  */
-export function getTextContent(parent) {
+export function getTextContent(parent: TreeNodeWithParent): string {
   const queue = [parent];
   const results = [];
   let item;
@@ -75,13 +65,9 @@ export function getTextContent(parent) {
 
 /**
  * Searches for the closest parent node with the matching tagName
- *
- * @param {TreeNodeWithParent} node
- * @param {string} tagName
- * @returns {TreeNodeWithParent | null}
  */
-export function closestParent(node, tagName) {
-  let currentNode = node;
+export function closestParent(node: TreeNodeWithParent, tagName: string): TreeNodeWithParent | null {
+  let currentNode: TreeNodeWithParent | undefined = node;
   while ((currentNode = currentNode.parent)) {
     if (tagName === currentNode.name) {
       return currentNode;
@@ -96,9 +82,9 @@ export function closestParent(node, tagName) {
  * @param {TreeNodeWithParent} node
  * @returns {string}
  */
-export function getPath(node) {
-  let currentNode = node;
-  let pathSegments = [];
+export function getPath(node: TreeNodeWithParent): string {
+  let currentNode: TreeNodeWithParent | undefined = node;
+  const pathSegments = [];
 
   while (currentNode) {
     pathSegments.unshift(getPathSegment(currentNode));
@@ -109,11 +95,8 @@ export function getPath(node) {
 
 /**
  * Gets a parent unique path segment for the node
- *
- * @param {TreeNodeWithParent} node
- * @returns {string}
  */
-function getPathSegment(node) {
+function getPathSegment(node: TreeNodeWithParent): string {
   if (node.type) {
     return node.type;
   }
@@ -135,21 +118,18 @@ function getPathSegment(node) {
     child => child.name,
   );
   const siblingsOfType = siblingsByType.get(node.name);
-  if (siblingsOfType.length === 1) {
+  if (siblingsOfType?.length === 1) {
     return node.name;
   } else {
-    const index = siblingsOfType.indexOf(node);
+    const index = siblingsOfType!.indexOf(node);
     return `${node.name}[${index}]`;
   }
 }
 
 /**
  * Converts a path to a css query selector
- *
- * @param {string} path
- * @returns {string}
  */
-export function pathToQuerySelector(path) {
+export function pathToQuerySelector(path: string): string {
   return path
     .split('/')
     .filter(segment => segment)
