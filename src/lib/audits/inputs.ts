@@ -12,7 +12,7 @@ import { groupBy } from '../array-util';
  */
 export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
   const issues: AuditResult[] = [];
-  const invalidFields: TreeNodeWithContext[] = findDescendants(tree, ['input']).filter(
+  const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = findDescendants(tree, ['input']).filter(
     node => node.attributes.type && !INPUT_TYPES.includes(node.attributes.type),
   );
 
@@ -31,6 +31,7 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
       return message;
     });
     issues.push({
+      auditType: 'input-type-valid',
       details: `Found input field(s) with invalid types:<br>• ${messages.join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types" target="_blank">MDN: The Input (Form Input) element</a>.',
@@ -65,6 +66,7 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'input-label',
       details: `Found input field(s) without a corresponding label:<br>• ${invalidFields
         .map(field => createLinkableElement(field))
         .join('<br>• ')}`,
@@ -100,6 +102,7 @@ export function inputHasAriaLabel(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'input-label',
       details: `Found input field(s) aria-labelledby but the corresponding label could not be found:<br>• ${invalidFields
         .map(field => createLinkableElement(field))
         .join('<br>• ')}`,

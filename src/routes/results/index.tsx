@@ -1,8 +1,9 @@
 import { FunctionalComponent, h } from 'preact';
+import ResultItem from './result-item';
 import style from './style.css';
 
 interface Props {
-  results: any[];
+  results: AuditResult[];
 }
 
 const Results: FunctionalComponent<Props> = props => {
@@ -12,7 +13,9 @@ const Results: FunctionalComponent<Props> = props => {
       {results.length ? (
         <ul>
           {results.map((result, index) => (
-            <li key={index}>{result.title}</li>
+            <li key={index}>
+              <ResultItem item={result} />
+            </li>
           ))}
         </ul>
       ) : (

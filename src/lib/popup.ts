@@ -255,7 +255,7 @@ function displayAuditIssue(item: AuditResult) {
   section.appendChild(h2);
   const detailsDiv = document.createElement('div');
   detailsDiv.classList.add('details');
-  detailsDiv.innerHTML = item.details;
+  detailsDiv.innerHTML = item.details ?? '';
   section.appendChild(detailsDiv);
   const learnMoreDiv = document.createElement('div');
   learnMoreDiv.classList.add('learn-more');

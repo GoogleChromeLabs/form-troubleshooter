@@ -11,7 +11,7 @@
     "dev": "preact watch",
     "build": "npm run build:preact && npm run build:rollup",
     "build:rollup": "rollup -c",
-    "build:preact": "preact build --no-sw --no-inline-css",
+    "build:preact": "preact build --no-sw --no-inline-css --no-prerender",
     "build:watch": "npm run build -- --watch --configDev",
     "pretty": "prettier . --write --loglevel warn",
     "pretty:check": "prettier . --check",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.2.5",
     "@types/chai": "^4.2.21",
+    "@types/chrome": "^0.0.153",
     "@types/enzyme": "^3.10.5",
     "@types/jest": "^26.0.8",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
@@ -65,7 +66,6 @@
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
-    "@types/chrome": "^0.0.153",
     "fuse.js": "^6.4.6",
     "preact": "^10.5.14",
     "preact-render-to-string": "^5.1.19",

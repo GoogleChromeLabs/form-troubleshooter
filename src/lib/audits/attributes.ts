@@ -57,6 +57,7 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult[] {
         .join('<br>&nbsp;&nbsp;&nbsp;')}`;
     });
     issues.push({
+      auditType: 'invalid-attributes',
       details:
         'Found element(s) with invalid attributes:<br>• ' +
         `${invalidFieldMessages.join('<br>• ')}` +
@@ -89,6 +90,7 @@ export function hasIdOrName(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'missing-identifier',
       details:
         'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
         `${invalidFields.map(node => createLinkableElement(node)).join('<br>• ')}<br>(This may not be an error.)`,
@@ -122,6 +124,7 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
 
   if (duplicateFields.length) {
     issues.push({
+      auditType: 'unique-ids',
       details:
         'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
         `${duplicateFields
@@ -170,6 +173,7 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
 
   if (duplicates.length) {
     issues.push({
+      auditType: 'unique-names',
       details:
         'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
         `${duplicates

@@ -21,6 +21,7 @@ export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'autocomplete-attribute',
       details:
         'Found form field(s) with no <code>autocomplete</code> attribute, ' +
         'even though an appropriate value is available:<br>• ' +
@@ -53,6 +54,7 @@ export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'autocomplete-empty',
       details:
         'Found form field(s) with empty autocomplete values:<br>• ' +
         `${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,
@@ -84,6 +86,7 @@ export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'autocomplete-off',
       details:
         'Found form field(s) with <code>autocomplete="off"</code>:<br>• ' +
         `${invalidFields
@@ -116,7 +119,7 @@ export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult[] {
 export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
   const issues: AuditResult[] = [];
   const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
-  const invalidFields: TreeNodeWithContext[] = [];
+  const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = [];
   const invalidFieldMessages = [];
   const autocompleteSuggestions = new Fuse([...AUTOCOMPLETE_TOKENS, ...Object.keys(AUTOCOMPLETE_ALIASES)], {
     threshold: 0.3,
@@ -152,6 +155,7 @@ export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFieldMessages.length) {
     issues.push({
+      auditType: 'autocomplete-valid',
       details:
         'Found form field(s) with invalid <code>autocomplete</code> values:<br>• ' +
         `${invalidFieldMessages.join('<br>• ')}`,

@@ -10,6 +10,7 @@ import { useEffect, useState } from 'preact/hooks';
 import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits';
+import { mockedAuditResult } from './test-data';
 
 const tabs = [
   {
@@ -34,24 +35,10 @@ const App: FunctionalComponent = () => {
       0,
     ),
   );
-  const [auditResults, setAuditResuits] = useState({
-    score: 0.78,
-    results: [
-      {
-        type: 'error',
-        title: 'Increase conversions by using correct autocomplete attributes',
-      },
-      {
-        type: 'error',
-        title:
-          'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
-      },
-      {
-        type: 'warning',
-        title: 'Increase conversions by using correct autocomplete attributes',
-      },
-    ],
-  });
+  const [auditResults, setAuditResuits] = useState<AuditDetails>(() => ({
+    score: 0,
+    results: [],
+  }));
 
   useEffect(() => {
     // Send a message to the content script to audit the current page.
@@ -61,14 +48,19 @@ const App: FunctionalComponent = () => {
       chrome.tabs.sendMessage(tabId!, { message: 'popup opened' });
     });
 
-    chrome?.runtime?.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.message === 'stored element data') {
-        chrome.storage.local.get(['tree'], result => {
-          const tree = getTreeNodeWithParents(result.tree);
-          setAuditResuits(runAudits(tree));
-        });
-      }
-    });
+    if (chrome.runtime) {
+      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.message === 'stored element data') {
+          chrome.storage.local.get(['tree'], result => {
+            const tree = getTreeNodeWithParents(result.tree);
+            setAuditResuits(runAudits(tree));
+          });
+        }
+      });
+    } else {
+      // test data for development
+      setAuditResuits(mockedAuditResult);
+    }
   }, []);
 
   const recommendations = auditResults.results.filter(result => result.type === 'error');

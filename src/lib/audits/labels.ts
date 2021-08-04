@@ -16,6 +16,7 @@ export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'label-empty',
       details: `Found empty label(s):<br>• ${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,
       learnMore:
         'Learn more: <a href="https://equalizedigital.com/accessibility-checker/empty-missing-form-label" target="_blank">Empty or Missing Form Label</a>',
@@ -52,6 +53,7 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult[] {
 
   if (duplicates.length) {
     issues.push({
+      auditType: 'label-unique',
       details:
         'Found labels in the same form with duplicate values:<br>• ' +
         `${duplicates
@@ -98,6 +100,7 @@ export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'label-valid-elements',
       details:
         'Found label(s) containing a heading or interactive element:<br>• ' +
         `${invalidFields
@@ -143,6 +146,7 @@ export function hasLabelWithForAttribute(tree: TreeNodeWithParent): AuditResult[
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'label-for',
       details:
         'Found label(s) with no form field descendant, and with no <code>for</code> attribute:<br>• ' +
         `${invalidFields.map(node => createLinkableElement(node)).join('<br>• ')}`,
@@ -174,6 +178,7 @@ export function hasLabelWithEmptyForAttribute(tree: TreeNodeWithParent): AuditRe
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'label-for',
       details:
         'Found label(s) with an empty <code>for</code> attribute:<br>• ' +
         `${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,
@@ -207,6 +212,7 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
 
   if (duplicates.length) {
     issues.push({
+      auditType: 'label-unique',
       details: `Found labels with the same <code>for</code> attribute:<br>• ${duplicates
         .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
         .join('<br>• ')}`,
@@ -250,6 +256,7 @@ export function hasMatchingForLabel(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     issues.push({
+      auditType: 'label-for',
       details:
         'The <code>for</code> attribute of the following label(s) does not match the id ' +
         `of a form field:<br>• ${invalidFields.map(field => createLinkableElement(field)).join('<br>• ')}`,

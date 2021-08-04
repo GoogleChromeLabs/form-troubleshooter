@@ -15,6 +15,7 @@ export function hasEmptyForms(tree: TreeNodeWithParent): AuditResult[] {
 
   if (emptyForms.length) {
     issues.push({
+      auditType: 'form-empty',
       details:
         'Found form(s) not containing any form fields:<br>• ' +
         `${emptyForms.map(form => createLinkableElement(form)).join('<br>• ')}`,

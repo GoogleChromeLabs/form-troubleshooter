@@ -6,10 +6,11 @@ interface AuditDetails {
   results: AuditResult[];
 }
 
-interface AuditResult {
+interface AuditResult<T = unkown> {
+  auditType: string;
   title: string;
-  items: TreeNodeWithContext[];
-  details: string;
+  items: TreeNodeWithContext<T>[];
+  details?: string;
   type: 'error' | 'warning';
   learnMore?: string;
   references: LearnMoreReference[];
@@ -29,12 +30,19 @@ interface TreeNodeWithParent extends TreeNode {
   parent?: TreeNodeWithParent;
 }
 
-interface TreeNodeWithContext extends TreeNodeWithParent {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  context?: any;
+interface TreeNodeWithContext<T> extends TreeNodeWithParent {
+  context?: T;
 }
 
 interface LearnMoreReference {
   title: string;
   url: string;
+}
+
+interface ContextSuggestion {
+  suggestion?: string | null;
+}
+
+interface ContextDuplicates {
+  duplicates?: TreeNodeWithParent[];
 }
