@@ -1,7 +1,13 @@
 build/
 node_modules/
 
-manifest.key.json
+manifest.version.json
+manifest.dev.json
+manifest.prod.json
+*.pem
+*.crx
+*.zip
 
 *.sublime-*
 .DS_Store
+.env

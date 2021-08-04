@@ -201,7 +201,7 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { autcomplete: 'something' } }] });
       const result = hasInvalidAttributes(tree);
       expect(result.length).to.equal(1);
-      expect(result[0].details).to.contain(wrapInCode('<form>'));
+      expect(result[0].details).to.contain(wrapInCode('<form ...>'));
       expect(result[0].details).to.contain(
         ': <strong><code>autcomplete</code></strong> (did you mean <code>autocomplete</code>?)',
       );

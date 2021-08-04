@@ -56,7 +56,8 @@ export function inputHasLabel(tree) {
   );
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
     .filter(node => !closestParent(node, 'label'))
-    .filter(node => !labelsByFor.has(node.attributes.id));
+    .filter(node => !labelsByFor.has(node.attributes.id))
+    .filter(node => !node.attributes['aria-labelledby']);
 
   if (invalidFields.length) {
     issues.push({
@@ -74,9 +75,39 @@ export function inputHasLabel(tree) {
 }
 
 /**
+ * Input has a aria-labelledby label.
+ * @type {AuditHandler}
+ */
+export function inputHasAriaLabel(tree) {
+  /** @type {AuditResult[]} */
+  const issues = [];
+  const labelsById = groupBy(
+    findDescendants(tree, ['label']).filter(node => node.attributes.id),
+    node => node.attributes.id,
+  );
+  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
+    .filter(node => !closestParent(node, 'label'))
+    .filter(node => node.attributes['aria-labelledby'] && !labelsById.has(node.attributes['aria-labelledby']));
+
+  if (invalidFields.length) {
+    issues.push({
+      details: `Found input field(s) aria-labelledby but the corresponding label could not be found:<br>• ${invalidFields
+        .map(field => createLinkableElement(field))
+        .join('<br>• ')}`,
+      learnMore:
+        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" target="_blank">MDN: Labels</a>.',
+      title: 'Input fields should have matching labels.',
+      type: 'error',
+    });
+  }
+
+  return issues;
+}
+
+/**
  * Run all input audits.
  * @type {AuditHandler}
  */
 export function runInputAudits(tree) {
-  return [...hasValidInputType(tree), ...inputHasLabel(tree)];
+  return [...hasValidInputType(tree), ...inputHasLabel(tree), ...inputHasAriaLabel(tree)];
 }

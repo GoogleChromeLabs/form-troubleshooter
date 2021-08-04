@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { expect } from 'chai';
 import { wrapInCode } from './audit-util';
 import { getTreeNodeWithParents } from '../tree-util';
-import { hasValidInputType, inputHasLabel } from './inputs';
+import { hasValidInputType, inputHasAriaLabel, inputHasLabel } from './inputs';
 
 describe('inputs', function () {
   describe('hasValidInputType', function () {
@@ -19,7 +19,7 @@ describe('inputs', function () {
       const result = hasValidInputType(tree);
       expect(result.length).to.equal(1);
       expect(result[0].details).to.contain(wrapInCode('<input type="check">'));
-      expect(result[0].details).to.contain('did you mean <code>checkbox</code>');
+      expect(result[0].details).to.contain('Did you mean <code>checkbox</code>');
       expect(result[0].type).to.equal('error');
     });
 
@@ -65,31 +65,79 @@ describe('inputs', function () {
       expect(result[0].details).to.contain(wrapInCode('<input id="input" type="text">'));
       expect(result[0].type).to.equal('error');
     });
+
+    it('should return audit error when select contains invalid type without suggestion', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', children: [{ text: 'text' }] },
+          { name: 'select', attributes: { id: 'select' } },
+        ],
+      });
+      const result = inputHasLabel(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(wrapInCode('<select id="select">'));
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should return audit error when textarea contains invalid type without suggestion', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', children: [{ text: 'text' }] },
+          { name: 'textarea', attributes: { id: 'textarea' } },
+        ],
+      });
+      const result = inputHasLabel(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(wrapInCode('<textarea id="textarea">'));
+      expect(result[0].type).to.equal('error');
+    });
+
+    it('should not return audit error when input has uses aria-labelledby', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label' }, children: [{ text: 'text' }] },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label' } },
+        ],
+      });
+      const result = inputHasLabel(tree);
+      expect(result).to.be.eql([]);
+    });
   });
 
-  it('should return audit error when select contains invalid type without suggestion', function () {
-    const tree = getTreeNodeWithParents({
-      children: [
-        { name: 'label', children: [{ text: 'text' }] },
-        { name: 'select', attributes: { id: 'select' } },
-      ],
+  describe('inputHasAriaLabel', function () {
+    it('should not return audit error when input does not uses aria-labelledby', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label' }, children: [{ text: 'text' }] },
+          { name: 'input', attributes: { type: 'text' } },
+        ],
+      });
+      const result = inputHasAriaLabel(tree);
+      expect(result).to.be.eql([]);
     });
-    const result = inputHasLabel(tree);
-    expect(result.length).to.equal(1);
-    expect(result[0].details).to.contain(wrapInCode('<select id="select">'));
-    expect(result[0].type).to.equal('error');
-  });
 
-  it('should return audit error when textarea contains invalid type without suggestion', function () {
-    const tree = getTreeNodeWithParents({
-      children: [
-        { name: 'label', children: [{ text: 'text' }] },
-        { name: 'textarea', attributes: { id: 'textarea' } },
-      ],
+    it('should not return audit error when input has uses aria-labelledby', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label' }, children: [{ text: 'text' }] },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label' } },
+        ],
+      });
+      const result = inputHasAriaLabel(tree);
+      expect(result).to.be.eql([]);
     });
-    const result = inputHasLabel(tree);
-    expect(result.length).to.equal(1);
-    expect(result[0].details).to.contain(wrapInCode('<textarea id="textarea">'));
-    expect(result[0].type).to.equal('error');
+
+    it('should return audit error when input has aria-labelledby but does not match label', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label1' }, children: [{ text: 'text' }] },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label2' } },
+        ],
+      });
+      const result = inputHasAriaLabel(tree);
+      expect(result.length).to.equal(1);
+      expect(result[0].details).to.contain(wrapInCode('<input type="text" ...>'));
+      expect(result[0].type).to.equal('error');
+    });
   });
 });

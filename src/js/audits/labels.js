@@ -105,11 +105,16 @@ export function hasLabelWithValidElements(tree) {
 export function hasLabelWithForAttribute(tree) {
   /** @type {AuditResult[]} */
   const issues = [];
+  const fieldsByAria = groupBy(
+    findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes['aria-labelledby']),
+    node => node.attributes['aria-labelledby'],
+  );
   const invalidFields = findDescendants(tree, ['label'])
     .filter(node => node.attributes.for == null)
     // Ignore labels that contain form fields: they don't need for attributes.
     // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label#:~:text=nest
-    .filter(node => findDescendants(node, ['button', 'input', 'select', 'textarea']).length === 0);
+    .filter(node => findDescendants(node, ['button', 'input', 'select', 'textarea']).length === 0)
+    .filter(node => !node.attributes.id || !fieldsByAria.has(node.attributes.id));
 
   if (invalidFields.length) {
     issues.push({

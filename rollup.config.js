@@ -4,6 +4,8 @@ import resolve from 'rollup-plugin-node-resolve';
 
 const buildFolder = 'build/';
 
+const envManifest = process.argv.includes('--configDev') ? 'manifest.dev.json' : 'manifest.prod.json';
+
 export default [
   {
     input: 'src/js/popup.js',
@@ -17,7 +19,7 @@ export default [
       copy('src/popup.html', `${buildFolder}popup.html`),
       copy('src/css', `${buildFolder}css`),
       copy('src/images', `${buildFolder}images`),
-      mergeJson(['src/manifest.json', 'manifest.key.json'], `${buildFolder}manifest.json`),
+      mergeJson(['src/manifest.json', 'manifest.version.json', envManifest], `${buildFolder}manifest.json`),
     ],
   },
   {
