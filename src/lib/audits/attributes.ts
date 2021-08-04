@@ -4,7 +4,6 @@ SPDX-License-Identifier: Apache-2.0 */
 import { groupBy } from '../array-util';
 import { ATTRIBUTES, FORM_FIELDS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
 import { closestParent, findDescendants } from '../tree-util';
-import { createLinkableElement } from './audit-util';
 import Fuse from 'fuse.js';
 
 function getInvalidAttributes(element: TreeNode) {
@@ -45,33 +44,9 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult[] {
     .filter(field => field.context.invalidAttributes.length);
 
   if (invalidFields.length) {
-    const invalidFieldMessages = invalidFields.map(field => {
-      return `${createLinkableElement(field)}: ${field.context.invalidAttributes
-        .map(({ attribute, suggestion }) => {
-          let message = `<strong><code>${attribute}</code></strong>`;
-          if (suggestion) {
-            message += ` (did you mean <code>${suggestion}</code>?)`;
-          }
-          return message;
-        })
-        .join('<br>&nbsp;&nbsp;&nbsp;')}`;
-    });
     issues.push({
       auditType: 'invalid-attributes',
-      details:
-        'Found element(s) with invalid attributes:<br>• ' +
-        `${invalidFieldMessages.join('<br>• ')}` +
-        '<br>Consider using <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes" title="MDN article: Using data attributes">data attributes</a> instead of non-standard attributes.',
-      learnMore:
-        'Learn more: <a href="https://html.spec.whatwg.org/multipage/forms.html" target="_blank">HTML Living Standard: Forms</a>',
       items: invalidFields,
-      references: [
-        {
-          title: 'HTML Living Standard: Forms',
-          url: 'https://html.spec.whatwg.org/multipage/forms.html',
-        },
-      ],
-      title: 'Element attributes should be valid.',
       type: 'warning',
     });
   }
@@ -91,19 +66,7 @@ export function hasIdOrName(tree: TreeNodeWithParent): AuditResult[] {
   if (invalidFields.length) {
     issues.push({
       auditType: 'missing-identifier',
-      details:
-        'Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:<br>• ' +
-        `${invalidFields.map(node => createLinkableElement(node)).join('<br>• ')}<br>(This may not be an error.)`,
-      learnMore:
-        'Learn more: <a href="https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The HTML name attribute</a>',
       items: invalidFields,
-      references: [
-        {
-          title: 'The HTML name attribute',
-          url: 'https://developer.mozilla.org/docs/Web/HTML/Element/input#htmlattrdefname',
-        },
-      ],
-      title: 'Form fields should have an <code>id</code> or a <code>name</code>.',
       type: 'warning',
     });
   }
@@ -125,13 +88,6 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
   if (duplicateFields.length) {
     issues.push({
       auditType: 'unique-ids',
-      details:
-        'Found form fields with duplicate <code>id</code> attributes:<br>• ' +
-        `${duplicateFields
-          .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
-          .join('<br>• ')}`,
-      learnMore:
-        'Learn more: <a href="https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active" target="_blank">ID attribute value must be unique</a>',
       items: duplicateFields.map(fields => {
         const [first, ...others] = fields;
         return {
@@ -141,13 +97,6 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
           },
         };
       }),
-      references: [
-        {
-          title: 'ID attribute value must be unique',
-          url: 'https://dequeuniversity.com/rules/axe/4.2/duplicate-id-active',
-        },
-      ],
-      title: 'Form fields must have unique <code>id</code> values.',
       type: 'error',
     });
   }
@@ -174,13 +123,6 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
   if (duplicates.length) {
     issues.push({
       auditType: 'unique-names',
-      details:
-        'Found fields in the same form with duplicate <code>name</code> attributes:<br>• ' +
-        `${duplicates
-          .map(fields => fields.map(field => createLinkableElement(field)).join('<br>&nbsp;&nbsp;&nbsp;'))
-          .join('<br>• ')}`,
-      learnMore:
-        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname" target="_blank">The input element name attribute</a>',
       items: duplicates.map(fields => {
         const [first, ...others] = fields;
         return {
@@ -190,13 +132,6 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
           },
         };
       }),
-      references: [
-        {
-          title: 'The input element name attribute',
-          url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname',
-        },
-      ],
-      title: 'Fields in the same form must have unique <code>name</code> values.',
       type: 'error',
     });
   }

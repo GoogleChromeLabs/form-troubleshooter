@@ -1,7 +1,6 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { wrapInCode } from './audit-util';
 import { getTreeNodeWithParents } from '../tree-util';
 import { hasValidInputType, inputHasAriaLabel, inputHasLabel } from './inputs';
 
@@ -17,12 +16,8 @@ describe('inputs', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'check' } }] });
       const result = hasValidInputType(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input type="check">'));
-      expect(result[0].details).toContain('Did you mean <code>checkbox</code>');
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].context.suggestion).toEqual('checkbox');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -30,12 +25,8 @@ describe('inputs', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'radiobutton' } }] });
       const result = hasValidInputType(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input type="radiobutton">'));
-      expect(result[0].details).not.toContain('did you mean');
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].context.suggestion).toBeNull();
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });
@@ -69,11 +60,8 @@ describe('inputs', function () {
       });
       const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input id="input" type="text">'));
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].context).toBeFalsy();
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -86,7 +74,7 @@ describe('inputs', function () {
       });
       const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<select id="select">'));
+      expect(result[0].items[0].name).toEqual('select');
       expect(result[0].type).toEqual('error');
     });
 
@@ -99,11 +87,8 @@ describe('inputs', function () {
       });
       const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<textarea id="textarea">'));
       expect(result[0].items[0].name).toEqual('textarea');
       expect(result[0].items[0].context).toBeFalsy();
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -151,10 +136,7 @@ describe('inputs', function () {
       });
       const result = inputHasAriaLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input type="text" ...>'));
       expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });

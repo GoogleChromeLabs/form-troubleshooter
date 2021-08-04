@@ -398,7 +398,7 @@ const ResultItem: FunctionalComponent<Props> = props => {
 
   return (
     <div>
-      <h3>{presenter.title || props.item.title}</h3>
+      <h3>{presenter.title}</h3>
       {presenter.render(props.item)}
 
       {presenter.references.length ? (

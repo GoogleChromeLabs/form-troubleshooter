@@ -2,7 +2,6 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { getTreeNodeWithParents } from '../tree-util';
-import { escapeHtml, wrapInCode } from './audit-util';
 import {
   hasAutocompleteAttributes,
   hasAutocompleteOff,
@@ -30,10 +29,7 @@ describe('autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { name: 'username' } }] });
       const result = hasAutocompleteAttributes(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input name="username">'));
       expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
   });
@@ -55,11 +51,8 @@ describe('autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: '' } }] });
       const result = hasEmptyAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input autocomplete="">'));
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -67,11 +60,8 @@ describe('autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: ' ' } }] });
       const result = hasEmptyAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input autocomplete=" ">'));
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual(' ');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });
@@ -99,11 +89,8 @@ describe('autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: 'off' } }] });
       const result = hasAutocompleteOff(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input autocomplete="off">'));
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('off');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
   });
@@ -119,15 +106,8 @@ describe('autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: 'stuff' } }] });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>stuff</code></strong><code>${escapeHtml(
-          '">',
-        )}</code>`,
-      );
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('stuff');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -137,15 +117,8 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>stuff</code></strong><code>${escapeHtml(
-          ' username">',
-        )}</code>`,
-      );
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('stuff username');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -195,17 +168,9 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml(
-          '<input autocomplete="section-1 ',
-        )}</code><strong><code>usrname</code></strong><code>${escapeHtml('">')}</code>`,
-      );
-      expect(result[0].details).toContain(`did you mean ${wrapInCode('username')}?`);
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('section-1 usrname');
       expect(result[0].items[0].context.suggestion).toEqual('username');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -215,17 +180,9 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>delivery</code></strong><code>${escapeHtml(
-          ' address-line1">',
-        )}</code>`,
-      );
-      expect(result[0].details).toContain(`did you mean ${wrapInCode('shipping')}?`);
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('delivery address-line1');
       expect(result[0].items[0].context.suggestion).toEqual('shipping');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -235,17 +192,9 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>zip</code></strong><code>${escapeHtml(
-          '">',
-        )}</code>`,
-      );
-      expect(result[0].details).toContain(`did you mean ${wrapInCode('postal-code')}?`);
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('zip');
       expect(result[0].items[0].context.suggestion).toEqual('postal-code');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -255,17 +204,9 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>zipcode</code></strong><code>${escapeHtml(
-          '">',
-        )}</code>`,
-      );
-      expect(result[0].details).toContain(`did you mean ${wrapInCode('postal-code')}?`);
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('zipcode');
       expect(result[0].items[0].context.suggestion).toEqual('postal-code');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -275,17 +216,9 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml('<input autocomplete="')}</code><strong><code>state</code></strong><code>${escapeHtml(
-          '">',
-        )}</code>`,
-      );
-      expect(result[0].details).toContain(`did you mean ${wrapInCode('address-level1')}?`);
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('state');
       expect(result[0].items[0].context.suggestion).toEqual('address-level1');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -295,17 +228,9 @@ describe('autocomplete', function () {
       });
       const result = hasValidAutocomplete(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(
-        `<code>${escapeHtml(
-          '<input autocomplete="section-1 ',
-        )}</code><strong><code>sjdjdasd</code></strong><code>${escapeHtml('">')}</code>`,
-      );
-      expect(result[0].details).not.toContain('did you mean');
       expect(result[0].items[0].name).toEqual('input');
       expect(result[0].items[0].attributes.autocomplete).toEqual('section-1 sjdjdasd');
       expect(result[0].items[0].context.suggestion).toBeNull();
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });

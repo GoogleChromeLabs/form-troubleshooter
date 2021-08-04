@@ -2,7 +2,6 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { getTextContent, getTreeNodeWithParents } from '../tree-util';
-import { wrapInCode } from './audit-util';
 import {
   hasEmptyLabel,
   hasLabelWithEmptyForAttribute,
@@ -33,10 +32,7 @@ describe('labels', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label' }] });
       const result = hasEmptyLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label></label>'));
       expect(result[0].items[0].name).toEqual('label');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -44,10 +40,7 @@ describe('labels', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ name: 'span' }] }] });
       const result = hasEmptyLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label></label>'));
       expect(result[0].items[0].name).toEqual('label');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });
@@ -80,13 +73,10 @@ describe('labels', function () {
       });
       const result = hasUniqueLabels(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(`${wrapInCode('<label>hello</label>')}`);
       expect(result[0].items[0].name).toEqual('label');
       expect(getTextContent(result[0].items[0])).toEqual('hello');
       expect(result[0].items[0].context.text).toEqual('hello');
       expect(getTextContent(result[0].items[0].context.duplicates[0])).toEqual('hello');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
 
@@ -166,15 +156,10 @@ describe('labels', function () {
       });
       const result = hasLabelWithValidElements(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label>hello anchor heading</label>'));
-      expect(result[0].details).toContain(wrapInCode('a'));
-      expect(result[0].details).toContain(wrapInCode('h1'));
       expect(result[0].items[0].name).toEqual('label');
       expect(getTextContent(result[0].items[0])).toEqual('hello anchor heading');
       expect(result[0].items[0].context.fields[0].name).toEqual('a');
       expect(result[0].items[0].context.fields[1].name).toEqual('h1');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
   });
@@ -224,11 +209,8 @@ describe('labels', function () {
       });
       const result = hasLabelWithForAttribute(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label id="label1">username</label>'));
       expect(result[0].items[0].name).toEqual('label');
       expect(getTextContent(result[0].items[0])).toEqual('username');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -236,11 +218,8 @@ describe('labels', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'label', children: [{ text: 'hello' }] }] });
       const result = hasLabelWithForAttribute(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label>hello</label>'));
       expect(result[0].items[0].name).toEqual('label');
       expect(getTextContent(result[0].items[0])).toEqual('hello');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });
@@ -260,11 +239,8 @@ describe('labels', function () {
       });
       const result = hasLabelWithEmptyForAttribute(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label for="">hello</label>'));
       expect(result[0].items[0].name).toEqual('label');
       expect(getTextContent(result[0].items[0])).toEqual('hello');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -274,12 +250,9 @@ describe('labels', function () {
       });
       const result = hasLabelWithEmptyForAttribute(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label for=" ">hello</label>'));
       expect(result[0].items[0].name).toEqual('label');
       expect(result[0].items[0].attributes.for).toEqual(' ');
       expect(getTextContent(result[0].items[0])).toEqual('hello');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });
@@ -302,12 +275,8 @@ describe('labels', function () {
       });
       const result = hasLabelWithUniqueForAttribute(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(`${wrapInCode('<label for="input">hello</label>')}`);
-      expect(result[0].details).toContain(`${wrapInCode('<label for="input">world</label>')}`);
       expect(result[0].items[0].name).toEqual('label');
       expect(result[0].items[0].context.duplicates).toHaveLength(1);
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 
@@ -339,12 +308,8 @@ describe('labels', function () {
       });
       const result = hasMatchingForLabel(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<label for="input1">hello</label>'));
-      expect(result[0].details).toContain(wrapInCode('<label for="input2">world</label>'));
       expect(result[0].items[0].attributes.for).toEqual('input1');
       expect(result[0].items[1].attributes.for).toEqual('input2');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 

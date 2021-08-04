@@ -3,7 +3,6 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { INPUT_SELECT_TEXT_FIELDS, INPUT_TYPES } from '../constants';
 import { closestParent, findDescendants } from '../tree-util';
-import { createLinkableElement } from './audit-util';
 import Fuse from 'fuse.js';
 import { groupBy } from '../array-util';
 
@@ -18,31 +17,14 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
 
   if (invalidFields.length) {
     const suggestions = new Fuse(INPUT_TYPES, { threshold: 0.3 });
-    const messages = invalidFields.map(field => {
+    invalidFields.forEach(field => {
       const matches = suggestions.search(field.attributes.type);
       const suggestion = matches[0] ? matches[0].item : null;
-      let message = createLinkableElement(field);
-
-      if (suggestion) {
-        message += `<br>Did you mean <code>${suggestion}</code>?`;
-      }
       field.context = { suggestion };
-
-      return message;
     });
     issues.push({
       auditType: 'input-type-valid',
-      details: `Found input field(s) with invalid types:<br>• ${messages.join('<br>• ')}`,
-      learnMore:
-        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types" target="_blank">MDN: The Input (Form Input) element</a>.',
       items: invalidFields,
-      references: [
-        {
-          title: 'MDN: The Input (Form Input) element',
-          url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types',
-        },
-      ],
-      title: 'Inputs types should be valid.',
       type: 'error',
     });
   }
@@ -67,19 +49,7 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult[] {
   if (invalidFields.length) {
     issues.push({
       auditType: 'input-label',
-      details: `Found input field(s) without a corresponding label:<br>• ${invalidFields
-        .map(field => createLinkableElement(field))
-        .join('<br>• ')}`,
-      learnMore:
-        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" target="_blank">MDN: Labels</a>.',
       items: invalidFields,
-      references: [
-        {
-          title: 'MDN: Labels',
-          url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label',
-        },
-      ],
-      title: 'Input fields should have labels.',
       type: 'error',
     });
   }
@@ -103,19 +73,7 @@ export function inputHasAriaLabel(tree: TreeNodeWithParent): AuditResult[] {
   if (invalidFields.length) {
     issues.push({
       auditType: 'input-label',
-      details: `Found input field(s) aria-labelledby but the corresponding label could not be found:<br>• ${invalidFields
-        .map(field => createLinkableElement(field))
-        .join('<br>• ')}`,
-      learnMore:
-        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" target="_blank">MDN: Labels</a>.',
       items: invalidFields,
-      references: [
-        {
-          title: 'MDN: Labels',
-          url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label',
-        },
-      ],
-      title: 'Input fields should have matching labels.',
       type: 'error',
     });
   }

@@ -8,12 +8,8 @@ interface AuditDetails {
 
 interface AuditResult<T = unkown> {
   auditType: string;
-  title: string;
   items: TreeNodeWithContext<T>[];
-  details?: string;
   type: 'error' | 'warning';
-  learnMore?: string;
-  references: LearnMoreReference[];
 }
 
 interface TreeNode {

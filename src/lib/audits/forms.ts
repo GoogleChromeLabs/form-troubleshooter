@@ -2,7 +2,6 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { findDescendants } from '../tree-util';
-import { createLinkableElement } from './audit-util';
 
 const FORM_FIELDS = ['button', 'input', 'select', 'textarea'];
 
@@ -16,19 +15,7 @@ export function hasEmptyForms(tree: TreeNodeWithParent): AuditResult[] {
   if (emptyForms.length) {
     issues.push({
       auditType: 'form-empty',
-      details:
-        'Found form(s) not containing any form fields:<br>• ' +
-        `${emptyForms.map(form => createLinkableElement(form)).join('<br>• ')}`,
-      learnMore:
-        'Learn more: <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" target="_blank">MDN: The HTML form element</a>.',
       items: emptyForms,
-      references: [
-        {
-          title: 'MDN: The HTML form element',
-          url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form',
-        },
-      ],
-      title: 'Forms should contain form fields.',
       type: 'error',
     });
   }

@@ -3,7 +3,6 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { getTreeNodeWithParents } from '../tree-util';
 import { hasIdOrName, hasInvalidAttributes, hasUniqueIds, hasUniqueNames } from './attributes';
-import { wrapInCode } from './audit-util';
 
 describe('attributes', function () {
   describe('hasInvalidAttributes', function () {
@@ -59,12 +58,8 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { for: 'something' } }] });
       const result = hasInvalidAttributes(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<form for="something">'));
-      expect(result[0].details).toContain(': <strong><code>for</code></strong>');
       expect(result[0].items[0].name).toEqual('form');
       expect(result[0].items[0].context.invalidAttributes).toEqual([{ attribute: 'for', suggestion: null }]);
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
 
@@ -204,16 +199,10 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { autcomplete: 'something' } }] });
       const result = hasInvalidAttributes(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<form ...>'));
-      expect(result[0].details).toContain(
-        ': <strong><code>autcomplete</code></strong> (did you mean <code>autocomplete</code>?)',
-      );
       expect(result[0].items[0].name).toEqual('form');
       expect(result[0].items[0].context.invalidAttributes).toEqual([
         { attribute: 'autcomplete', suggestion: 'autocomplete' },
       ]);
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
   });
@@ -241,10 +230,7 @@ describe('attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input' }] });
       const result = hasIdOrName(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input>'));
       expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('warning');
     });
   });
@@ -278,12 +264,8 @@ describe('attributes', function () {
       });
       const result = hasUniqueIds(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input id="input" name="input1">'));
-      expect(result[0].details).toContain(wrapInCode('<input id="input" name="input2">'));
       expect(result[0].items[0].attributes.name).toEqual('input1');
       expect(result[0].items[0].context.duplicates[0].attributes.name).toEqual('input2');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
   });
@@ -320,12 +302,8 @@ describe('attributes', function () {
       });
       const result = hasUniqueNames(tree);
       expect(result.length).toEqual(1);
-      expect(result[0].details).toContain(wrapInCode('<input id="input1" name="input">'));
-      expect(result[0].details).toContain(wrapInCode('<input id="input2" name="input">'));
       expect(result[0].items[0].attributes.id).toEqual('input1');
       expect(result[0].items[0].context.duplicates[0].attributes.id).toEqual('input2');
-      expect(result[0].learnMore).toContain(result[0].references[0].title);
-      expect(result[0].learnMore).toContain(result[0].references[0].url);
       expect(result[0].type).toEqual('error');
     });
 

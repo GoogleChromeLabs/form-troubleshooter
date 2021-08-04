@@ -251,15 +251,15 @@ function displayAuditIssue(item: AuditResult) {
   const details = document.getElementById(item.type)!;
   const section = document.createElement('section');
   const h2 = document.createElement('h2');
-  h2.innerHTML = item.title;
+  h2.innerHTML = 'item.title';
   section.appendChild(h2);
   const detailsDiv = document.createElement('div');
   detailsDiv.classList.add('details');
-  detailsDiv.innerHTML = item.details ?? '';
+  detailsDiv.innerHTML = 'item.details';
   section.appendChild(detailsDiv);
   const learnMoreDiv = document.createElement('div');
   learnMoreDiv.classList.add('learn-more');
-  learnMoreDiv.innerHTML = item.learnMore ?? '';
+  learnMoreDiv.innerHTML = 'item.learnMore';
   section.appendChild(learnMoreDiv);
   details.appendChild(section);
 }

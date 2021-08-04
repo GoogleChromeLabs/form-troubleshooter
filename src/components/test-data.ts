@@ -4,7 +4,6 @@ export const mockedAuditResult: AuditDetails = {
     {
       auditType: 'autocomplete-attribute',
       type: 'error',
-      title: 'Increase conversions by using correct autocomplete attributes',
       items: [
         {
           name: 'input',
@@ -13,12 +12,10 @@ export const mockedAuditResult: AuditDetails = {
         },
         { name: 'input', attributes: { name: 'password', type: 'password' }, children: [] },
       ],
-      references: [],
     },
     {
       auditType: 'autocomplete-valid',
       type: 'error',
-      title: 'Increase conversions by using correct autocomplete attributes',
       items: [
         {
           name: 'input',
@@ -28,12 +25,10 @@ export const mockedAuditResult: AuditDetails = {
         },
         { name: 'input', attributes: { name: 'password', type: 'password' }, children: [] },
       ],
-      references: [],
     },
     {
       auditType: 'input-type-valid',
       type: 'error',
-      title: 'Increase conversions by using correct autocomplete attributes',
       items: [
         {
           name: 'input',
@@ -42,12 +37,10 @@ export const mockedAuditResult: AuditDetails = {
           context: { suggestion: 'checkbox' },
         },
       ],
-      references: [],
     },
     {
       auditType: 'label-for',
       type: 'error',
-      title: 'Increase conversions by using correct autocomplete attributes',
       items: [
         {
           name: 'label',
@@ -55,12 +48,10 @@ export const mockedAuditResult: AuditDetails = {
           children: [],
         },
       ],
-      references: [],
     },
     {
       auditType: 'input-type-valid',
       type: 'error',
-      title: 'Increase conversions by using correct autocomplete attributes',
       items: [
         {
           name: 'input',
@@ -69,21 +60,15 @@ export const mockedAuditResult: AuditDetails = {
           context: { suggestion: 'checkbox' },
         },
       ],
-      references: [],
     },
     {
       auditType: 'input-label',
       type: 'error',
-      title:
-        'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
       items: [{ name: 'input', attributes: { name: 'username', type: 'text' }, children: [] }],
-      references: [],
     },
     {
       auditType: 'label-unique',
       type: 'error',
-      title:
-        'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
       items: [
         {
           name: 'label',
@@ -92,13 +77,10 @@ export const mockedAuditResult: AuditDetails = {
           context: { duplicates: [{ name: 'label', attributes: { for: 'input' }, children: [{ text: 'world' }] }] },
         },
       ],
-      references: [],
     },
     {
       auditType: 'unique-ids',
       type: 'error',
-      title:
-        'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
       items: [
         {
           name: 'input',
@@ -120,13 +102,10 @@ export const mockedAuditResult: AuditDetails = {
           },
         },
       ],
-      references: [],
     },
     {
       auditType: 'unique-names',
       type: 'error',
-      title:
-        'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
       items: [
         {
           name: 'input',
@@ -148,13 +127,10 @@ export const mockedAuditResult: AuditDetails = {
           },
         },
       ],
-      references: [],
     },
     {
       auditType: 'label-valid-elements',
       type: 'error',
-      title:
-        'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
       items: [
         {
           name: 'label',
@@ -171,14 +147,11 @@ export const mockedAuditResult: AuditDetails = {
           },
         },
       ],
-      references: [],
     },
     {
       auditType: 'autocomplete-off',
       type: 'warning',
-      title: 'Increase conversions by using correct autocomplete attributes',
       items: [{ name: 'input', attributes: { name: 'username', type: 'text' }, children: [] }],
-      references: [],
     },
   ],
 };

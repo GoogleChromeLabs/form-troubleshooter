@@ -1,7 +1,6 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { stringifyFormElementAsCode } from './audit-util';
 import { getTreeNodeWithParents } from '../tree-util';
 import { hasEmptyForms } from './forms';
 
@@ -10,10 +9,7 @@ describe('forms', function () {
     const tree = getTreeNodeWithParents({ children: [{ name: 'form' }] });
     const result = hasEmptyForms(tree);
     expect(result.length).toEqual(1);
-    expect(result[0].details).toContain(stringifyFormElementAsCode(tree.children[0]));
     expect(result[0].items[0].name).toEqual('form');
-    expect(result[0].learnMore).toContain(result[0].references[0].title);
-    expect(result[0].learnMore).toContain(result[0].references[0].url);
     expect(result[0].type).toEqual('error');
   });
 
@@ -26,11 +22,8 @@ describe('forms', function () {
     });
     const result = hasEmptyForms(tree);
     expect(result.length).toEqual(1);
-    expect(result[0].details).toContain(stringifyFormElementAsCode(tree.children[1]));
     expect(result[0].items[0].name).toEqual('form');
     expect(result[0].items[0].attributes.id).toEqual('form2');
-    expect(result[0].learnMore).toContain(result[0].references[0].title);
-    expect(result[0].learnMore).toContain(result[0].references[0].url);
     expect(result[0].type).toEqual('error');
   });
 
