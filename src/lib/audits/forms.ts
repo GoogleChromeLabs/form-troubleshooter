@@ -16,7 +16,7 @@ export function hasEmptyForms(tree: TreeNodeWithParent): AuditResult[] {
     issues.push({
       auditType: 'form-empty',
       items: emptyForms,
-      type: 'error',
+      type: 'warning',
     });
   }
 
