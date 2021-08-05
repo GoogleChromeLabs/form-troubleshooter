@@ -37,38 +37,37 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
  */
 export function inputHasLabel(tree: TreeNodeWithParent): AuditResult[] {
   const issues: AuditResult[] = [];
+  const labels = findDescendants(tree, ['label']);
+  const labelsById = groupBy(
+    labels.filter(node => node.attributes.id),
+    node => node.attributes.id,
+  );
   const labelsByFor = groupBy(
-    findDescendants(tree, ['label']).filter(node => node.attributes.for),
+    labels.filter(node => node.attributes.for),
     node => node.attributes.for,
   );
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
     .filter(node => !closestParent(node, 'label'))
-    .filter(node => !labelsByFor.has(node.attributes.id))
-    .filter(node => !node.attributes['aria-labelledby']);
-
-  if (invalidFields.length) {
-    issues.push({
-      auditType: 'input-label',
-      items: invalidFields,
-      type: 'error',
+    .filter(node => node.attributes.type !== 'button' && node.attributes.type !== 'submit')
+    .map(node => ({ ...node, context: { reasons: [] as Array<{ type: string; reference: string }> } }))
+    .filter(node => {
+      if (node.attributes.id) {
+        node.context.reasons.push({ type: 'id', reference: node.attributes.id });
+      }
+      return !labelsByFor.has(node.attributes.id);
+    })
+    .filter(node => {
+      if (node.attributes['aria-labelledby']) {
+        node.context.reasons.push({ type: 'aria-labelledby', reference: node.attributes['aria-labelledby'] });
+      }
+      return (
+        !node.attributes['aria-labelledby'] ||
+        !node.attributes['aria-labelledby']
+          .split(' ')
+          .filter(Boolean)
+          .some(id => labelsById.has(id))
+      );
     });
-  }
-
-  return issues;
-}
-
-/**
- * Input has a aria-labelledby label.
- */
-export function inputHasAriaLabel(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
-  const labelsById = groupBy(
-    findDescendants(tree, ['label']).filter(node => node.attributes.id),
-    node => node.attributes.id,
-  );
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
-    .filter(node => !closestParent(node, 'label'))
-    .filter(node => node.attributes['aria-labelledby'] && !labelsById.has(node.attributes['aria-labelledby']));
 
   if (invalidFields.length) {
     issues.push({
@@ -85,5 +84,5 @@ export function inputHasAriaLabel(tree: TreeNodeWithParent): AuditResult[] {
  * Run all input audits.
  */
 export function runInputAudits(tree: TreeNodeWithParent): AuditResult[] {
-  return [...hasValidInputType(tree), ...inputHasLabel(tree), ...inputHasAriaLabel(tree)];
+  return [...hasValidInputType(tree), ...inputHasLabel(tree)];
 }

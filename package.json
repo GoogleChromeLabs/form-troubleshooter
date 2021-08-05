@@ -14,7 +14,7 @@
     "build:preact": "preact build --no-sw --no-inline-css --no-prerender",
     "pretty": "prettier . --write --loglevel warn",
     "pretty:check": "prettier . --check",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "test:watch": "npm run test -- --watch"
   },
   "repository": {

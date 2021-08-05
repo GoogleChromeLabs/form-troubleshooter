@@ -100,7 +100,8 @@
                                             "class": "ace_text-input",
                                             "spellcheck": "false",
                                             "style": "opacity: 0; font-size: 1px;",
-                                            "wrap": "off"
+                                            "wrap": "off",
+                                            "aria-labelledby": "hello world"
                                           },
                                           "name": "textarea"
                                         },

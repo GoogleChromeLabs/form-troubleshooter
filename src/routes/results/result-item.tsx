@@ -202,7 +202,39 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <div>
         <p>Found input field(s) without a corresponding label:</p>
-        {defaultItemsPresenter(result.items)}
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
+            <Fragment>
+              <ul>
+                {(contextItem.context?.reasons ?? []).map((reason, index) => (
+                  <li key={index}>
+                    {reason.type === 'id' ? (
+                      <Fragment>
+                        There are no labels that reference <code>for="{reason.reference}"</code>
+                      </Fragment>
+                    ) : null}
+                    {reason.type === 'aria-labelledby' ? (
+                      <Fragment>
+                        None of the referenced labels exist:
+                        {reason.reference
+                          .split(' ')
+                          .filter(Boolean)
+                          .map((id, idIndex) => (
+                            <Fragment key={idIndex}>
+                              {idIndex ? ', ' : ''}
+                              <span>
+                                <code>{id}</code>
+                              </span>
+                            </Fragment>
+                          ))}
+                      </Fragment>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </Fragment>
+          )),
+        )}
       </div>
     ),
     references: [
@@ -240,7 +272,6 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                 <ul>
                   {contextItem.context!.invalidAttributes.map((context, index) => (
                     <li key={index}>
-                      {index ? ', ' : ''}
                       <code>{context.attribute}</code>
                       {context.suggestion ? (
                         <span>

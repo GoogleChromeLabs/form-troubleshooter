@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { getTreeNodeWithParents } from '../tree-util';
-import { hasValidInputType, inputHasAriaLabel, inputHasLabel } from './inputs';
+import { hasValidInputType, inputHasLabel } from './inputs';
 
 describe('inputs', function () {
   describe('hasValidInputType', function () {
@@ -40,7 +40,7 @@ describe('inputs', function () {
       expect(result).toEqual([]);
     });
 
-    it('should not return audit error when input label identified by for', function () {
+    it('should not return audit error when label has matching for attribute', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', attributes: { for: 'input' }, children: [{ text: 'text' }] },
@@ -51,7 +51,23 @@ describe('inputs', function () {
       expect(result).toEqual([]);
     });
 
-    it('should return audit error when input contains invalid type without suggestion', function () {
+    it('should not return audit error for button inputs', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { type: 'button', id: 'input' } }],
+      });
+      const result = inputHasLabel(tree);
+      expect(result).toEqual([]);
+    });
+
+    it('should not return audit error for submit inputs', function () {
+      const tree = getTreeNodeWithParents({
+        children: [{ name: 'input', attributes: { type: 'button', id: 'input' } }],
+      });
+      const result = inputHasLabel(tree);
+      expect(result).toEqual([]);
+    });
+
+    it('should return audit error when label does not have for attribute (input)', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', children: [{ text: 'text' }] },
@@ -61,11 +77,11 @@ describe('inputs', function () {
       const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
       expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].items[0].context).toBeFalsy();
+      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'id', reference: 'input' });
       expect(result[0].type).toEqual('error');
     });
 
-    it('should return audit error when select contains invalid type without suggestion', function () {
+    it('should return audit error when label does not have for attribute (select)', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', children: [{ text: 'text' }] },
@@ -75,10 +91,11 @@ describe('inputs', function () {
       const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
       expect(result[0].items[0].name).toEqual('select');
+      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'id', reference: 'select' });
       expect(result[0].type).toEqual('error');
     });
 
-    it('should return audit error when textarea contains invalid type without suggestion', function () {
+    it('should return audit error when label does not have for attribute (textarea)', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', children: [{ text: 'text' }] },
@@ -88,11 +105,11 @@ describe('inputs', function () {
       const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
       expect(result[0].items[0].name).toEqual('textarea');
-      expect(result[0].items[0].context).toBeFalsy();
+      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'id', reference: 'textarea' });
       expect(result[0].type).toEqual('error');
     });
 
-    it('should not return audit error when input has uses aria-labelledby', function () {
+    it('should not return audit error when input has aria-labelledby', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', attributes: { id: 'label' }, children: [{ text: 'text' }] },
@@ -102,41 +119,29 @@ describe('inputs', function () {
       const result = inputHasLabel(tree);
       expect(result).toEqual([]);
     });
-  });
 
-  describe('inputHasAriaLabel', function () {
-    it('should not return audit error when input does not uses aria-labelledby', function () {
+    it('should not return audit error when input has aria-labelledby with some matching ids', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', attributes: { id: 'label' }, children: [{ text: 'text' }] },
-          { name: 'input', attributes: { type: 'text' } },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label other' } },
         ],
       });
-      const result = inputHasAriaLabel(tree);
+      const result = inputHasLabel(tree);
       expect(result).toEqual([]);
     });
 
-    it('should not return audit error when input has uses aria-labelledby', function () {
+    it('should return audit error when input has aria-labelledby without matching id', function () {
       const tree = getTreeNodeWithParents({
         children: [
           { name: 'label', attributes: { id: 'label' }, children: [{ text: 'text' }] },
-          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label' } },
+          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'labels' } },
         ],
       });
-      const result = inputHasAriaLabel(tree);
-      expect(result).toEqual([]);
-    });
-
-    it('should return audit error when input has aria-labelledby but does not match label', function () {
-      const tree = getTreeNodeWithParents({
-        children: [
-          { name: 'label', attributes: { id: 'label1' }, children: [{ text: 'text' }] },
-          { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label2' } },
-        ],
-      });
-      const result = inputHasAriaLabel(tree);
+      const result = inputHasLabel(tree);
       expect(result.length).toEqual(1);
       expect(result[0].items[0].name).toEqual('input');
+      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'aria-labelledby', reference: 'labels' });
       expect(result[0].type).toEqual('error');
     });
   });
