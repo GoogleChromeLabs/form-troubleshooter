@@ -23,7 +23,13 @@ const Header: FunctionalComponent = () => {
     <header class={style.header}>
       <h1>Form troubleshooter</h1>
       <nav>
-        <IconButton aria-label="more" aria-controls="long-menu" aria-haspopup="true" onClick={handleClick}>
+        <IconButton
+          className={style.more}
+          aria-label="more"
+          aria-controls="long-menu"
+          aria-haspopup="true"
+          onClick={handleClick}
+        >
           <MoreVertIcon />
         </IconButton>
         <Menu id="long-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>

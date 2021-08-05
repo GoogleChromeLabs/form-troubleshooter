@@ -1,3 +1,5 @@
+import { getPath, pathToQuerySelector } from './tree-util';
+
 let tabId: number;
 
 // Send a message to the content script to audit the current page.
@@ -11,7 +13,7 @@ chrome?.tabs?.query({ active: true, currentWindow: true }, function (tabs) {
   });
 });
 
-export function showHighlight(selector: string, className: string, scrollIntoView: boolean): void {
+function showHighlight(selector: string, className: string, scrollIntoView: boolean): void {
   if (chrome?.tabs) {
     chrome.tabs.sendMessage(tabId, { message: 'highlight', selector, className, scroll: scrollIntoView });
   } else {
@@ -19,10 +21,26 @@ export function showHighlight(selector: string, className: string, scrollIntoVie
   }
 }
 
-export function clearHighlight(className: string): void {
+function clearHighlight(className: string): void {
   if (chrome?.tabs) {
     chrome.tabs.sendMessage(tabId, { message: 'clear highlight', className });
   } else {
     console.log('simulating clear highlight', className);
   }
+}
+
+export function handleHighlightClick(item: TreeNodeWithParent): void {
+  const path = getPath(item);
+  const selector = pathToQuerySelector(path);
+  showHighlight(selector, 'form-troubleshooter-highlight', true);
+}
+
+export function handleHighlightMouseEnter(item: TreeNodeWithParent): void {
+  const path = getPath(item);
+  const selector = pathToQuerySelector(path);
+  showHighlight(selector, 'form-troubleshooter-highlight-hover', false);
+}
+
+export function handleHighlightMouseLeave(item: TreeNodeWithParent): void {
+  clearHighlight('form-troubleshooter-highlight-hover');
 }

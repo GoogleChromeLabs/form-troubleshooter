@@ -1,8 +1,11 @@
 /* eslint-disable react/display-name */
 import { ComponentChildren, Fragment, FunctionalComponent, h } from 'preact';
 import { stringifyFormElement } from '../../lib/audits/audit-util';
-import { clearHighlight, showHighlight } from '../../lib/element-highlighter';
-import { getPath, pathToQuerySelector } from '../../lib/tree-util';
+import {
+  handleHighlightClick,
+  handleHighlightMouseEnter,
+  handleHighlightMouseLeave,
+} from '../../lib/element-highlighter';
 
 interface Props {
   item: AuditResult;
@@ -12,22 +15,6 @@ interface AuditTypePresenter {
   title: ComponentChildren | ((result: AuditResult) => ComponentChildren);
   render: (result: AuditResult) => ComponentChildren;
   references: LearnMoreReference[];
-}
-
-function handleIssueClick(item: TreeNodeWithParent) {
-  const path = getPath(item);
-  const selector = pathToQuerySelector(path);
-  showHighlight(selector, 'form-troubleshooter-highlight', true);
-}
-
-function handleMouseEnter(item: TreeNodeWithParent) {
-  const path = getPath(item);
-  const selector = pathToQuerySelector(path);
-  showHighlight(selector, 'form-troubleshooter-highlight-hover', false);
-}
-
-function handleMouseLeave(item: TreeNodeWithParent) {
-  clearHighlight('form-troubleshooter-highlight-hover');
 }
 
 type ItemRenderer<T> = (
@@ -42,9 +29,9 @@ function defaultItemRenderer<T>(
   return (
     <Fragment>
       <a
-        onClick={() => handleIssueClick(item)}
-        onMouseEnter={() => handleMouseEnter(item)}
-        onMouseLeave={() => handleMouseLeave(item)}
+        onClick={() => handleHighlightClick(item)}
+        onMouseEnter={() => handleHighlightMouseEnter(item)}
+        onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
         <code>{stringifyFormElement(item)}</code>
         {extraContext ? extraContext(item) : null}
@@ -70,9 +57,9 @@ function suggestionItemRenderer(item: TreeNodeWithContext<ContextSuggestion>): J
   return (
     <Fragment>
       <a
-        onClick={() => handleIssueClick(item)}
-        onMouseEnter={() => handleMouseEnter(item)}
-        onMouseLeave={() => handleMouseLeave(item)}
+        onClick={() => handleHighlightClick(item)}
+        onMouseEnter={() => handleHighlightMouseEnter(item)}
+        onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
         <code>{stringifyFormElement(item)}</code>
       </a>
@@ -89,9 +76,9 @@ function duplicateItemRenderer(item: TreeNodeWithContext<ContextDuplicates>): JS
   return (
     <Fragment>
       <a
-        onClick={() => handleIssueClick(item)}
-        onMouseEnter={() => handleMouseEnter(item)}
-        onMouseLeave={() => handleMouseLeave(item)}
+        onClick={() => handleHighlightClick(item)}
+        onMouseEnter={() => handleHighlightMouseEnter(item)}
+        onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
         <code>{stringifyFormElement(item)}</code>
       </a>

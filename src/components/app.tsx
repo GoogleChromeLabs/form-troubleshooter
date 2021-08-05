@@ -10,7 +10,7 @@ import { useEffect, useState } from 'preact/hooks';
 import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits';
-import { mockedAuditResult } from './test-data';
+import { sampleTree } from './test-data';
 
 const tabs = [
   {
@@ -39,6 +39,7 @@ const App: FunctionalComponent = () => {
     score: 0,
     results: [],
   }));
+  const [tree, setTree] = useState<TreeNodeWithParent>();
 
   useEffect(() => {
     // Send a message to the content script to audit the current page.
@@ -52,14 +53,17 @@ const App: FunctionalComponent = () => {
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.message === 'stored element data') {
           chrome.storage.local.get(['tree'], result => {
-            const tree = getTreeNodeWithParents(result.tree);
-            setAuditResuits(runAudits(tree));
+            const doc = getTreeNodeWithParents(result.tree);
+            setTree(doc);
+            setAuditResuits(runAudits(doc));
           });
         }
       });
     } else {
       // test data for development
-      setAuditResuits(mockedAuditResult);
+      const doc = getTreeNodeWithParents(sampleTree as unknown as TreeNode);
+      setTree(doc);
+      setAuditResuits(runAudits(doc));
     }
   }, []);
 
@@ -89,7 +93,7 @@ const App: FunctionalComponent = () => {
         <Redirect path="/index.html" to="/recommendations.html" />
         <Route path="/recommendations.html" component={Results} results={recommendations} />
         <Route path="/mistakes.html" component={Results} results={commonMistakes} />
-        <Route path="/details.html" component={Details} />
+        <Route path="/details.html" component={Details} documentTree={tree} />
         <NotFoundPage default />
       </Router>
     </div>

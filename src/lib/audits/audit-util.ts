@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { getPath, getTextContent } from '../tree-util';
 
 const FORM_ATTRIBUTES_TO_INCLUDE = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder', 'type'];
-const END_TAGS_TO_INCLUDE = new Set(['label']);
+const END_TAGS_TO_INCLUDE = new Set(['label', 'button']);
 
 /**
  * Escapes a string as HTML.
@@ -30,8 +30,8 @@ export function stringifyFormElement(node: TreeNodeWithParent): string {
 
   const hasHiddenAttributes = Object.entries(node.attributes).length > attributes.length;
   let str = `<${node.name}${attributesString ? ` ${attributesString}` : ''}${hasHiddenAttributes ? ' ...' : ''}>`;
-  const textContent = getTextContent(node);
-  if (textContent || END_TAGS_TO_INCLUDE.has(node.name!)) {
+  if (END_TAGS_TO_INCLUDE.has(node.name!)) {
+    const textContent = getTextContent(node);
     str += `${textContent}</${node.name}>`;
   }
 

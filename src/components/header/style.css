@@ -1,5 +1,4 @@
 .header {
-  position: fixed;
   left: 0;
   top: 0;
   width: 100%;
@@ -22,6 +21,12 @@
 }
 
 .header nav {
+  position: fixed;
   font-size: 100%;
-  margin-top: 5px;
+  top: 5px;
+  right: 5px;
+}
+
+.more {
+  background-color: #fff;
 }

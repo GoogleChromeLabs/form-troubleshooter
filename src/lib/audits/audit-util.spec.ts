@@ -31,13 +31,23 @@ describe('audit-util', function () {
     it('should render button with attributes', function () {
       const element = getTreeNodeWithParents({ name: 'button', attributes: { id: '__id', name: '__name' } });
       const result = stringifyFormElement(element);
-      expect(result).toEqual('<button id="__id" name="__name">');
+      expect(result).toEqual('<button id="__id" name="__name"></button>');
     });
 
-    it('should render button with additional attributes attributes', function () {
+    it('should render button with additional attributes', function () {
       const element = getTreeNodeWithParents({ name: 'button', attributes: { id: '__id', additional: 'true' } });
       const result = stringifyFormElement(element);
-      expect(result).toEqual('<button id="__id" ...>');
+      expect(result).toEqual('<button id="__id" ...></button>');
+    });
+
+    it('should render button with text content', function () {
+      const element = getTreeNodeWithParents({
+        name: 'button',
+        attributes: { id: '__id' },
+        children: [{ text: 'button' }],
+      });
+      const result = stringifyFormElement(element);
+      expect(result).toEqual('<button id="__id">button</button>');
     });
 
     it('should render button with attributes and text', function () {
