@@ -129,7 +129,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'autocomplete-off': {
-    title: 'Setting autocomplete="off" doesn\'t always work as expected',
+    title: (
+      <Fragment>
+        Setting <code>autocomplete="off"</code> doesn't always work as expected
+      </Fragment>
+    ),
     render: result => (
       <div>
         <p>
@@ -354,7 +358,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'missing-identifier': {
-    title: 'Form fields should have an <code>id</code> or a <code>name</code>.',
+    title: (
+      <Fragment>
+        Form fields should have an <code>id</code> or a <code>name</code>
+      </Fragment>
+    ),
     render: result => (
       <div>
         <p>
@@ -371,7 +379,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'unique-ids': {
-    title: 'Form fields must have unique <code>id</code> values.',
+    title: (
+      <Fragment>
+        Form fields must have unique <code>id</code> values
+      </Fragment>
+    ),
     render: result => (
       <div>
         <p>
@@ -388,7 +400,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'unique-names': {
-    title: 'Fields in the same form must have unique <code>name</code> values.',
+    title: (
+      <Fragment>
+        Fields in the same form must have unique <code>name</code> values
+      </Fragment>
+    ),
     render: result => (
       <div>
         <p>
