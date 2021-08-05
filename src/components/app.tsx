@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { getCurrentUrl, route, Route, Router } from 'preact-router';
+import { CustomHistory, getCurrentUrl, route, Route, Router } from 'preact-router';
 
 import Results from '../routes/results';
 import NotFoundPage from '../routes/notfound';
@@ -11,35 +11,43 @@ import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits';
 import { sampleTree } from './test-data';
+import { createHashHistory } from 'history';
 
 const tabs = [
   {
     name: 'Recommendations',
-    route: '/recommendations.html',
+    route: '/recommendations',
   },
   {
     name: 'Common mistakes',
-    route: '/mistakes.html',
+    route: '/mistakes',
   },
   {
     name: 'Form details',
-    route: '/details.html',
+    route: '/details',
   },
 ];
 
+// hack to get silence typescript type warnings for history
+const history = createHashHistory() as unknown as CustomHistory;
+
 const App: FunctionalComponent = () => {
   const currentUrl = getCurrentUrl();
-  const [tabIndex, setTabIndex] = useState(
-    Math.max(
-      tabs.findIndex(tab => tab.route === currentUrl),
-      0,
-    ),
-  );
+  const [tabIndex, setTabIndex] = useState(0);
   const [auditResults, setAuditResuits] = useState<AuditDetails>(() => ({
     score: 0,
     results: [],
   }));
   const [tree, setTree] = useState<TreeNodeWithParent>();
+
+  useEffect(() => {
+    setTabIndex(
+      Math.max(
+        tabs.findIndex(tab => tab.route === currentUrl),
+        0,
+      ),
+    );
+  }, [currentUrl]);
 
   useEffect(() => {
     // Send a message to the content script to audit the current page.
@@ -88,12 +96,12 @@ const App: FunctionalComponent = () => {
           ))}
         </Tabs>
       </div>
-      <Router>
-        <Redirect path="/" to="/recommendations.html" />
-        <Redirect path="/index.html" to="/recommendations.html" />
-        <Route path="/recommendations.html" component={Results} results={recommendations} />
-        <Route path="/mistakes.html" component={Results} results={commonMistakes} />
-        <Route path="/details.html" component={Details} documentTree={tree} />
+      <Router history={history}>
+        <Redirect path="/" to="/recommendations" />
+        <Redirect path="/index.html" to="/recommendations" />
+        <Route path="/recommendations" component={Results} results={recommendations} />
+        <Route path="/mistakes" component={Results} results={commonMistakes} />
+        <Route path="/details" component={Details} documentTree={tree} />
         <NotFoundPage default />
       </Router>
     </div>

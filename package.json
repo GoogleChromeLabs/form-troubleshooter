@@ -61,6 +61,7 @@
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "fuse.js": "^6.4.6",
+    "history": "^5.0.0",
     "preact": "^10.5.14",
     "preact-render-to-string": "^5.1.19",
     "preact-router": "^3.2.1"
