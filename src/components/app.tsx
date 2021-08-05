@@ -10,7 +10,6 @@ import { useEffect, useState } from 'preact/hooks';
 import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits';
-import { sampleTree } from './test-data';
 import { createHashHistory } from 'history';
 
 const tabs = [
@@ -68,10 +67,13 @@ const App: FunctionalComponent = () => {
         }
       });
     } else {
-      // test data for development
-      const doc = getTreeNodeWithParents(sampleTree as unknown as TreeNode);
-      setTree(doc);
-      setAuditResuits(runAudits(doc));
+      (async () => {
+        // test data for development
+        const testData = (await import('../test-data/shadow-dom.json')) as unknown as TreeNode;
+        const doc = getTreeNodeWithParents(testData);
+        setTree(doc);
+        setAuditResuits(runAudits(doc));
+      })();
     }
   }, []);
 
