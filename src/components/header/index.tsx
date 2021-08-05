@@ -19,8 +19,25 @@ const Header: FunctionalComponent = () => {
     setAnchorEl(null);
   };
 
-  const handleNewIssue = () => {
-    window.open('https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new/choose', '_blank');
+  const handleBugReport = () => {
+    window.open(
+      'https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new?labels=bug&template=bug_report.md',
+      '_blank',
+    );
+    setAnchorEl(null);
+  };
+
+  const handleFeatureRequest = () => {
+    window.open(
+      'https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new?labels=enhancement&template=feature_request.md',
+      '_blank',
+    );
+    setAnchorEl(null);
+  };
+
+  const handleFeedback = () => {
+    // TODO: add url for feedback link
+    window.open('', '_blank');
     setAnchorEl(null);
   };
 
@@ -31,14 +48,27 @@ const Header: FunctionalComponent = () => {
         <IconButton aria-label="more" aria-controls="long-menu" aria-haspopup="true" onClick={handleClick}>
           <MoreVertIcon />
         </IconButton>
-        <Menu id="long-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
+        <Menu
+          id="long-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={open}
+          onClose={handleClose}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
           <MenuItem onClick={handleClose} disabled={true}>
             Share results
           </MenuItem>
           <MenuItem onClick={handleClose} disabled={true}>
             Save as HTML
           </MenuItem>
-          <MenuItem onClick={handleNewIssue}>Provide feedback</MenuItem>
+          <MenuItem onClick={handleBugReport}>File a bug</MenuItem>
+          <MenuItem onClick={handleFeatureRequest}>Request a feature</MenuItem>
+          <MenuItem onClick={handleFeedback} disabled>
+            Provide feedback
+          </MenuItem>
         </Menu>
       </nav>
     </header>
