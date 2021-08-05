@@ -1,7 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { stringifyFormElement, stringifyFormElementAsCode } from './audit-util';
+import { stringifyFormElement } from './audit-util';
 import { getTreeNodeWithParents } from '../tree-util';
 
 describe('audit-util', function () {
@@ -58,30 +58,6 @@ describe('audit-util', function () {
       });
       const result = stringifyFormElement(element);
       expect(result).toEqual('<button id="__id" name="__name">hello</button>');
-    });
-  });
-
-  describe('stringifyFormElementAsCode', function () {
-    it('should render label with for attribute', function () {
-      const element = getTreeNodeWithParents({
-        name: 'label',
-        attributes: { for: 'id' },
-        children: [{ text: 'hello' }],
-      });
-      const result = stringifyFormElementAsCode(element);
-      expect(result).toEqual('<code>&lt;label for="id"&gt;hello&lt;/label&gt;</code>');
-    });
-
-    it('should render code with highlighted section in bold', function () {
-      const element = getTreeNodeWithParents({
-        name: 'label',
-        attributes: { for: 'id' },
-        children: [{ text: 'hello' }],
-      });
-      const result = stringifyFormElementAsCode(element, 'for="id"');
-      expect(result).toEqual(
-        '<code>&lt;label </code><strong><code>for="id"</code></strong><code>&gt;hello&lt;/label&gt;</code>',
-      );
     });
   });
 });

@@ -1,5 +1,6 @@
 /* eslint-disable react/display-name */
 import { ComponentChildren, Fragment, FunctionalComponent, h } from 'preact';
+import CodeWrap from '../../components/code-wrap';
 import { stringifyFormElement } from '../../lib/audits/audit-util';
 import {
   handleHighlightClick,
@@ -55,6 +56,8 @@ function defaultItemsPresenter<T>(
 }
 
 function suggestionItemRenderer(item: TreeNodeWithContext<ContextSuggestion>): JSX.Element {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const context: any = item.context;
   return (
     <Fragment>
       <a
@@ -62,7 +65,7 @@ function suggestionItemRenderer(item: TreeNodeWithContext<ContextSuggestion>): J
         onMouseEnter={() => handleHighlightMouseEnter(item)}
         onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
-        <code>{stringifyFormElement(item)}</code>
+        <CodeWrap text={stringifyFormElement(item)} emphasize={context?.token} />
       </a>
       {item.context?.suggestion ? (
         <div>
@@ -225,7 +228,27 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <div>
         <p>Found element(s) with invalid attributes</p>
-        {defaultItemsPresenter(result.items, suggestionItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer<{ invalidAttributes: Array<{ attribute?: string; suggestion?: string }> }>(
+            item,
+            contextItem => (
+              <Fragment>
+                {contextItem.context!.invalidAttributes.map((context, index) => (
+                  <div key={index}>
+                    {index ? ', ' : ''}
+                    <code>{context.attribute}</code>
+                    {context.suggestion ? (
+                      <span>
+                        {' '}
+                        - did you mean <code>{context.suggestion}</code>?
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
+              </Fragment>
+            ),
+          ),
+        )}
         <p>
           Consider using{' '}
           <a
@@ -387,7 +410,7 @@ const ResultItem: FunctionalComponent<Props> = props => {
   return (
     <div>
       <h3>{presenter.title}</h3>
-      {presenter.render(props.item)}
+      <div class={style.details}>{presenter.render(props.item)}</div>
 
       {presenter.references.length ? (
         <p class={style.learnMore}>

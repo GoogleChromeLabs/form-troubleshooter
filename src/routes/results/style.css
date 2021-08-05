@@ -4,6 +4,10 @@
   width: 100%;
 }
 
+.details ul > li {
+  margin-block-end: 0.5rem;
+}
+
 .learnMore::before {
   content: '⇒';
   padding: 0 5px 0 0;

@@ -216,6 +216,7 @@ export const sampleTree = {
                             class: 'name',
                             id: 'given-name',
                             name: 'additional-name',
+                            autocmplete: 'middle-name',
                           },
                           name: 'input',
                         },

@@ -75,7 +75,7 @@ export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult[] {
 export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
   const issues: AuditResult[] = [];
   const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
-  const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = [];
+  const invalidFields: TreeNodeWithContext<{ token: string | null; suggestion: string | null }>[] = [];
   const autocompleteSuggestions = new Fuse([...AUTOCOMPLETE_TOKENS, ...Object.keys(AUTOCOMPLETE_ALIASES)], {
     threshold: 0.3,
   });
@@ -100,7 +100,7 @@ export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
           }
         }
 
-        invalidFields.push({ ...field, context: { suggestion } });
+        invalidFields.push({ ...field, context: { token, suggestion } });
       }
     }
   }

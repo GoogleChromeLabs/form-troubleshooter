@@ -22,6 +22,24 @@ code {
   background-color: #eee;
   border-radius: 0.3rem;
   padding: 0.2rem 0.3rem;
+  white-space: pre;
+}
+
+code.first-of-many {
+  padding: 0.2rem 0 0.2rem 0.3rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+code.last-of-many {
+  padding: 0.2rem 0.3rem 0.2rem 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+code + code {
+  padding: 0.2rem 0;
+  border-radius: 0;
 }
 
 #preact_root {
