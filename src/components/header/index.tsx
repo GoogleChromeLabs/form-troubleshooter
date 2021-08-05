@@ -19,6 +19,11 @@ const Header: FunctionalComponent = () => {
     setAnchorEl(null);
   };
 
+  const handleNewIssue = () => {
+    window.open('https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new/choose', '_blank');
+    setAnchorEl(null);
+  };
+
   return (
     <header class={style.header}>
       <h1>Form troubleshooter</h1>
@@ -33,9 +38,13 @@ const Header: FunctionalComponent = () => {
           <MoreVertIcon />
         </IconButton>
         <Menu id="long-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
-          <MenuItem onClick={handleClose}>Share results</MenuItem>
-          <MenuItem onClick={handleClose}>Save as HTML</MenuItem>
-          <MenuItem onClick={handleClose}>File a bug</MenuItem>
+          <MenuItem onClick={handleClose} disabled={true}>
+            Share results
+          </MenuItem>
+          <MenuItem onClick={handleClose} disabled={true}>
+            Save as HTML
+          </MenuItem>
+          <MenuItem onClick={handleNewIssue}>Provide feedback</MenuItem>
         </Menu>
       </nav>
     </header>
