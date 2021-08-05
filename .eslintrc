@@ -33,14 +33,9 @@
     "browser": true,
     "node": true
   },
-  "extends": [
-    "preact",
-    "plugin:mocha/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["preact", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
   "globals": {},
-  "plugins": ["mocha"],
+  "plugins": [],
   "overrides": [
     {
       "files": ["*.spec.js"],
