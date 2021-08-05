@@ -3,3 +3,10 @@
   min-height: 100%;
   width: 100%;
 }
+
+.learnMore::before {
+  content: '⇒';
+  padding: 0 5px 0 0;
+  position: relative;
+  top: -1px;
+}

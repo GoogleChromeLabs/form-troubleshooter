@@ -6,6 +6,7 @@ import {
   handleHighlightMouseEnter,
   handleHighlightMouseLeave,
 } from '../../lib/element-highlighter';
+import style from './style.css';
 
 interface Props {
   item: AuditResult;
@@ -389,7 +390,7 @@ const ResultItem: FunctionalComponent<Props> = props => {
       {presenter.render(props.item)}
 
       {presenter.references.length ? (
-        <p>
+        <p class={style.learnMore}>
           Learn more:{' '}
           {presenter.references.map((ref, index) => (
             <span key={index}>
