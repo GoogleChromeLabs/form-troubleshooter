@@ -15,28 +15,38 @@ body {
   box-sizing: border-box;
 }
 
+a {
+  color: #3740ff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 code {
   font-size: 90%;
   font-family: 'Consolas', 'Roboto Mono', monospace;
   background-color: #eee;
-  border-radius: 0.3rem;
-  padding: 0.2rem 0.3rem;
+  border-radius: 0.2rem;
+  padding: 0.05rem 0.2rem;
 }
 
 code.first-of-many {
-  padding: 0.2rem 0 0.2rem 0.3rem;
+  padding: 0.05rem 0 0.05rem 0.2rem;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 code.last-of-many {
-  padding: 0.2rem 0.3rem 0.2rem 0;
+  padding: 0.05rem 0.2rem 0.05rem 0;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
 code + code {
-  padding: 0.2rem 0;
+  padding: 0.05rem 0;
   border-radius: 0;
 }
 

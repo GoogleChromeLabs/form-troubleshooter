@@ -84,7 +84,7 @@ const Details: FunctionalComponent<Props> = props => {
         <Fragment key={formIndex}>
           <h3>
             Form:{' '}
-            <code
+            <a
               onClick={() => {
                 handleHighlightClick(form);
               }}
@@ -95,8 +95,8 @@ const Details: FunctionalComponent<Props> = props => {
                 handleHighlightMouseLeave(form);
               }}
             >
-              {stringifyFormElement(form)}
-            </code>
+              <code>{stringifyFormElement(form)}</code>
+            </a>
           </h3>
           {formSections.map((section, sectionIndex) => {
             const items = section.getItems(form);

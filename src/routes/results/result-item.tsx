@@ -36,8 +36,8 @@ function defaultItemRenderer<T>(
         onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
         <code>{stringifyFormElement(item)}</code>
-        {extraContext ? extraContext(item) : null}
       </a>
+      {extraContext ? extraContext(item) : null}
     </Fragment>
   );
 }
@@ -233,18 +233,20 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
             item,
             contextItem => (
               <Fragment>
-                {contextItem.context!.invalidAttributes.map((context, index) => (
-                  <div key={index}>
-                    {index ? ', ' : ''}
-                    <code>{context.attribute}</code>
-                    {context.suggestion ? (
-                      <span>
-                        {' '}
-                        - did you mean <code>{context.suggestion}</code>?
-                      </span>
-                    ) : null}
-                  </div>
-                ))}
+                <ul>
+                  {contextItem.context!.invalidAttributes.map((context, index) => (
+                    <li key={index}>
+                      {index ? ', ' : ''}
+                      <code>{context.attribute}</code>
+                      {context.suggestion ? (
+                        <span>
+                          {' '}
+                          - did you mean <code>{context.suggestion}</code>?
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
               </Fragment>
             ),
           ),

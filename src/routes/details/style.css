@@ -9,6 +9,14 @@
   border-collapse: collapse;
 }
 
+.details table > tbody > tr {
+  cursor: pointer;
+}
+
+.details table > tbody > tr:hover {
+  background-color: #fafafa;
+}
+
 .details th,
 .details td {
   border: 1px solid #eee;
