@@ -10,7 +10,7 @@
 
 ## Installation
 
-When released, this extensiousfn will be available from the
+When released, this extension will be available from the
 [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
 
 For the moment, you'll need to download the code, build, and install the extension from local files. Note that you will
