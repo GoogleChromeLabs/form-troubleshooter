@@ -1,6 +1,8 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
+import { truncate } from './string-util';
+
 /* global chrome */
 
 const IGNORE_CHILDREN = ['head', 'script', 'style', 'svg'];
@@ -68,12 +70,12 @@ async function getTree(parent: Element | Document): Promise<TreeNode> {
     const node: TreeNode = {};
 
     if (item.element.nodeType === Node.TEXT_NODE && item.element.nodeValue?.trim()) {
-      node.text = item.element.nodeValue;
+      node.text = truncate(item.element.nodeValue, 400);
     } else if (item.element instanceof Element) {
       node.name = item.element.tagName.toLowerCase();
       const attributes = Array.from(item.element.attributes)
         .filter(a => !IGNORE_ATTRIBUTES.some(ignored => a.name === ignored))
-        .map(a => [a.name, a.value]);
+        .map(a => [a.name, truncate(a.value, 400)]);
       if (attributes.length > 0) {
         node.attributes = Object.fromEntries(attributes);
       }

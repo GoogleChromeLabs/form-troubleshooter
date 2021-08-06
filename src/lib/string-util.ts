@@ -9,3 +9,17 @@ export function pluralize(count: number, single: string, multiple?: string, zero
   }
   return plural;
 }
+
+export function truncate(input: string, length: number, indicator = '...'): string {
+  const truncateLength = length - indicator.length;
+
+  if (indicator.length >= length) {
+    return indicator;
+  }
+
+  if (input.length > length) {
+    return input.substring(0, truncateLength).trimEnd() + indicator;
+  }
+
+  return input.substring(0, length);
+}
