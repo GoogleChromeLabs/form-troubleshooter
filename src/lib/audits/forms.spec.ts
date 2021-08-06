@@ -10,6 +10,7 @@ describe('forms', function () {
     const result = hasEmptyForms(tree);
 
     expect(result!.items[0].name).toEqual('form');
+    expect(result!.score).toBe(0);
   });
 
   it('should return audit error when one or more forms is empty', function () {
@@ -23,6 +24,7 @@ describe('forms', function () {
 
     expect(result!.items[0].name).toEqual('form');
     expect(result!.items[0].attributes.id).toEqual('form2');
+    expect(result!.score).toBe(0.5);
   });
 
   it('should not return audit error when form is contains button', function () {

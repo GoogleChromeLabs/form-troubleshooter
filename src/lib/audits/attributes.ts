@@ -47,7 +47,7 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | un
     return {
       auditType: 'invalid-attributes',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -65,7 +65,7 @@ export function hasIdOrName(tree: TreeNodeWithParent): AuditResult | undefined {
     return {
       auditType: 'missing-identifier',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -90,7 +90,7 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined 
           },
         };
       }),
-      score: duplicates.length / eligibleFields.length,
+      score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
   }
 }
@@ -120,7 +120,7 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefine
           },
         };
       }),
-      score: duplicates.length / eligibleFields.length,
+      score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
   }
 }

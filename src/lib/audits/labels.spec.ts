@@ -31,6 +31,7 @@ describe('labels', function () {
       const result = hasEmptyLabel(tree);
 
       expect(result!.items[0].name).toEqual('label');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when label has no children with text', function () {
@@ -38,6 +39,7 @@ describe('labels', function () {
       const result = hasEmptyLabel(tree);
 
       expect(result!.items[0].name).toEqual('label');
+      expect(result!.score).toBe(0);
     });
   });
 
@@ -73,6 +75,7 @@ describe('labels', function () {
       expect(getTextContent(result!.items[0])).toEqual('hello');
       expect(result!.items[0].context.text).toEqual('hello');
       expect(getTextContent(result!.items[0].context.duplicates[0])).toEqual('hello');
+      expect(result!.score).toBe(0);
     });
 
     it('should not return audit error when with multiple unique labels', function () {
@@ -155,6 +158,7 @@ describe('labels', function () {
       expect(getTextContent(result!.items[0])).toEqual('hello anchor heading');
       expect(result!.items[0].context.fields[0].name).toEqual('a');
       expect(result!.items[0].context.fields[1].name).toEqual('h1');
+      expect(result!.score).toBe(0);
     });
   });
 
@@ -178,6 +182,7 @@ describe('labels', function () {
 
       expect(result!.items[0].name).toEqual('label');
       expect(result!.items[0].context.duplicates).toHaveLength(1);
+      expect(result!.score).toBe(0);
     });
 
     it('should not return audit error for mutliple labels with different for attribute', function () {

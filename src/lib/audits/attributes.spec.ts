@@ -202,6 +202,22 @@ describe('attributes', function () {
       expect(result!.items[0].context.invalidAttributes).toEqual([
         { attribute: 'autcomplete', suggestion: 'autocomplete' },
       ]);
+      expect(result!.score).toBe(0);
+    });
+
+    it('should return audit error when field contains invalid attribute (multiple forms)', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'form', attributes: { happy: 'something' } },
+          { name: 'form', attributes: {} },
+          { name: 'form', attributes: {} },
+          { name: 'form', attributes: {} },
+        ],
+      });
+      const result = hasInvalidAttributes(tree);
+
+      expect(result!.items[0].name).toEqual('form');
+      expect(result!.score).toBe(0.75);
     });
   });
 
@@ -229,6 +245,7 @@ describe('attributes', function () {
       const result = hasIdOrName(tree);
 
       expect(result!.items[0].name).toEqual('input');
+      expect(result!.score).toBe(0);
     });
   });
 
@@ -260,9 +277,24 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueIds(tree);
-
       expect(result!.items[0].attributes.name).toEqual('input1');
       expect(result!.items[0].context.duplicates[0].attributes.name).toEqual('input2');
+      expect(result!.score).toBe(0);
+    });
+
+    it('should return audit error when form has multiple fields with the same id (partial correct)', function () {
+      const tree = getTreeNodeWithParents({
+        name: 'form',
+        children: [
+          { name: 'input', attributes: { id: 'input', name: 'input1' } },
+          { name: 'input', attributes: { id: 'input', name: 'input2' } },
+          { name: 'input', attributes: { id: 'input3', name: 'input3' } },
+        ],
+      });
+      const result = hasUniqueIds(tree);
+      expect(result!.items[0].attributes.name).toEqual('input1');
+      expect(result!.items[0].context.duplicates[0].attributes.name).toEqual('input2');
+      expect(result!.score).toBeCloseTo(1 / 3);
     });
   });
 
@@ -297,9 +329,9 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueNames(tree);
-
       expect(result!.items[0].attributes.id).toEqual('input1');
       expect(result!.items[0].context.duplicates[0].attributes.id).toEqual('input2');
+      expect(result!.score).toBe(0);
     });
 
     it('should not return audit error when form has multiple fields with the same name in different forms', function () {

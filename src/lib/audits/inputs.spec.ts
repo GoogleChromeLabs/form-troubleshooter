@@ -89,6 +89,7 @@ describe('inputs', function () {
 
       expect(result!.items[0].name).toEqual('select');
       expect(result!.items[0].context.reasons).toContainEqual({ type: 'id', reference: 'select' });
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when label does not have for attribute (textarea)', function () {
@@ -102,6 +103,7 @@ describe('inputs', function () {
 
       expect(result!.items[0].name).toEqual('textarea');
       expect(result!.items[0].context.reasons).toContainEqual({ type: 'id', reference: 'textarea' });
+      expect(result!.score).toBe(0);
     });
 
     it('should not return audit error when input has aria-labelledby', function () {
@@ -137,6 +139,7 @@ describe('inputs', function () {
 
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].context.reasons).toContainEqual({ type: 'aria-labelledby', reference: 'labels' });
+      expect(result!.score).toBe(0);
     });
   });
 });

@@ -9,7 +9,7 @@ import { Tab, Tabs } from '@material-ui/core';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
-import { runAudits } from '../lib/audits';
+import { runAudits } from '../lib/audits/audits';
 import { createHashHistory } from 'history';
 import style from './app.css';
 
@@ -77,7 +77,7 @@ const App: FunctionalComponent = () => {
     } else {
       (async () => {
         // test data for development
-        const testData = (await import('../test-data/shadow-dom.json')) as unknown as TreeNode;
+        const testData = (await import('../test-data/score.json')) as unknown as TreeNode;
         const doc = getTreeNodeWithParents(testData);
         setTree(doc);
         const results = runAudits(doc);

@@ -17,7 +17,7 @@ export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult | undefined
     return {
       auditType: 'label-empty',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -51,7 +51,7 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
           },
         };
       }),
-      score: duplicates.length / eligibleFields.length,
+      score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
   }
 }
@@ -73,7 +73,7 @@ export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult
     return {
       auditType: 'label-valid-elements',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -98,7 +98,7 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
           },
         };
       }),
-      score: duplicates.length / eligibleFields.length,
+      score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
   }
 }
@@ -158,7 +158,7 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
     return {
       auditType: 'label-no-field',
       items: invalidFields,
-      score: invalidFields.length / labels.length,
+      score: 1 - invalidFields.length / labels.length,
     };
   }
 }

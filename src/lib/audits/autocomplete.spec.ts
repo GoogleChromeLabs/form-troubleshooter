@@ -28,8 +28,8 @@ describe('autocomplete', function () {
     it('should return audit error when input has name but no autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { name: 'username' } }] });
       const result = hasAutocompleteAttributes(tree);
-
       expect(result!.items[0].name).toEqual('input');
+      expect(result!.score).toBe(0);
     });
   });
 
@@ -49,17 +49,17 @@ describe('autocomplete', function () {
     it('should return audit error when input has empty autocomplete', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: '' } }] });
       const result = hasEmptyAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has empty autocomplete (whitespace)', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: ' ' } }] });
       const result = hasEmptyAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual(' ');
+      expect(result!.score).toBe(0);
     });
   });
 
@@ -85,9 +85,9 @@ describe('autocomplete', function () {
     it('should return audit error when input has autocomplete off', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: 'off' } }] });
       const result = hasAutocompleteOff(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('off');
+      expect(result!.score).toBe(0);
     });
   });
 
@@ -101,9 +101,9 @@ describe('autocomplete', function () {
     it('should return audit error when input has invalid autocomplete value', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { autocomplete: 'stuff' } }] });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('stuff');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has invalid autocomplete value (multiple tokens)', function () {
@@ -111,9 +111,9 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'stuff username' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('stuff username');
+      expect(result!.score).toBe(0);
     });
 
     it('should not return audit error when input has valid autocomplete value (multiple tokens)', function () {
@@ -161,10 +161,10 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'section-1 usrname' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('section-1 usrname');
       expect(result!.items[0].context.suggestion).toEqual('username');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has invalid autocomplete value (suggest alias for delivery)', function () {
@@ -172,10 +172,10 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'delivery address-line1' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('delivery address-line1');
       expect(result!.items[0].context.suggestion).toEqual('shipping');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has invalid autocomplete value (suggest alias for zip)', function () {
@@ -183,10 +183,10 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'zip' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('zip');
       expect(result!.items[0].context.suggestion).toEqual('postal-code');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has invalid autocomplete value (suggest alias for zipcode)', function () {
@@ -194,10 +194,10 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'zipcode' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('zipcode');
       expect(result!.items[0].context.suggestion).toEqual('postal-code');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has invalid autocomplete value (suggest alias for state)', function () {
@@ -205,10 +205,10 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'state' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('state');
       expect(result!.items[0].context.suggestion).toEqual('address-level1');
+      expect(result!.score).toBe(0);
     });
 
     it('should return audit error when input has invalid autocomplete value without suggestion', function () {
@@ -216,10 +216,10 @@ describe('autocomplete', function () {
         children: [{ name: 'input', attributes: { autocomplete: 'section-1 sjdjdasd' } }],
       });
       const result = hasValidAutocomplete(tree);
-
       expect(result!.items[0].name).toEqual('input');
       expect(result!.items[0].attributes.autocomplete).toEqual('section-1 sjdjdasd');
       expect(result!.items[0].context.suggestion).toBeNull();
+      expect(result!.score).toBe(0);
     });
   });
 });

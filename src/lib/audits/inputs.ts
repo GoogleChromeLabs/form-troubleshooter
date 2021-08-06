@@ -25,7 +25,7 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult | undef
     return {
       auditType: 'input-type-valid',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -72,7 +72,7 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult | undefined
     return {
       auditType: 'input-label',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }

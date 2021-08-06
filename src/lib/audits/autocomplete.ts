@@ -23,7 +23,7 @@ export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult
     return {
       auditType: 'autocomplete-attribute',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -43,7 +43,7 @@ export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult | un
     return {
       auditType: 'autocomplete-empty',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -63,7 +63,7 @@ export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult | unde
     return {
       auditType: 'autocomplete-off',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -109,7 +109,7 @@ export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult | un
     return {
       auditType: 'autocomplete-valid',
       items: invalidFields,
-      score: invalidFields.length / eligibleFields.length,
+      score: 1 - invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -118,5 +118,5 @@ export const autocompleteAudits: AuditMetadata[] = [
   { type: 'warning', weight: 1, audit: hasAutocompleteAttributes },
   { type: 'warning', weight: 1, audit: hasEmptyAutocomplete },
   { type: 'warning', weight: 1, audit: hasAutocompleteOff },
-  { type: 'error', weight: 2, audit: hasValidAutocomplete },
+  { type: 'error', weight: 5, audit: hasValidAutocomplete },
 ];

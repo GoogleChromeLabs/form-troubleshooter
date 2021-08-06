@@ -16,7 +16,7 @@ export function hasEmptyForms(tree: TreeNodeWithParent): AuditResult | undefined
     return {
       auditType: 'form-empty',
       items: emptyForms,
-      score: emptyForms.length / eligibleFields.length,
+      score: 1 - emptyForms.length / eligibleFields.length,
     };
   }
 }
