@@ -10,6 +10,7 @@ interface AuditDetails {
 interface AuditResult<T = unkown> {
   auditType: string;
   items: TreeNodeWithContext<T>[];
+  score: number;
 }
 
 interface TreeNode {

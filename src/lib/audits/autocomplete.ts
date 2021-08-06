@@ -10,10 +10,12 @@ import Fuse from 'fuse.js';
  * Empty autocomplete are handled in hasEmptyAutocomplete().
  */
 export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.type !== 'hidden' && node.attributes.type !== 'button' && node.attributes.type !== 'submit',
+  );
+  const invalidFields = eligibleFields.filter(
     node =>
       !node.attributes.autocomplete &&
-      node.attributes.type !== 'hidden' &&
       (AUTOCOMPLETE_TOKENS.includes(node.attributes.id) || AUTOCOMPLETE_TOKENS.includes(node.attributes.name)),
   );
 
@@ -21,6 +23,7 @@ export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult
     return {
       auditType: 'autocomplete-attribute',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -29,7 +32,10 @@ export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult
  * Form fields do not have autocomplete with empty value.
  */
 export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.type !== 'hidden' && node.attributes.type !== 'button' && node.attributes.type !== 'submit',
+  );
+  const invalidFields = eligibleFields.filter(
     node => node.attributes.autocomplete != null && node.attributes.autocomplete.trim() === '',
   );
 
@@ -37,6 +43,7 @@ export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult | un
     return {
       auditType: 'autocomplete-empty',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -45,7 +52,10 @@ export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult | un
  * Form fields do not have autocomplete with value 'off'.
  */
 export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.type !== 'hidden' && node.attributes.type !== 'button' && node.attributes.type !== 'submit',
+  );
+  const invalidFields = eligibleFields.filter(
     node => node.attributes.autocomplete && node.attributes.autocomplete.trim() === 'off',
   );
 
@@ -53,6 +63,7 @@ export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult | unde
     return {
       auditType: 'autocomplete-off',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -61,13 +72,15 @@ export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult | unde
  * Form autocomplete atttribute values are valid.
  */
 export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult | undefined {
-  const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.type !== 'hidden' && node.attributes.type !== 'button' && node.attributes.type !== 'submit',
+  );
   const invalidFields: TreeNodeWithContext<{ token: string | null; suggestion: string | null }>[] = [];
   const autocompleteSuggestions = new Fuse([...AUTOCOMPLETE_TOKENS, ...Object.keys(AUTOCOMPLETE_ALIASES)], {
     threshold: 0.3,
   });
 
-  for (const field of fields) {
+  for (const field of eligibleFields) {
     const attributes = field.attributes;
     // fields missing autocomplete, autocomplete="", and autocomplete="off" are handled elsewhere.
     if (!attributes.autocomplete || attributes.autocomplete === 'off') {
@@ -96,6 +109,7 @@ export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult | un
     return {
       auditType: 'autocomplete-valid',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }

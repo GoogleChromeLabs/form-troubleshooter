@@ -13,7 +13,7 @@ interface AuditRun {
 }
 
 const scoreReducer = ({ score, max }: { score: number; max: number }, result: AuditRun) => ({
-  score: score + (result.result !== undefined ? 0 : result.audit.weight),
+  score: score + (result.result !== undefined ? result.result.score * result.audit.weight : result.audit.weight),
   max: max + result.audit.weight,
 });
 
@@ -37,7 +37,6 @@ export function runAudits(tree: TreeNodeWithParent): AuditDetails {
   const errorsScore = errorResults.reduce(scoreReducer, { score: 0, max: 0 });
   const warningsScore = warningResults.reduce(scoreReducer, { score: 0, max: 0 });
   const totalScore = (errorsScore.score / errorsScore.max) * 0.9 + (warningsScore.score / warningsScore.max) * 0.1;
-  console.log(totalScore, errorsScore, warningsScore);
 
   return {
     score: totalScore,

@@ -9,12 +9,14 @@ const FORM_FIELDS = ['button', 'input', 'select', 'textarea'];
  * All form elements should contain at least one form field element.
  */
 export function hasEmptyForms(tree: TreeNodeWithParent): AuditResult | undefined {
-  const emptyForms = findDescendants(tree, ['form']).filter(form => findDescendants(form, FORM_FIELDS).length === 0);
+  const eligibleFields = findDescendants(tree, ['form']);
+  const emptyForms = eligibleFields.filter(form => findDescendants(form, FORM_FIELDS).length === 0);
 
   if (emptyForms.length) {
     return {
       auditType: 'form-empty',
       items: emptyForms,
+      score: emptyForms.length / eligibleFields.length,
     };
   }
 }

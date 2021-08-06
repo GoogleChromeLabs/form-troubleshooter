@@ -10,12 +10,14 @@ const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
  * All labels have textContent (i.e. are not empty).
  */
 export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, ['label']).filter(node => !getTextContent(node));
+  const eligibleFields = findDescendants(tree, ['label']);
+  const invalidFields = eligibleFields.filter(node => !getTextContent(node));
 
   if (invalidFields.length) {
     return {
       auditType: 'label-empty',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -24,8 +26,9 @@ export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult | undefined
  * In the same form, all label values are unique, i.e. no labels have duplicate textContent.
  */
 export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefined {
+  const eligibleFields = findDescendants(tree, ['label']);
   const labelsByForm = groupBy(
-    findDescendants(tree, ['label'])
+    eligibleFields
       .map(node => ({ ...node, context: { text: getTextContent(node) } }))
       .filter(field => field.context.text),
     node => closestParent(node, 'form'),
@@ -48,6 +51,7 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
           },
         };
       }),
+      score: duplicates.length / eligibleFields.length,
     };
   }
 }
@@ -57,7 +61,8 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
  * See https://developer.mozilla.org/docs/Web/HTML/Element/label#accessibility_concerns.
  */
 export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, ['label'])
+  const eligibleFields = findDescendants(tree, ['label']);
+  const invalidFields = eligibleFields
     .map(node => ({
       ...node,
       context: { fields: findDescendants(node, ['a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']) },
@@ -68,6 +73,7 @@ export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult
     return {
       auditType: 'label-valid-elements',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -76,10 +82,8 @@ export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult
  * All for attributes are unique.
  */
 export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditResult | undefined {
-  const labelsByFor = groupBy(
-    findDescendants(tree, ['label']).filter(node => node.attributes.for),
-    node => node.attributes.for,
-  );
+  const eligibleFields = findDescendants(tree, ['label']).filter(node => node.attributes.for);
+  const labelsByFor = groupBy(eligibleFields, node => node.attributes.for);
   const duplicates = Array.from(labelsByFor.values()).filter(fields => fields.length > 1);
 
   if (duplicates.length) {
@@ -94,6 +98,7 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
           },
         };
       }),
+      score: duplicates.length / eligibleFields.length,
     };
   }
 }
@@ -153,6 +158,7 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
     return {
       auditType: 'label-no-field',
       items: invalidFields,
+      score: invalidFields.length / labels.length,
     };
   }
 }

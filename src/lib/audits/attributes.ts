@@ -26,7 +26,8 @@ function getInvalidAttributes(element: TreeNode) {
  * Form fields have valid attributes as defined in ATTRIBUTES.
  */
 export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, FORM_FIELDS)
+  const eligibleFields = findDescendants(tree, FORM_FIELDS);
+  const invalidFields = eligibleFields
     .map(node => ({
       ...node,
       context: {
@@ -46,6 +47,7 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | un
     return {
       auditType: 'invalid-attributes',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -54,16 +56,16 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | un
  * Form fields have either an id or a name attribute.
  */
 export function hasIdOrName(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
-    .filter(
-      node => node.attributes.type !== 'button' && node.attributes.type !== 'submit' && node.attributes.type !== 'file',
-    )
-    .filter(node => !node.attributes.id && !node.attributes.name);
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.type !== 'button' && node.attributes.type !== 'submit' && node.attributes.type !== 'file',
+  );
+  const invalidFields = eligibleFields.filter(node => !node.attributes.id && !node.attributes.name);
 
   if (invalidFields.length) {
     return {
       auditType: 'missing-identifier',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -72,16 +74,14 @@ export function hasIdOrName(tree: TreeNodeWithParent): AuditResult | undefined {
  * Element id values are unique.
  */
 export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined {
-  const fieldsById = groupBy(
-    findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id),
-    node => node.attributes.id,
-  );
-  const duplicateFields = Array.from(fieldsById.values()).filter(values => values.length > 1);
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id);
+  const fieldsById = groupBy(eligibleFields, node => node.attributes.id);
+  const duplicates = Array.from(fieldsById.values()).filter(values => values.length > 1);
 
-  if (duplicateFields.length) {
+  if (duplicates.length) {
     return {
       auditType: 'unique-ids',
-      items: duplicateFields.map(fields => {
+      items: duplicates.map(fields => {
         const [first, ...others] = fields;
         return {
           ...first,
@@ -90,6 +90,7 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined 
           },
         };
       }),
+      score: duplicates.length / eligibleFields.length,
     };
   }
 }
@@ -98,12 +99,10 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined 
  * Element name values within the same form are unique.
  */
 export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefined {
-  const fieldsByForm = groupBy(
-    findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
-      .filter(node => node.attributes.name)
-      .filter(node => node.attributes.type !== 'radio' && node.attributes.type !== 'checkbox'),
-    node => closestParent(node, 'form'),
-  );
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
+    .filter(node => node.attributes.name)
+    .filter(node => node.attributes.type !== 'radio' && node.attributes.type !== 'checkbox');
+  const fieldsByForm = groupBy(eligibleFields, node => closestParent(node, 'form'));
   const duplicates = Array.from(fieldsByForm.values())
     .map(formFields => Array.from(groupBy(formFields, field => field.attributes.name).values()))
     .filter(formFields => formFields.filter(fields => fields.length > 1).length)
@@ -121,6 +120,7 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefine
           },
         };
       }),
+      score: duplicates.length / eligibleFields.length,
     };
   }
 }

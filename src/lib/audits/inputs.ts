@@ -10,7 +10,8 @@ import { groupBy } from '../array-util';
  * Input has a valid type value.
  */
 export function hasValidInputType(tree: TreeNodeWithParent): AuditResult | undefined {
-  const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = findDescendants(tree, ['input']).filter(
+  const eligibleFields = findDescendants(tree, ['input']);
+  const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = eligibleFields.filter(
     node => node.attributes.type && !INPUT_TYPES.includes(node.attributes.type),
   );
 
@@ -24,6 +25,7 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult | undef
     return {
       auditType: 'input-type-valid',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
@@ -41,9 +43,11 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult | undefined
     labels.filter(node => node.attributes.for),
     node => node.attributes.for,
   );
-  const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
+  const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    node => node.attributes.type !== 'hidden' && node.attributes.type !== 'button' && node.attributes.type !== 'submit',
+  );
+  const invalidFields = eligibleFields
     .filter(node => !closestParent(node, 'label'))
-    .filter(node => node.attributes.type !== 'button' && node.attributes.type !== 'submit')
     .map(node => ({ ...node, context: { reasons: [] as Array<{ type: string; reference: string }> } }))
     .filter(node => {
       if (node.attributes.id) {
@@ -68,6 +72,7 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult | undefined
     return {
       auditType: 'input-label',
       items: invalidFields,
+      score: invalidFields.length / eligibleFields.length,
     };
   }
 }
