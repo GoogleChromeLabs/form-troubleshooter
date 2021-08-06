@@ -52,3 +52,7 @@
 .details table + h3 {
   margin-block-start: 1.5em;
 }
+
+.miniScore {
+  margin-right: 0.3rem;
+}

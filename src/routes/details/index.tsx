@@ -9,6 +9,8 @@ import {
 } from '../../lib/element-highlighter';
 import style from './style.css';
 import { groupBy } from '../../lib/array-util';
+import Score from '../../components/summary/score';
+import { runAudits } from '../../lib/audits/audits';
 
 interface Props {
   documentTree: TreeNodeWithParent | undefined;
@@ -102,6 +104,9 @@ const Details: FunctionalComponent<Props> = props => {
           <Fragment key={formIndex}>
             {form ? (
               <h3>
+                {form.parent ? (
+                  <Score class={style.miniScore} radius={7} stroke={3} value={runAudits(form.parent).score} />
+                ) : null}
                 Form:{' '}
                 <a
                   onClick={() => {
