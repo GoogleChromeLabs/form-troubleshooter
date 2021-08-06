@@ -54,7 +54,7 @@ You can try out the extension on the test page [form-problems.glitch.me](https:/
   ways to function at scale and integrate with legacy and third-party systems. The same code may not be appropriate for
   smaller-scale sites.
 
-However, please [File a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for any errors reported
+However, please [File a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for anything reported
 that appear to be incorrect.
 
 ## How it works
