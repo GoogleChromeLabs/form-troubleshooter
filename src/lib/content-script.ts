@@ -86,6 +86,10 @@ async function getTree(parent: Element | Document): Promise<TreeNode> {
     }
     item.node.children.push(node);
 
+    if (!isElementVisible(item.element)) {
+      continue;
+    }
+
     // don't inspect the child nodes of ignored tags
     if (!IGNORE_CHILDREN.some(ignored => node.name === ignored)) {
       queue.push(
@@ -242,4 +246,11 @@ function injectStylesheet(target: Document | ShadowRoot, id: string, url: string
     elem.setAttribute('href', url);
     target.appendChild(elem);
   }
+}
+
+function isElementVisible(elem: ChildNode): boolean {
+  if (elem instanceof HTMLElement) {
+    return !!(elem.offsetParent || elem.offsetWidth || elem.offsetHeight || elem.getClientRects?.().length);
+  }
+  return true;
 }
