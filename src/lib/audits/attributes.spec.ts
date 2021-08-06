@@ -9,7 +9,7 @@ describe('attributes', function () {
     it('should not return audit error when fields have no attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', children: [{ name: 'button' }] }] });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when form contains valid attributes', function () {
@@ -33,34 +33,33 @@ describe('attributes', function () {
         ],
       });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error with aria attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { 'aria-something': 'yes' } }] });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error with data attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { 'data-something': 'yes' } }] });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error with event handler attributes', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { onclick: 'alert' } }] });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when field contains invalid attribute', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { for: 'something' } }] });
       const result = hasInvalidAttributes(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('form');
-      expect(result[0].items[0].context.invalidAttributes).toEqual([{ attribute: 'for', suggestion: null }]);
-      expect(result[0].type).toEqual('warning');
+
+      expect(result!.items[0].name).toEqual('form');
+      expect(result!.items[0].context.invalidAttributes).toEqual([{ attribute: 'for', suggestion: null }]);
     });
 
     it('should not return audit error when label contains valid attributes', function () {
@@ -76,7 +75,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when button contains valid attributes', function () {
@@ -101,7 +100,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when input contains valid attributes', function () {
@@ -148,7 +147,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when select contains valid attributes', function () {
@@ -170,7 +169,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when textarea contains valid attributes', function () {
@@ -192,18 +191,17 @@ describe('attributes', function () {
         ],
       });
       const result = hasInvalidAttributes(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when field contains invalid attribute (with suggestion)', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'form', attributes: { autcomplete: 'something' } }] });
       const result = hasInvalidAttributes(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('form');
-      expect(result[0].items[0].context.invalidAttributes).toEqual([
+
+      expect(result!.items[0].name).toEqual('form');
+      expect(result!.items[0].context.invalidAttributes).toEqual([
         { attribute: 'autcomplete', suggestion: 'autocomplete' },
       ]);
-      expect(result[0].type).toEqual('warning');
     });
   });
 
@@ -211,27 +209,26 @@ describe('attributes', function () {
     it('should not return audit error when field has id', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { id: 'input' } }] });
       const result = hasIdOrName(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when field has name', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { name: 'input' } }] });
       const result = hasIdOrName(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when button does not have id or name', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'button' }] });
       const result = hasIdOrName(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when field does not have id or name', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input' }] });
       const result = hasIdOrName(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].type).toEqual('warning');
+
+      expect(result!.items[0].name).toEqual('input');
     });
   });
 
@@ -239,7 +236,7 @@ describe('attributes', function () {
     it('should not return audit error when form has single field with unique id', function () {
       const tree = getTreeNodeWithParents({ name: 'form', children: [{ name: 'input', attributes: { id: 'input' } }] });
       const result = hasUniqueIds(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when form has multiple fields with unique id', function () {
@@ -251,7 +248,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueIds(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when form has multiple fields with the same id', function () {
@@ -263,10 +260,9 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueIds(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].attributes.name).toEqual('input1');
-      expect(result[0].items[0].context.duplicates[0].attributes.name).toEqual('input2');
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].attributes.name).toEqual('input1');
+      expect(result!.items[0].context.duplicates[0].attributes.name).toEqual('input2');
     });
   });
 
@@ -277,7 +273,7 @@ describe('attributes', function () {
         children: [{ name: 'input', attributes: { name: 'input' } }],
       });
       const result = hasUniqueNames(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when form has multiple fields with unique name', function () {
@@ -289,7 +285,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueNames(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when form has multiple fields with the same name', function () {
@@ -301,10 +297,9 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueNames(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].attributes.id).toEqual('input1');
-      expect(result[0].items[0].context.duplicates[0].attributes.id).toEqual('input2');
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].attributes.id).toEqual('input1');
+      expect(result!.items[0].context.duplicates[0].attributes.id).toEqual('input2');
     });
 
     it('should not return audit error when form has multiple fields with the same name in different forms', function () {
@@ -322,7 +317,7 @@ describe('attributes', function () {
         ],
       });
       const result = hasUniqueNames(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
   });
 });

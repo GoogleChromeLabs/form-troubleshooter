@@ -8,9 +8,8 @@ describe('forms', function () {
   it('should return audit error when form is empty', function () {
     const tree = getTreeNodeWithParents({ children: [{ name: 'form' }] });
     const result = hasEmptyForms(tree);
-    expect(result.length).toEqual(1);
-    expect(result[0].items[0].name).toEqual('form');
-    expect(result[0].type).toEqual('warning');
+
+    expect(result!.items[0].name).toEqual('form');
   });
 
   it('should return audit error when one or more forms is empty', function () {
@@ -21,33 +20,32 @@ describe('forms', function () {
       ],
     });
     const result = hasEmptyForms(tree);
-    expect(result.length).toEqual(1);
-    expect(result[0].items[0].name).toEqual('form');
-    expect(result[0].items[0].attributes.id).toEqual('form2');
-    expect(result[0].type).toEqual('warning');
+
+    expect(result!.items[0].name).toEqual('form');
+    expect(result!.items[0].attributes.id).toEqual('form2');
   });
 
   it('should not return audit error when form is contains button', function () {
     const tree = getTreeNodeWithParents({ children: [{ name: 'form', children: [{ name: 'button' }] }] });
     const result = hasEmptyForms(tree);
-    expect(result).toHaveLength(0);
+    expect(result).toBeUndefined();
   });
 
   it('should not return audit error when form is contains input', function () {
     const tree = getTreeNodeWithParents({ children: [{ name: 'form', children: [{ name: 'input' }] }] });
     const result = hasEmptyForms(tree);
-    expect(result).toHaveLength(0);
+    expect(result).toBeUndefined();
   });
 
   it('should not return audit error when form is contains select', function () {
     const tree = getTreeNodeWithParents({ children: [{ name: 'form', children: [{ name: 'select' }] }] });
     const result = hasEmptyForms(tree);
-    expect(result).toHaveLength(0);
+    expect(result).toBeUndefined();
   });
 
   it('should not return audit error when form is contains textarea', function () {
     const tree = getTreeNodeWithParents({ children: [{ name: 'form', children: [{ name: 'textarea' }] }] });
     const result = hasEmptyForms(tree);
-    expect(result).toHaveLength(0);
+    expect(result).toBeUndefined();
   });
 });

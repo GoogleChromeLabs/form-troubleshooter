@@ -113,7 +113,7 @@ function processFormData() {
 
     // Run the audits defined in audits.js and display results.
     const auditIssues = runAudits(tree);
-    displayAuditIssues(auditIssues.results);
+    displayAuditIssues([...auditIssues.errors, ...auditIssues.warnings]);
   });
 }
 
@@ -222,8 +222,8 @@ function createAttributeTable(elementName: string, elementArray: TreeNodeWithPar
 // In popup.html, display errors and warnings for any issues found by runAudits().
 // Each of the items represents a single issue with an element or attribute.
 function displayAuditIssues(items: AuditResult[]) {
-  const numErrors = items.filter(item => item.type === 'error').length;
-  const numWarnings = items.filter(item => item.type === 'warning').length;
+  const numErrors = items.length;
+  const numWarnings = items.length;
   for (const item of items) {
     displayAuditIssue(item);
   }
@@ -248,7 +248,7 @@ function displayAuditIssues(items: AuditResult[]) {
 // Add a warning or an error to popup.html.
 function displayAuditIssue(item: AuditResult) {
   // details will be details#error or details#warning
-  const details = document.getElementById(item.type)!;
+  const details = document.getElementById('error')!;
   const section = document.createElement('section');
   const h2 = document.createElement('h2');
   h2.innerHTML = 'item.title';

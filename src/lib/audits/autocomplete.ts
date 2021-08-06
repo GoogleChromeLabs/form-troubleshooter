@@ -9,8 +9,7 @@ import Fuse from 'fuse.js';
  * Form fields have autocomplete attributes when appropriate.
  * Empty autocomplete are handled in hasEmptyAutocomplete().
  */
-export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node =>
       !node.attributes.autocomplete &&
@@ -19,61 +18,49 @@ export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult
   );
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'autocomplete-attribute',
       items: invalidFields,
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Form fields do not have autocomplete with empty value.
  */
-export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasEmptyAutocomplete(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node => node.attributes.autocomplete != null && node.attributes.autocomplete.trim() === '',
   );
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'autocomplete-empty',
       items: invalidFields,
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Form fields do not have autocomplete with value 'off'.
  */
-export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasAutocompleteOff(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node => node.attributes.autocomplete && node.attributes.autocomplete.trim() === 'off',
   );
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'autocomplete-off',
       items: invalidFields,
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Form autocomplete atttribute values are valid.
  */
-export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult | undefined {
   const fields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS);
   const invalidFields: TreeNodeWithContext<{ token: string | null; suggestion: string | null }>[] = [];
   const autocompleteSuggestions = new Fuse([...AUTOCOMPLETE_TOKENS, ...Object.keys(AUTOCOMPLETE_ALIASES)], {
@@ -106,24 +93,16 @@ export function hasValidAutocomplete(tree: TreeNodeWithParent): AuditResult[] {
   }
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'autocomplete-valid',
       items: invalidFields,
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
-/**
- * Rull all attribute audits.
- */
-export function runAutocompleteAudits(tree: TreeNodeWithParent): AuditResult[] {
-  return [
-    ...hasAutocompleteAttributes(tree),
-    ...hasEmptyAutocomplete(tree),
-    ...hasAutocompleteOff(tree),
-    ...hasValidAutocomplete(tree),
-  ];
-}
+export const autocompleteAudits: AuditMetadata[] = [
+  { type: 'warning', weight: 1, audit: hasAutocompleteAttributes },
+  { type: 'warning', weight: 1, audit: hasEmptyAutocomplete },
+  { type: 'warning', weight: 1, audit: hasAutocompleteOff },
+  { type: 'error', weight: 2, audit: hasValidAutocomplete },
+];

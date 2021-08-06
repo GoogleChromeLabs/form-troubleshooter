@@ -25,8 +25,7 @@ function getInvalidAttributes(element: TreeNode) {
 /**
  * Form fields have valid attributes as defined in ATTRIBUTES.
  */
-export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, FORM_FIELDS)
     .map(node => ({
       ...node,
@@ -44,21 +43,17 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult[] {
     .filter(field => field.context.invalidAttributes.length);
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'invalid-attributes',
       items: invalidFields,
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Form fields have either an id or a name attribute.
  */
-export function hasIdOrName(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasIdOrName(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
     .filter(
       node => node.attributes.type !== 'button' && node.attributes.type !== 'submit' && node.attributes.type !== 'file',
@@ -66,21 +61,17 @@ export function hasIdOrName(tree: TreeNodeWithParent): AuditResult[] {
     .filter(node => !node.attributes.id && !node.attributes.name);
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'missing-identifier',
       items: invalidFields,
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Element id values are unique.
  */
-export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined {
   const fieldsById = groupBy(
     findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id),
     node => node.attributes.id,
@@ -88,7 +79,7 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
   const duplicateFields = Array.from(fieldsById.values()).filter(values => values.length > 1);
 
   if (duplicateFields.length) {
-    issues.push({
+    return {
       auditType: 'unique-ids',
       items: duplicateFields.map(fields => {
         const [first, ...others] = fields;
@@ -99,18 +90,14 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult[] {
           },
         };
       }),
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Element name values within the same form are unique.
  */
-export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefined {
   const fieldsByForm = groupBy(
     findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
       .filter(node => node.attributes.name)
@@ -123,7 +110,7 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
     .flat();
 
   if (duplicates.length) {
-    issues.push({
+    return {
       auditType: 'unique-names',
       items: duplicates.map(fields => {
         const [first, ...others] = fields;
@@ -134,16 +121,13 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult[] {
           },
         };
       }),
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
-/**
- * Rull all attribute audits.
- */
-export function runAttributeAudits(tree: TreeNodeWithParent): AuditResult[] {
-  return [...hasInvalidAttributes(tree), ...hasIdOrName(tree), ...hasUniqueIds(tree), ...hasUniqueNames(tree)];
-}
+export const attributeAudits: AuditMetadata[] = [
+  { type: 'warning', weight: 1, audit: hasInvalidAttributes },
+  { type: 'warning', weight: 1, audit: hasIdOrName },
+  { type: 'error', weight: 1, audit: hasUniqueIds },
+  { type: 'warning', weight: 1, audit: hasUniqueNames },
+];

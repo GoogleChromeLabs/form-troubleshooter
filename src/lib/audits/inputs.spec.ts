@@ -9,25 +9,23 @@ describe('inputs', function () {
     it('should not return audit error when input contains valid type', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'text' } }] });
       const result = hasValidInputType(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when input contains invalid type', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'check' } }] });
       const result = hasValidInputType(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].items[0].context.suggestion).toEqual('checkbox');
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].name).toEqual('input');
+      expect(result!.items[0].context.suggestion).toEqual('checkbox');
     });
 
     it('should return audit error when input contains invalid type without suggestion', function () {
       const tree = getTreeNodeWithParents({ children: [{ name: 'input', attributes: { type: 'radiobutton' } }] });
       const result = hasValidInputType(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].items[0].context.suggestion).toBeNull();
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].name).toEqual('input');
+      expect(result!.items[0].context.suggestion).toBeNull();
     });
   });
 
@@ -37,7 +35,7 @@ describe('inputs', function () {
         children: [{ name: 'label', children: [{ text: 'text' }, { name: 'input', attributes: { type: 'text' } }] }],
       });
       const result = inputHasLabel(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when label has matching for attribute', function () {
@@ -48,7 +46,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error for button inputs', function () {
@@ -56,7 +54,7 @@ describe('inputs', function () {
         children: [{ name: 'input', attributes: { type: 'button', id: 'input' } }],
       });
       const result = inputHasLabel(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error for submit inputs', function () {
@@ -64,7 +62,7 @@ describe('inputs', function () {
         children: [{ name: 'input', attributes: { type: 'button', id: 'input' } }],
       });
       const result = inputHasLabel(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when label does not have for attribute (input)', function () {
@@ -75,10 +73,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'id', reference: 'input' });
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].name).toEqual('input');
+      expect(result!.items[0].context.reasons).toContainEqual({ type: 'id', reference: 'input' });
     });
 
     it('should return audit error when label does not have for attribute (select)', function () {
@@ -89,10 +86,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('select');
-      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'id', reference: 'select' });
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].name).toEqual('select');
+      expect(result!.items[0].context.reasons).toContainEqual({ type: 'id', reference: 'select' });
     });
 
     it('should return audit error when label does not have for attribute (textarea)', function () {
@@ -103,10 +99,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('textarea');
-      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'id', reference: 'textarea' });
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].name).toEqual('textarea');
+      expect(result!.items[0].context.reasons).toContainEqual({ type: 'id', reference: 'textarea' });
     });
 
     it('should not return audit error when input has aria-labelledby', function () {
@@ -117,7 +112,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should not return audit error when input has aria-labelledby with some matching ids', function () {
@@ -128,7 +123,7 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
 
     it('should return audit error when input has aria-labelledby without matching id', function () {
@@ -139,10 +134,9 @@ describe('inputs', function () {
         ],
       });
       const result = inputHasLabel(tree);
-      expect(result.length).toEqual(1);
-      expect(result[0].items[0].name).toEqual('input');
-      expect(result[0].items[0].context.reasons).toContainEqual({ type: 'aria-labelledby', reference: 'labels' });
-      expect(result[0].type).toEqual('error');
+
+      expect(result!.items[0].name).toEqual('input');
+      expect(result!.items[0].context.reasons).toContainEqual({ type: 'aria-labelledby', reference: 'labels' });
     });
   });
 });

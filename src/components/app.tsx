@@ -35,7 +35,8 @@ const App: FunctionalComponent = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [auditResults, setAuditResuits] = useState<AuditDetails>(() => ({
     score: 0,
-    results: [],
+    errors: [],
+    warnings: [],
   }));
   const [tree, setTree] = useState<TreeNodeWithParent>();
 
@@ -77,8 +78,8 @@ const App: FunctionalComponent = () => {
     }
   }, []);
 
-  const recommendations = auditResults.results.filter(result => result.type === 'error');
-  const commonMistakes = auditResults.results.filter(result => result.type !== 'error');
+  const recommendations = auditResults.errors;
+  const commonMistakes = auditResults.warnings;
 
   return (
     <div id="preact_root">

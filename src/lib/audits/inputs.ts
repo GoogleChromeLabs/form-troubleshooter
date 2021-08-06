@@ -9,8 +9,7 @@ import { groupBy } from '../array-util';
 /**
  * Input has a valid type value.
  */
-export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasValidInputType(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = findDescendants(tree, ['input']).filter(
     node => node.attributes.type && !INPUT_TYPES.includes(node.attributes.type),
   );
@@ -22,21 +21,17 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult[] {
       const suggestion = matches[0] ? matches[0].item : null;
       field.context = { suggestion };
     });
-    issues.push({
+    return {
       auditType: 'input-type-valid',
       items: invalidFields,
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Input has a label.
  */
-export function inputHasLabel(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function inputHasLabel(tree: TreeNodeWithParent): AuditResult | undefined {
   const labels = findDescendants(tree, ['label']);
   const labelsById = groupBy(
     labels.filter(node => node.attributes.id),
@@ -70,19 +65,14 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult[] {
     });
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'input-label',
       items: invalidFields,
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
-/**
- * Run all input audits.
- */
-export function runInputAudits(tree: TreeNodeWithParent): AuditResult[] {
-  return [...hasValidInputType(tree), ...inputHasLabel(tree)];
-}
+export const inputAudits: AuditMetadata[] = [
+  { type: 'error', weight: 5, audit: hasValidInputType },
+  { type: 'error', weight: 3, audit: inputHasLabel },
+];

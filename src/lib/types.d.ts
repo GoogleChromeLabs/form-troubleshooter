@@ -3,13 +3,13 @@ SPDX-License-Identifier: Apache-2.0 */
 
 interface AuditDetails {
   score: number;
-  results: AuditResult[];
+  errors: AuditResult[];
+  warnings: AuditResult[];
 }
 
 interface AuditResult<T = unkown> {
   auditType: string;
   items: TreeNodeWithContext<T>[];
-  type: 'error' | 'warning';
 }
 
 interface TreeNode {
@@ -41,4 +41,10 @@ interface ContextSuggestion {
 
 interface ContextDuplicates {
   duplicates?: TreeNodeWithParent[];
+}
+
+interface AuditMetadata {
+  type: 'error' | 'warning';
+  weight: number;
+  audit: (tree: TreeNodeWithParent) => AuditResult | undefined;
 }

@@ -9,26 +9,21 @@ const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
 /**
  * All labels have textContent (i.e. are not empty).
  */
-export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasEmptyLabel(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, ['label']).filter(node => !getTextContent(node));
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'label-empty',
       items: invalidFields,
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * In the same form, all label values are unique, i.e. no labels have duplicate textContent.
  */
-export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefined {
   const labelsByForm = groupBy(
     findDescendants(tree, ['label'])
       .map(node => ({ ...node, context: { text: getTextContent(node) } }))
@@ -41,7 +36,7 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult[] {
     .flat();
 
   if (duplicates.length) {
-    issues.push({
+    return {
       auditType: 'label-unique',
       items: duplicates.map(fields => {
         const [first, ...others] = fields;
@@ -53,19 +48,15 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult[] {
           },
         };
       }),
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Labels do not contain interactive elements or headings.
  * See https://developer.mozilla.org/docs/Web/HTML/Element/label#accessibility_concerns.
  */
-export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult | undefined {
   const invalidFields = findDescendants(tree, ['label'])
     .map(node => ({
       ...node,
@@ -74,21 +65,17 @@ export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult
     .filter(field => field.context.fields.length);
 
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'label-valid-elements',
       items: invalidFields,
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * All for attributes are unique.
  */
-export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditResult | undefined {
   const labelsByFor = groupBy(
     findDescendants(tree, ['label']).filter(node => node.attributes.for),
     node => node.attributes.for,
@@ -96,7 +83,7 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
   const duplicates = Array.from(labelsByFor.values()).filter(fields => fields.length > 1);
 
   if (duplicates.length) {
-    issues.push({
+    return {
       auditType: 'label-unique',
       items: duplicates.map(fields => {
         const [first, ...others] = fields;
@@ -107,18 +94,14 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
           },
         };
       }),
-      type: 'error',
-    });
+    };
   }
-
-  return issues;
 }
 
 /**
  * Label has associated input
  */
-export function hasInput(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
+export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
   const inputs = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     input => input.attributes.type !== 'button' && input.attributes.type !== 'submit',
   );
@@ -166,25 +149,17 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult[] {
       return emptyFor || invalidFor || invalidAria || invalidChild;
     });
   if (invalidFields.length) {
-    issues.push({
+    return {
       auditType: 'label-no-field',
       items: invalidFields,
-      type: 'warning',
-    });
+    };
   }
-
-  return issues;
 }
 
-/**
- * Rull all attribute audits.
- */
-export function runLabelAudits(tree: TreeNodeWithParent): AuditResult[] {
-  return [
-    ...hasEmptyLabel(tree),
-    ...hasUniqueLabels(tree),
-    ...hasLabelWithValidElements(tree),
-    ...hasLabelWithUniqueForAttribute(tree),
-    ...hasInput(tree),
-  ];
-}
+export const labelAudits: AuditMetadata[] = [
+  { type: 'warning', weight: 1, audit: hasEmptyLabel },
+  { type: 'warning', weight: 1, audit: hasUniqueLabels },
+  { type: 'warning', weight: 1, audit: hasLabelWithValidElements },
+  { type: 'warning', weight: 1, audit: hasLabelWithUniqueForAttribute },
+  { type: 'warning', weight: 4, audit: hasInput },
+];
