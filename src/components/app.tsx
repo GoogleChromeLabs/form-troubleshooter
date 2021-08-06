@@ -11,6 +11,7 @@ import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits';
 import { createHashHistory } from 'history';
+import style from './app.css';
 
 const tabs = [
   {
@@ -85,9 +86,9 @@ const App: FunctionalComponent = () => {
     <div id="preact_root">
       <Header />
       <AuditSummary score={auditResults.score} recommendations={recommendations} commonMistakes={commonMistakes} />
-      <div class="tabWrapper">
+      <div class={style.tabWrapper}>
         <Tabs
-          className="tabs"
+          className={style.tabs}
           value={tabIndex}
           onChange={(event, newValue) => {
             setTabIndex(newValue);
@@ -99,14 +100,16 @@ const App: FunctionalComponent = () => {
           ))}
         </Tabs>
       </div>
-      <Router history={history}>
-        <Redirect path="/" to="/recommendations" />
-        <Redirect path="/index.html" to="/recommendations" />
-        <Route path="/recommendations" component={Results} results={recommendations} />
-        <Route path="/mistakes" component={Results} results={commonMistakes} />
-        <Route path="/details" component={Details} documentTree={tree} />
-        <NotFoundPage default />
-      </Router>
+      <div class={style.content}>
+        <Router history={history}>
+          <Redirect path="/" to="/recommendations" />
+          <Redirect path="/index.html" to="/recommendations" />
+          <Route path="/recommendations" component={Results} results={recommendations} />
+          <Route path="/mistakes" component={Results} results={commonMistakes} />
+          <Route path="/details" component={Details} documentTree={tree} />
+          <NotFoundPage default />
+        </Router>
+      </div>
     </div>
   );
 };

@@ -54,16 +54,3 @@ code + code {
   min-width: 770px;
   min-height: 400px;
 }
-
-.tabWrapper {
-  border-bottom: 1px solid #ccc;
-}
-
-.tabs {
-  margin: 10px 10px -2px;
-}
-
-.tabs button {
-  text-transform: none;
-  font-weight: normal;
-}

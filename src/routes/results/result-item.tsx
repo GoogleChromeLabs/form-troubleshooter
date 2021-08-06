@@ -98,13 +98,13 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'autocomplete-attribute': {
     title: 'Increase conversions by including autocomplete attributes',
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found form field(s) with no <code>autocomplete</code> attribute, even though an appropriate value is
           available:
         </p>
         {defaultItemsPresenter(result.items)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -116,10 +116,10 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'autocomplete-empty': {
     title: 'Increase conversions by using correct autocomplete attributes',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found form field(s) with empty autocomplete values:</p>
         {defaultItemsPresenter(result.items)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -135,7 +135,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       </Fragment>
     ),
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found form field(s) with <code>autocomplete="off"</code>
         </p>
@@ -151,7 +151,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           and has legitimate use cases, it can be problematic for users (forcing them to reenter data) and may not work
           as expected (such as with autofill behaviour in name, address and payment forms).
         </p>
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -167,12 +167,12 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'autocomplete-valid': {
     title: 'Increase conversions by using correct autocomplete attributes',
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found form field(s) with invalid <code>autocomplete</code> values:
         </p>
         {defaultItemsPresenter(result.items, suggestionItemRenderer)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -184,10 +184,10 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'form-empty': {
     title: 'Forms should contain form fields',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found form(s) not containing any form fields:</p>
         {defaultItemsPresenter(result.items)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -200,7 +200,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title:
       'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found input field(s) without a corresponding label:</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
@@ -235,7 +235,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
             </Fragment>
           )),
         )}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -247,10 +247,10 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'input-type-valid': {
     title: 'Unrecognized input types can lead to unexpected and incosistent user experiences',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found input field(s) with invalid types:</p>
         {defaultItemsPresenter(result.items, suggestionItemRenderer)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -262,7 +262,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'invalid-attributes': {
     title: 'Input and control elements with unrecognized attributes may not be achieving the desired outcome',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found element(s) with invalid attributes</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ invalidAttributes: Array<{ attribute?: string; suggestion?: string }> }>(
@@ -296,7 +296,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           </a>{' '}
           instead of non-standard attributes.
         </p>
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -312,10 +312,10 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'label-empty': {
     title: 'Labels must have text content',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found empty label(s):</p>
         {defaultItemsPresenter(result.items)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -328,7 +328,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title:
       'Labels should be associated with input fields to help users complete your form with tools like screen readers',
     render: result => (
-      <div>
+      <Fragment>
         <p>Found label(s) that weren't associated with a form field:</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
@@ -357,7 +357,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
             </Fragment>
           )),
         )}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -371,12 +371,12 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title:
       'Form fields with multiple labels may make it difficult for tools like screen readers to correctly identify form fields',
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found labels with the same <code>for</code> attribute:
         </p>
         {defaultItemsPresenter(result.items, duplicateItemRenderer)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -388,7 +388,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   'label-valid-elements': {
     title: "Don't put headings or interactive elements in labels.",
     render: result => (
-      <div>
+      <Fragment>
         <p>Found label(s) containing a heading or interactive element:</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ fields: TreeNodeWithParent[] }>(item, contextItem => (
@@ -403,7 +403,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
             </Fragment>
           )),
         )}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -419,12 +419,12 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       </Fragment>
     ),
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:
         </p>
         {defaultItemsPresenter(result.items)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -440,12 +440,12 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       </Fragment>
     ),
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found form fields with duplicate <code>id</code> attributes:
         </p>
         {defaultItemsPresenter(result.items, duplicateItemRenderer)}
-      </div>
+      </Fragment>
     ),
     references: [
       {
@@ -461,12 +461,12 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       </Fragment>
     ),
     render: result => (
-      <div>
+      <Fragment>
         <p>
           Found fields in the same form with duplicate <code>name</code> attributes:
         </p>
         {defaultItemsPresenter(result.items, duplicateItemRenderer)}
-      </div>
+      </Fragment>
     ),
     references: [
       {

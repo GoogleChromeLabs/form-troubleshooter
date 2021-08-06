@@ -11,7 +11,7 @@ const Results: FunctionalComponent<Props> = props => {
   return (
     <div class={style.results}>
       {results.length ? (
-        <ul>
+        <ul class={style.audit}>
           {results.map((result, index) => (
             <li key={index}>
               <ResultItem item={result} />
