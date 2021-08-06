@@ -60,7 +60,9 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult[] {
 export function hasIdOrName(tree: TreeNodeWithParent): AuditResult[] {
   const issues: AuditResult[] = [];
   const invalidFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS)
-    .filter(node => node.attributes.type !== 'submit' && node.attributes.type !== 'file')
+    .filter(
+      node => node.attributes.type !== 'button' && node.attributes.type !== 'submit' && node.attributes.type !== 'file',
+    )
     .filter(node => !node.attributes.id && !node.attributes.name);
 
   if (invalidFields.length) {
