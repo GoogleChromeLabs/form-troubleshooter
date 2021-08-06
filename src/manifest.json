@@ -20,7 +20,7 @@
       "matches": ["*://*/*"]
     }
   ],
-  "permissions": ["activeTab", "downloads", "storage", "tabs"],
+  "permissions": ["activeTab", "downloads", "storage"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
