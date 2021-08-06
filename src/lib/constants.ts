@@ -170,6 +170,7 @@ export const ATTRIBUTES: { [key: string]: string[] } = {
   select: ['autocomplete', 'disabled', 'form', 'multiple', 'name', 'required', 'size'],
   textarea: [
     'autocomplete',
+    'autocorrect',
     'cols',
     'dirname',
     'disabled',

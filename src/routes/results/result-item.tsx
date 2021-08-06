@@ -324,25 +324,49 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       },
     ],
   },
-
-  'label-for': {
+  'label-no-field': {
     title:
       'Labels should be associated with input fields to help users complete your form with tools like screen readers',
     render: result => (
       <div>
-        <p>
-          Found label(s) with no form field descendant, and with no <code>for</code> attribute:
-        </p>
-        {defaultItemsPresenter(result.items)}
+        <p>Found label(s) that weren't associated with a form field:</p>
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
+            <Fragment>
+              <ul>
+                {(contextItem.context?.reasons ?? []).map((reason, index) => (
+                  <li key={index}>
+                    {reason.type === 'id' ? (
+                      <Fragment>
+                        There are no form fields which reference label <code>{reason.reference}</code>
+                      </Fragment>
+                    ) : null}
+                    {reason.type === 'for' ? (
+                      <Fragment>
+                        There are no form fields with <code>id="{reason.reference}"</code>
+                      </Fragment>
+                    ) : null}
+                    {reason.type === 'empty-for' ? (
+                      <Fragment>
+                        There <code>for</code> attribute should not be empty
+                      </Fragment>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </Fragment>
+          )),
+        )}
       </div>
     ),
     references: [
       {
-        title: 'The HTML for attribute',
-        url: 'https://developer.mozilla.org/docs/Web/HTML/Attributes/for#usage',
+        title: 'MDN: Labels',
+        url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label',
       },
     ],
   },
+
   'label-unique': {
     title:
       'Form fields with multiple labels may make it difficult for tools like screen readers to correctly identify form fields',

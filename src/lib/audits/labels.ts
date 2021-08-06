@@ -85,53 +85,6 @@ export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult
 }
 
 /**
- * All labels should have a for attribute.
- */
-export function hasLabelWithForAttribute(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
-  const fieldsByAria = groupBy(
-    findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes['aria-labelledby']),
-    node => node.attributes['aria-labelledby'],
-  );
-  const invalidFields = findDescendants(tree, ['label'])
-    .filter(node => node.attributes.for == null)
-    // Ignore labels that contain form fields: they don't need for attributes.
-    // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label#:~:text=nest
-    .filter(node => findDescendants(node, ['button', 'input', 'select', 'textarea']).length === 0)
-    .filter(node => !node.attributes.id || !fieldsByAria.has(node.attributes.id));
-
-  if (invalidFields.length) {
-    issues.push({
-      auditType: 'label-for',
-      items: invalidFields,
-      type: 'error',
-    });
-  }
-
-  return issues;
-}
-
-/**
- * No for attribute values are empty.
- */
-export function hasLabelWithEmptyForAttribute(tree: TreeNodeWithParent): AuditResult[] {
-  const issues: AuditResult[] = [];
-  const invalidFields = findDescendants(tree, ['label']).filter(
-    node => node.attributes.for != null && node.attributes.for.trim() === '',
-  );
-
-  if (invalidFields.length) {
-    issues.push({
-      auditType: 'label-for',
-      items: invalidFields,
-      type: 'error',
-    });
-  }
-
-  return issues;
-}
-
-/**
  * All for attributes are unique.
  */
 export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditResult[] {
@@ -162,23 +115,61 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
 }
 
 /**
- * All for attributes match the id of a form field.
+ * Label has associated input
  */
-export function hasMatchingForLabel(tree: TreeNodeWithParent): AuditResult[] {
+export function hasInput(tree: TreeNodeWithParent): AuditResult[] {
   const issues: AuditResult[] = [];
+  const inputs = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
+    input => input.attributes.type !== 'button' && input.attributes.type !== 'submit',
+  );
   const inputsById = groupBy(
-    findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id),
+    inputs.filter(node => node.attributes.id),
     node => node.attributes.id,
   );
-  const invalidFields = findDescendants(tree, ['label']).filter(
-    node => node.attributes.for && !inputsById.has(node.attributes.for),
+  const inputsByAria = groupBy(
+    inputs
+      .filter(node => node.attributes['aria-labelledby'])
+      .flatMap(node =>
+        node.attributes['aria-labelledby']
+          .split(' ')
+          .filter(Boolean)
+          .map(id => ({ ariaId: id, node })),
+      ),
+    item => item.ariaId,
+    item => item.node,
   );
+  const labels = findDescendants(tree, ['label']);
 
+  const invalidFields = labels
+    .map(node => ({ ...node, context: { reasons: [] as Array<{ type: string; reference: string }> } }))
+    .filter(node => {
+      const emptyFor = node.attributes.for != null && node.attributes.for.trim() === '';
+      const invalidFor = node.attributes.for && !inputsById.has(node.attributes.for);
+      const invalidAria = node.attributes.id && !inputsByAria.has(node.attributes.id);
+      const invalidChild =
+        !node.attributes.for &&
+        !node.attributes.id &&
+        findDescendants(node, INPUT_SELECT_TEXT_FIELDS).filter(
+          input => input.attributes.type !== 'button' && input.attributes.type !== 'submit',
+        ).length === 0;
+
+      if (emptyFor) {
+        node.context.reasons.push({ type: 'empty-for', reference: node.attributes.for });
+      }
+
+      if (invalidFor) {
+        node.context.reasons.push({ type: 'for', reference: node.attributes.for });
+      } else if (invalidAria) {
+        node.context.reasons.push({ type: 'id', reference: node.attributes.id });
+      }
+
+      return emptyFor || invalidFor || invalidAria || invalidChild;
+    });
   if (invalidFields.length) {
     issues.push({
-      auditType: 'label-for',
+      auditType: 'label-no-field',
       items: invalidFields,
-      type: 'error',
+      type: 'warning',
     });
   }
 
@@ -193,9 +184,7 @@ export function runLabelAudits(tree: TreeNodeWithParent): AuditResult[] {
     ...hasEmptyLabel(tree),
     ...hasUniqueLabels(tree),
     ...hasLabelWithValidElements(tree),
-    ...hasLabelWithForAttribute(tree),
-    ...hasLabelWithEmptyForAttribute(tree),
     ...hasLabelWithUniqueForAttribute(tree),
-    ...hasMatchingForLabel(tree),
+    ...hasInput(tree),
   ];
 }

@@ -1538,7 +1538,7 @@
                                                                   "children": [
                                                                     {
                                                                       "attributes": {
-                                                                        "aria-labelledby": "accountEmailLabel accountInfoHeading",
+                                                                        "aria-labelledby": "accountEmailLabels accountInfoHeadings",
                                                                         "autofocus": "",
                                                                         "id": "accountEmail",
                                                                         "name": "accountEmail",
@@ -1557,7 +1557,8 @@
                                                                         {
                                                                           "attributes": {
                                                                             "class": "",
-                                                                            "id": "accountEmailLabel"
+                                                                            "id": "accountEmailLabel",
+                                                                            "for": "accountEmail_input"
                                                                           },
                                                                           "children": [{ "text": "Email" }],
                                                                           "name": "label"
@@ -1579,7 +1580,7 @@
                                                                   "children": [
                                                                     {
                                                                       "attributes": {
-                                                                        "aria-labelledby": "accountPhoneLabel accountInfoHeading",
+                                                                        "aria-labelledby": "accountPhoneLabels accountInfoHeading",
                                                                         "id": "accountPhone",
                                                                         "name": "accountPhone",
                                                                         "pattern": "\\d{10,}",
@@ -1625,7 +1626,7 @@
                                                                   "children": [
                                                                     {
                                                                       "attributes": {
-                                                                        "aria-labelledby": "shipAddressLabel shipAddressHeading",
+                                                                        "aria-labelledby": "shipAddressLabels shipAddressHeading",
                                                                         "id": "shipAddress",
                                                                         "name": "shipAddress",
                                                                         "pattern": ".{5,}",
@@ -1643,7 +1644,7 @@
                                                                       "children": [
                                                                         {
                                                                           "attributes": {
-                                                                            "class": "",
+                                                                            "for": "",
                                                                             "id": "shipAddressLabel"
                                                                           },
                                                                           "children": [{ "text": "Address" }],
@@ -1683,10 +1684,7 @@
                                                                       },
                                                                       "children": [
                                                                         {
-                                                                          "attributes": {
-                                                                            "class": "",
-                                                                            "id": "shipCityLabel"
-                                                                          },
+                                                                          "attributes": {},
                                                                           "children": [{ "text": "City" }],
                                                                           "name": "label"
                                                                         },
