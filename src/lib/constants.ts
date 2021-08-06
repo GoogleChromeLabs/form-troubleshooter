@@ -72,6 +72,7 @@ export const AUTOCOMPLETE_TOKENS = [
 export const AUTOCOMPLETE_ALIASES: { [key: string]: string } = {
   'cc-cvv': 'cc-csc',
   'delivery': 'shipping',
+  'password': 'current-password',
   'state': 'address-level1',
   'zip-code': 'postal-code',
   'zip': 'postal-code',
