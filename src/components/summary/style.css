@@ -33,19 +33,30 @@
 
 .result dl {
   display: grid;
-  gap: 5px 10px;
   width: auto;
   margin: 0 0 8px;
+  grid-auto-flow: dense;
 }
 
-.result dl dt {
-  grid-column: 1;
-  justify-self: end;
+.result dl > dt,
+.result dl > dd {
+  padding: 3px 5px;
+  cursor: pointer;
 }
 
-.result dl dd {
+.result dl > dt:hover,
+.result dl > dd:hover {
+  text-decoration: underline;
+}
+
+.result dl > dt {
   grid-column: 2;
   justify-self: start;
+}
+
+.result dl > dd {
+  grid-column: 1;
+  justify-self: end;
   margin: 0;
 }
 

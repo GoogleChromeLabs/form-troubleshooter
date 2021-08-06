@@ -7,6 +7,7 @@ import {
   handleHighlightMouseEnter,
   handleHighlightMouseLeave,
 } from '../../lib/element-highlighter';
+import { pluralize } from '../../lib/string-util';
 import style from './style.css';
 
 interface Props {
@@ -100,8 +101,8 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>
-          Found form field(s) with no <code>autocomplete</code> attribute, even though an appropriate value is
-          available:
+          Found {pluralize(result.items.length, 'a form field', 'form fields')} with no <code>autocomplete</code>{' '}
+          attribute, even though an appropriate value is available:
         </p>
         {defaultItemsPresenter(result.items)}
       </Fragment>
@@ -117,7 +118,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title: 'Increase conversions by using correct autocomplete attributes',
     render: result => (
       <Fragment>
-        <p>Found form field(s) with empty autocomplete values:</p>
+        <p>Found {pluralize(result.items.length, 'a form field', 'form fields')} with empty autocomplete values:</p>
         {defaultItemsPresenter(result.items)}
       </Fragment>
     ),
@@ -137,7 +138,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>
-          Found form field(s) with <code>autocomplete="off"</code>
+          Found {pluralize(result.items.length, 'a form field', 'form fields')} with <code>autocomplete="off"</code>
         </p>
         {defaultItemsPresenter(result.items)}
         <p>
@@ -169,7 +170,8 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>
-          Found form field(s) with invalid <code>autocomplete</code> values:
+          Found {pluralize(result.items.length, 'a form field', 'form fields')} with invalid <code>autocomplete</code>{' '}
+          values:
         </p>
         {defaultItemsPresenter(result.items, suggestionItemRenderer)}
       </Fragment>
@@ -185,7 +187,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title: 'Forms should contain form fields',
     render: result => (
       <Fragment>
-        <p>Found form(s) not containing any form fields:</p>
+        <p>Found {pluralize(result.items.length, 'a form', 'forms')} without any form fields:</p>
         {defaultItemsPresenter(result.items)}
       </Fragment>
     ),
@@ -201,7 +203,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       'Help your users using alternate input methods complete this form by ensuring each field is correctly labeled',
     render: result => (
       <Fragment>
-        <p>Found input field(s) without a corresponding label:</p>
+        <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} without a corresponding label:</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
             <Fragment>
@@ -248,7 +250,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title: 'Unrecognized input types can lead to unexpected and incosistent user experiences',
     render: result => (
       <Fragment>
-        <p>Found input field(s) with invalid types:</p>
+        <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} with invalid types:</p>
         {defaultItemsPresenter(result.items, suggestionItemRenderer)}
       </Fragment>
     ),
@@ -263,7 +265,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title: 'Input and control elements with unrecognized attributes may not be achieving the desired outcome',
     render: result => (
       <Fragment>
-        <p>Found element(s) with invalid attributes</p>
+        <p>Found {pluralize(result.items.length, 'an element', 'elements')} with invalid attributes</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ invalidAttributes: Array<{ attribute?: string; suggestion?: string }> }>(
             item,
@@ -313,7 +315,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title: 'Labels must have text content',
     render: result => (
       <Fragment>
-        <p>Found empty label(s):</p>
+        <p>Found {pluralize(result.items.length, 'an empty label', 'empty labels')}:</p>
         {defaultItemsPresenter(result.items)}
       </Fragment>
     ),
@@ -329,7 +331,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       'Labels should be associated with input fields to help users complete your form with tools like screen readers',
     render: result => (
       <Fragment>
-        <p>Found label(s) that weren't associated with a form field:</p>
+        <p>Found {pluralize(result.items.length, 'a label', 'labels')} that weren't associated with a form field:</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
             <Fragment>
@@ -389,7 +391,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     title: "Don't put headings or interactive elements in labels.",
     render: result => (
       <Fragment>
-        <p>Found label(s) containing a heading or interactive element:</p>
+        <p>Found {pluralize(result.items.length, 'a label', 'labels')} containing a heading or interactive element:</p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ fields: TreeNodeWithParent[] }>(item, contextItem => (
             <Fragment>
@@ -421,7 +423,8 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>
-          Found form field(s) with no <code>id</code> attribute and no <code>name</code> attribute:
+          Found {pluralize(result.items.length, 'a form field', 'form fields')} with no <code>id</code> attribute and no{' '}
+          <code>name</code> attribute:
         </p>
         {defaultItemsPresenter(result.items)}
       </Fragment>

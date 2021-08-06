@@ -1,6 +1,8 @@
 import { FunctionalComponent, h } from 'preact';
 import style from './style.css';
 import Score from './score';
+import { pluralize } from '../../lib/string-util';
+import { route } from 'preact-router';
 
 interface Props {
   score: number;
@@ -16,10 +18,18 @@ const AuditSummary: FunctionalComponent<Props> = (props: Props) => {
       <Score class={style.score} radius={50} stroke={8} value={score} text={(score * 100).toFixed(0)} />
       <div class={style.result}>
         <dl>
-          <dt class={style.recommended}>{recommendations.length}</dt>
-          <dd class={style.recommended}>recommendations</dd>
-          <dt class={style.other}>{commonMistakes.length}</dt>
-          <dd class={style.other}>common mistakes</dd>
+          <dt class={style.recommended} onClick={() => route('/recommendations')}>
+            {pluralize(recommendations.length, 'recommendation')}
+          </dt>
+          <dd class={style.recommended} onClick={() => route('/recommendations')}>
+            {recommendations.length}
+          </dd>
+          <dt class={style.other} onClick={() => route('/mistakes')}>
+            common {pluralize(commonMistakes.length, 'mistake')}
+          </dt>
+          <dd class={style.other} onClick={() => route('/mistakes')}>
+            {commonMistakes.length}
+          </dd>
         </dl>
       </div>
     </div>

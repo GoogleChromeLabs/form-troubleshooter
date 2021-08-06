@@ -1,12 +1,12 @@
-import { FunctionalComponent, h } from 'preact';
-import { CustomHistory, getCurrentUrl, route, Route, Router } from 'preact-router';
+import { FunctionalComponent } from 'preact';
+import { CustomHistory, route, Route, Router } from 'preact-router';
 
 import Results from '../routes/results';
 import NotFoundPage from '../routes/notfound';
 import Header from './header';
 import AuditSummary from './summary';
 import { Tab, Tabs } from '@material-ui/core';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits';
@@ -28,11 +28,17 @@ const tabs = [
   },
 ];
 
-// hack to get silence typescript type warnings for history
-const history = createHashHistory() as unknown as CustomHistory;
-
 const App: FunctionalComponent = () => {
-  const currentUrl = getCurrentUrl();
+  const [currentUrl, setCurrentUrl] = useState('/');
+  const history = useMemo(() => {
+    const hist = createHashHistory();
+    setCurrentUrl(hist.location.pathname);
+
+    hist.listen(({ location }) => {
+      setCurrentUrl(location.pathname);
+    });
+    return hist;
+  }, []);
   const [tabIndex, setTabIndex] = useState(0);
   const [auditResults, setAuditResuits] = useState<AuditDetails>(() => ({
     score: 0,
@@ -85,10 +91,8 @@ const App: FunctionalComponent = () => {
   useEffect(() => {
     if (tree) {
       if (auditResults.errors.length === 0 && auditResults.warnings.length !== 0) {
-        setTabIndex(1);
         route('/mistakes', true);
       } else if (auditResults.errors.length === 0 && auditResults.warnings.length === 0) {
-        setTabIndex(2);
         route('/details', true);
       }
     }
@@ -116,7 +120,7 @@ const App: FunctionalComponent = () => {
         </Tabs>
       </div>
       <div class={style.content}>
-        <Router history={history}>
+        <Router history={history as unknown as CustomHistory}>
           <Redirect path="/" to="/recommendations" />
           <Redirect path="/index.html" to="/recommendations" />
           <Route path="/recommendations" component={Results} results={recommendations} />

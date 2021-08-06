@@ -129,7 +129,7 @@ const Details: FunctionalComponent<Props> = props => {
               return (
                 <Fragment key={sectionIndex}>
                   <h4>
-                    {section.name} ({items.length})
+                    {section.name} <span class="deemphasise">({items.length})</span>
                   </h4>
                   <Table
                     items={items}
