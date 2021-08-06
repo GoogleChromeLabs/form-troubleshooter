@@ -37,7 +37,24 @@ interface LearnMoreReference {
 }
 
 interface ContextSuggestion {
+  token?: string | null;
   suggestion?: string | null;
+}
+
+interface ContextReasons {
+  reasons: Array<{ type: string; reference: string }>;
+}
+
+interface ContextText {
+  text: string;
+}
+
+interface ContextFields {
+  fields: TreeNodeWithParent[];
+}
+
+interface ContextInvalidAttributes {
+  invalidAttributes: Array<{ attribute: string; suggestion: string | null }>;
 }
 
 interface ContextDuplicates {

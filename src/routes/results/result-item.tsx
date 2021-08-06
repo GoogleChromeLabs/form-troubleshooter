@@ -205,7 +205,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} without a corresponding label:</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
+          defaultItemRenderer<ContextReasons>(item, contextItem => (
             <Fragment>
               <ul>
                 {(contextItem.context?.reasons ?? []).map((reason, index) => (
@@ -267,26 +267,23 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an element', 'elements')} with invalid attributes</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<{ invalidAttributes: Array<{ attribute?: string; suggestion?: string }> }>(
-            item,
-            contextItem => (
-              <Fragment>
-                <ul>
-                  {contextItem.context!.invalidAttributes.map((context, index) => (
-                    <li key={index}>
-                      <code>{context.attribute}</code>
-                      {context.suggestion ? (
-                        <span>
-                          {' '}
-                          - did you mean <code>{context.suggestion}</code>?
-                        </span>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              </Fragment>
-            ),
-          ),
+          defaultItemRenderer<ContextInvalidAttributes>(item, contextItem => (
+            <Fragment>
+              <ul>
+                {contextItem.context!.invalidAttributes.map((context, index) => (
+                  <li key={index}>
+                    <code>{context.attribute}</code>
+                    {context.suggestion ? (
+                      <span>
+                        {' '}
+                        - did you mean <code>{context.suggestion}</code>?
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </Fragment>
+          )),
         )}
         <p>
           Consider using{' '}
@@ -333,7 +330,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'a label', 'labels')} that weren't associated with a form field:</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
+          defaultItemRenderer<ContextReasons>(item, contextItem => (
             <Fragment>
               <ul>
                 {(contextItem.context?.reasons ?? []).map((reason, index) => (
@@ -393,7 +390,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'a label', 'labels')} containing a heading or interactive element:</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<{ fields: TreeNodeWithParent[] }>(item, contextItem => (
+          defaultItemRenderer<ContextFields>(item, contextItem => (
             <Fragment>
               {' contains the following elements: '}
               {contextItem.context!.fields.map((field, index) => (

@@ -28,9 +28,10 @@ function getInvalidAttributes(element: TreeNode) {
 export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | undefined {
   const eligibleFields = findDescendants(tree, FORM_FIELDS);
   const invalidFields = eligibleFields
-    .map(node => ({
-      ...node,
-      context: {
+    .map(node => {
+      const contextNode: TreeNodeWithContext<ContextInvalidAttributes> = node;
+      // mutating node instead of returning a new one to keep object identity the same
+      contextNode.context = {
         invalidAttributes: getInvalidAttributes(node).map(attribute => {
           const suggestions = new Fuse(Array.from(new Set([...ATTRIBUTES.global, ...(ATTRIBUTES[node.name!] || [])])), {
             threshold: 0.2,
@@ -39,9 +40,10 @@ export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | un
           const suggestion = matches[0] ? matches[0].item : null;
           return { attribute, suggestion };
         }),
-      },
-    }))
-    .filter(field => field.context.invalidAttributes.length);
+      };
+      return contextNode;
+    })
+    .filter(field => field.context?.invalidAttributes.length);
 
   if (invalidFields.length) {
     return {
@@ -82,13 +84,12 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined 
     return {
       auditType: 'unique-ids',
       items: duplicates.map(fields => {
-        const [first, ...others] = fields;
-        return {
-          ...first,
-          context: {
-            duplicates: others,
-          },
+        const [first, ...others] = fields as TreeNodeWithContext<ContextDuplicates>[];
+        // mutating node instead of returning a new one to keep object identity the same
+        first.context = {
+          duplicates: others,
         };
+        return first;
       }),
       score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
@@ -112,13 +113,12 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefine
     return {
       auditType: 'unique-names',
       items: duplicates.map(fields => {
-        const [first, ...others] = fields;
-        return {
-          ...first,
-          context: {
-            duplicates: others,
-          },
+        const [first, ...others] = fields as TreeNodeWithContext<ContextDuplicates>[];
+        // mutating node instead of returning a new one to keep object identity the same
+        first.context = {
+          duplicates: others,
         };
+        return first;
       }),
       score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
