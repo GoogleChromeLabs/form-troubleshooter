@@ -11,6 +11,10 @@
   stroke-linecap: round;
 }
 
+.score circle {
+  transition: stroke 0.5s, stroke-dashoffset 0.5s;
+}
+
 .score text {
   font-size: 2rem;
 }
