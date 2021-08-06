@@ -204,6 +204,17 @@ describe('labels', function () {
       expect(result).toBeUndefined();
     });
 
+    it('should not return audit error for label with matching input (for) with id', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          { name: 'label', attributes: { id: 'label', for: 'input1' }, children: [{ text: 'hello' }] },
+          { name: 'input', attributes: { id: 'input1' } },
+        ],
+      });
+      const result = hasInput(tree);
+      expect(result).toBeUndefined();
+    });
+
     it('should not return audit error for label with matching input (child)', function () {
       const tree = getTreeNodeWithParents({
         children: [

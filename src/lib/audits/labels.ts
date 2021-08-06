@@ -128,7 +128,8 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
     .filter(node => {
       const emptyFor = node.attributes.for != null && node.attributes.for.trim() === '';
       const invalidFor = node.attributes.for && !inputsById.has(node.attributes.for);
-      const invalidAria = node.attributes.id && !inputsByAria.has(node.attributes.id);
+      const invalidAria =
+        !inputsById.has(node.attributes.for) && node.attributes.id && !inputsByAria.has(node.attributes.id);
       const invalidChild =
         !node.attributes.for &&
         !node.attributes.id &&
