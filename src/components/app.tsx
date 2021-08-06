@@ -74,10 +74,25 @@ const App: FunctionalComponent = () => {
         const testData = (await import('../test-data/shadow-dom.json')) as unknown as TreeNode;
         const doc = getTreeNodeWithParents(testData);
         setTree(doc);
-        setAuditResuits(runAudits(doc));
+        const results = runAudits(doc);
+        // results.errors = [];
+        // results.warnings = [];
+        setAuditResuits(results);
       })();
     }
   }, []);
+
+  useEffect(() => {
+    if (tree) {
+      if (auditResults.errors.length === 0 && auditResults.warnings.length !== 0) {
+        setTabIndex(1);
+        route('/mistakes', true);
+      } else if (auditResults.errors.length === 0 && auditResults.warnings.length === 0) {
+        setTabIndex(2);
+        route('/details', true);
+      }
+    }
+  }, [auditResults, tree]);
 
   const recommendations = auditResults.errors;
   const commonMistakes = auditResults.warnings;
