@@ -120,6 +120,15 @@ describe('tree-util', function () {
       const result = getTextContent(tree);
       expect(result).toEqual('a b1 b2 c');
     });
+
+    it('should get text content from without traversing child frames', function () {
+      const tree = getTreeNodeWithParents({
+        text: 'root',
+        children: [{ text: 'a' }, { type: '#document', children: [{ text: '1' }, { text: '2' }] }, { text: 'c' }],
+      });
+      const result = getTextContent(tree);
+      expect(result).toEqual('root a c');
+    });
   });
 
   describe('closestParent', function () {

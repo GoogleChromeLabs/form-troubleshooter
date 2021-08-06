@@ -52,6 +52,9 @@ export function getTextContent(parent: TreeNodeWithParent): string {
   let item;
 
   while ((item = queue.shift())) {
+    if (item.type === '#document') {
+      continue;
+    }
     if (item.text) {
       results.push(item.text);
     }
