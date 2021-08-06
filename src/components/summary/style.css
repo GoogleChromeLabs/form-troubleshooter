@@ -1,0 +1,66 @@
+.summary {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 10px 10px 10px 36px;
+}
+
+.score {
+  font-size: 2rem;
+  stroke: #ccc;
+  stroke-linecap: round;
+}
+
+.score circle {
+  transition: stroke 0.5s, stroke-dashoffset 0.5s;
+}
+
+.score text {
+  font-size: 2rem;
+}
+
+.good circle {
+  stroke: #137333;
+}
+
+.fair circle {
+  stroke: #ea8600;
+}
+
+.bad circle {
+  stroke: #cf221f;
+}
+
+.result dl {
+  display: grid;
+  width: auto;
+  margin: 0 0 8px;
+  grid-auto-flow: dense;
+}
+
+.result dl > dt,
+.result dl > dd {
+  padding: 3px 5px;
+  cursor: pointer;
+}
+
+.result dl > dt:hover,
+.result dl > dd:hover {
+  text-decoration: underline;
+}
+
+.result dl > dt {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.result dl > dd {
+  grid-column: 1;
+  justify-self: end;
+  margin: 0;
+}
+
+.recommended {
+  font-weight: bold;
+  font-size: 1.3rem;
+}

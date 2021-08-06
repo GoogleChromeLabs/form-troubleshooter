@@ -8,6 +8,8 @@ manifest.prod.json
 *.crx
 *.zip
 
+size-plugin.json
+
 *.sublime-*
 .DS_Store
 .env

@@ -1,0 +1,29 @@
+.results {
+  margin-top: -15px;
+  min-height: 100%;
+  width: 100%;
+}
+
+.audit {
+  padding: 0;
+  margin: 0;
+}
+
+.audit > li {
+  list-style: none;
+}
+
+.details ul > li {
+  line-height: 1.3rem;
+}
+
+.details > ul > li {
+  margin-block-end: 0.5rem;
+}
+
+.learnMore::before {
+  content: '⇒';
+  padding: 0 5px 0 0;
+  position: relative;
+  top: -1px;
+}

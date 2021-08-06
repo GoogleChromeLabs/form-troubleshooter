@@ -1,0 +1,19 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
+.tabWrapper {
+  border-bottom: 1px solid #ccc;
+}
+
+.tabs {
+  margin: 10px 10px -2px;
+}
+
+.tabs button {
+  text-transform: none;
+  font-weight: normal;
+}
+
+.content {
+  padding: 20px;
+}
