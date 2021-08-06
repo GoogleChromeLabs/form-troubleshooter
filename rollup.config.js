@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import resolve from 'rollup-plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 
 const buildFolder = 'build/';
 
@@ -8,38 +8,29 @@ const envManifest = process.argv.includes('--configDev') ? 'manifest.dev.json' :
 
 export default [
   {
-    input: 'src/js/popup.js',
-    output: {
-      file: `${buildFolder}js/popup.js`,
-    },
-    plugins: [
-      resolve({
-        browser: true,
-      }),
-      copy('src/popup.html', `${buildFolder}popup.html`),
-      copy('src/css', `${buildFolder}css`),
-      copy('src/images', `${buildFolder}images`),
-      mergeJson(['src/manifest.json', 'manifest.version.json', envManifest], `${buildFolder}manifest.json`),
-    ],
-  },
-  {
     input: 'src/background.js',
     output: {
       file: `${buildFolder}background.js`,
     },
   },
   {
-    input: 'src/js/content-script.js',
+    input: 'src/lib/content-script.ts',
     output: {
-      file: `${buildFolder}js/content-script.js`,
+      file: `${buildFolder}lib/content-script.js`,
     },
+    plugins: [
+      typescript(),
+      copy('src/css', `${buildFolder}css`),
+      copy('src/images', `${buildFolder}images`),
+      mergeJson(['src/manifest.json', 'manifest.version.json', envManifest], `${buildFolder}manifest.json`),
+    ],
   },
-  {
-    input: 'src/js/options.js',
-    output: {
-      file: `${buildFolder}js/options.js`,
-    },
-  },
+  // {
+  //   input: 'src/lib/options.ts',
+  //   output: {
+  //     file: `${buildFolder}js/options.js`,
+  //   },
+  // },
 ];
 
 function copy(source, destination) {

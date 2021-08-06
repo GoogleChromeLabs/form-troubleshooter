@@ -1,0 +1,33 @@
+.header {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 56px;
+  padding: 0;
+  background: #fff;
+  z-index: 50;
+  display: flex;
+}
+
+.header h1 {
+  float: left;
+  flex-grow: 1;
+  margin: 0;
+  padding: 0 15px;
+  font-size: 24px;
+  line-height: 56px;
+  font-weight: bold;
+  color: #444;
+}
+
+.header nav {
+  position: fixed;
+  font-size: 100%;
+  top: 5px;
+  right: 5px;
+}
+
+.more {
+  background-color: #fff;
+  border-radius: 100px;
+}

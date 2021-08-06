@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["js/content-script.js"],
+      "js": ["lib/content-script.js"],
       "css": ["css/highlight.css"],
       "all_frames": true
     }
@@ -22,7 +22,7 @@
   ],
   "permissions": ["activeTab", "downloads", "storage", "tabs"],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_icon": {
       "16": "/images/icons/icon16.png",
       "32": "/images/icons/icon32.png",
