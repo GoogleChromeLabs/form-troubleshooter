@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import resolve from 'rollup-plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 
 const buildFolder = 'build/';
