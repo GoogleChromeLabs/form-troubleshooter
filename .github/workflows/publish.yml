@@ -26,3 +26,13 @@ jobs:
           CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
           CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
           REFRESH_TOKEN: ${{secrets.GOOGLE_REFRESH_TOKEN}}
+
+      - name: upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/extension.zip
+          asset_name: form-troubleshooter-extension.zip
+          asset_content_type: application/zip
