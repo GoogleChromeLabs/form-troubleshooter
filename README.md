@@ -84,12 +84,12 @@ Open http://localhost:8080/.
 
 Note that developing in this uses a different retrieves sample form data from `json` files instead of the browser.
 
-See
-[example](https://github.com/GoogleChromeLabs/form-troubleshooter/blob/main/src/components/app.tsx#:~:text=%2F%2F%20test%20data%20for%20development):
+By default, it will load `/test-data/score.json`. However, you can load a different `json` file to test with by changing
+the `data` query string parameter. Some examples include:
 
-```ts
-const testData = await import('../test-data/score.json');
-```
+- http://localhost:8080/?data=/test-data/form-problems.json
+- http://localhost:8080/?data=/test-data/score.json
+- http://localhost:8080/?data=/test-data/shadow-dom.json
 
 ### Running tests
 

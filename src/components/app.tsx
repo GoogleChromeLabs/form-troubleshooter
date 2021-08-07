@@ -77,7 +77,8 @@ const App: FunctionalComponent = () => {
     } else {
       (async () => {
         // test data for development
-        const testData = (await import('../test-data/score.json')) as unknown as TreeNode;
+        const params = new URLSearchParams(window.location.search.replace('?', ''));
+        const testData = await (await fetch(params.get('data') || '/test-data/score.json')).json();
         const doc = getTreeNodeWithParents(testData);
         setTree(doc);
         const results = runAudits(doc);
