@@ -13,19 +13,43 @@
 When released, this extension will be available from the
 [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
 
-For the moment, you'll need to download the code, build, and install the extension from local files. Note that you will
-need to have [Node.js 12 or later](https://nodejs.org/en/) to build the extension.
+For the moment, you have the option to either
+
+- Download the latest extension, or
+- To build from source
+
+### Download the latest version (recommended)
+
+The latest version of the extension can be downloaded with the following URL:
+https://github.com/GoogleChromeLabs/form-troubleshooter/releases/latest/download/form-troubleshooter-extension.zip
+
+Note that you can download specific versions using by visiting the
+[releases page](https://github.com/GoogleChromeLabs/form-troubleshooter/releases) on GitHub and downloading the
+`form-troubleshooter-extension.zip` file.
+
+Once you have downloaded the zip file, extract in your preferred location.
+
+### Building from source
+
+Note that you will need to have [Node.js 12 or later](https://nodejs.org/en/) to build the extension.
 
 1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) or clone the
    repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
 2. Install dependencies: `npm install`
 3. Build the extension: `npm run build`
-4. In Chrome, navigate to `chrome://extensions`<br><br>
+
+### Installing the extension
+
+1. In Chrome, navigate to `chrome://extensions`<br><br>
    <img alt="Screenshot of the chrome://extensions page" src="https://user-images.githubusercontent.com/205226/124620948-c86a1c00-de71-11eb-8c9d-5d7353c13f65.png" width="75%">
 
-5. Enable **Developer mode**
-6. Click the **Load unpacked** button and select the extension's `build/` directory
-7. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form
+2. Enable **Developer mode**
+3. Click the **Load unpacked** button and select the extension's folder
+
+   - If you downloaded the `form-troubleshooter-extension.zip`, this will be the location of the extracted folder
+   - If you built the extension from source, this will be the `build/` folder of the repository
+
+4. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form
    Troubleshooter**<br><br>
    <img alt="Screenshot of the Chrome Extensions menu" src="https://user-images.githubusercontent.com/205226/124620955-cb650c80-de71-11eb-9c99-65430ac7949b.png" width="75%">
 
@@ -43,6 +67,50 @@ The extension popup has three sections:
 **Save as HTML** saves the report as a local HTML file.
 
 You can try out the extension on the test page [form-problems.glitch.me](https://form-problems.glitch.me).
+
+## Development
+
+To develop and test the extension locally, first follow the steps to [build from source](#building-from-source).
+
+### Local web server
+
+Run the local web server with Hot Module Reloading (HMR):
+
+```sh
+npm run dev
+```
+
+Open http://localhost:8080/.
+
+Note that developing in this uses a different retrieves sample form data from `json` files instead of the browser.
+
+See
+[example](https://github.com/GoogleChromeLabs/form-troubleshooter/blob/main/src/components/app.tsx#:~:text=%2F%2F%20test%20data%20for%20development):
+
+```ts
+const testData = await import('../test-data/score.json');
+```
+
+### Running tests
+
+```sh
+# one off test run
+npm run test
+
+# continuously watch for changes
+npm run test:watch
+```
+
+### Linting
+
+Before contributing any code, make sure that code has been linted.
+
+```sh
+npm run lint
+
+# reformat files automatically
+npm run pretty
+```
 
 ## Caveats
 
