@@ -82,14 +82,14 @@ npm run dev
 
 Open http://localhost:8080/.
 
-Note that developing in this uses a different retrieves sample form data from `json` files instead of the browser.
-
-By default, it will load `/test-data/score.json`. However, you can load a different `json` file to test with by changing
-the `data` query string parameter. Some examples include:
+Note that developing in this mode requires you to bring your own form data. This can be achieved by referencing one of
+the existing data files in the `test-data` folder using the `data` query string parameter:
 
 - http://localhost:8080/?data=/test-data/form-problems.json
 - http://localhost:8080/?data=/test-data/score.json
 - http://localhost:8080/?data=/test-data/shadow-dom.json
+
+Or by loading a saved form file from the more menu in the top right of the popup.
 
 ### Running tests
 

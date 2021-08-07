@@ -40,12 +40,19 @@ const App: FunctionalComponent = () => {
     return hist;
   }, []);
   const [tabIndex, setTabIndex] = useState(0);
-  const [auditResults, setAuditResuits] = useState<AuditDetails>(() => ({
-    score: 0,
-    errors: [],
-    warnings: [],
-  }));
-  const [tree, setTree] = useState<TreeNodeWithParent>();
+  const [tree, setTree] = useState<TreeNode>();
+  const richTree = useMemo(() => (tree ? getTreeNodeWithParents(tree) : undefined), [tree]);
+  const auditResults = useMemo(
+    () =>
+      richTree
+        ? runAudits(richTree)
+        : {
+            score: 0,
+            errors: [],
+            warnings: [],
+          },
+    [richTree],
+  );
 
   useEffect(() => {
     setTabIndex(
@@ -68,9 +75,7 @@ const App: FunctionalComponent = () => {
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.message === 'stored element data') {
           chrome.storage.local.get(['tree'], result => {
-            const doc = getTreeNodeWithParents(result.tree);
-            setTree(doc);
-            setAuditResuits(runAudits(doc));
+            setTree(result.tree);
           });
         }
       });
@@ -78,13 +83,11 @@ const App: FunctionalComponent = () => {
       (async () => {
         // test data for development
         const params = new URLSearchParams(window.location.search.replace('?', ''));
-        const testData = await (await fetch(params.get('data') || '/test-data/score.json')).json();
-        const doc = getTreeNodeWithParents(testData);
-        setTree(doc);
-        const results = runAudits(doc);
-        // results.errors = [];
-        // results.warnings = [];
-        setAuditResuits(results);
+        const testDataFile = params.get('data');
+        if (testDataFile) {
+          const testData = await (await fetch(params.get('data') || '/test-data/score.json')).json();
+          setTree(testData);
+        }
       })();
     }
   }, []);
@@ -104,7 +107,7 @@ const App: FunctionalComponent = () => {
 
   return (
     <div id="preact_root">
-      <Header />
+      <Header documentTree={tree} onLoadTree={setTree} />
       <AuditSummary score={auditResults.score} recommendations={recommendations} commonMistakes={commonMistakes} />
       <div class={style.tabWrapper}>
         <Tabs
@@ -120,16 +123,18 @@ const App: FunctionalComponent = () => {
           ))}
         </Tabs>
       </div>
-      <div class={style.content}>
-        <Router history={history as unknown as CustomHistory}>
-          <Redirect path="/" to="/recommendations" />
-          <Redirect path="/index.html" to="/recommendations" />
-          <Route path="/recommendations" component={Results} results={recommendations} />
-          <Route path="/mistakes" component={Results} results={commonMistakes} />
-          <Route path="/details" component={Details} documentTree={tree} />
-          <NotFoundPage default />
-        </Router>
-      </div>
+      {tree ? (
+        <div class={style.content}>
+          <Router history={history as unknown as CustomHistory}>
+            <Redirect path="/" to="/recommendations" />
+            <Redirect path="/index.html" to="/recommendations" />
+            <Route path="/recommendations" component={Results} results={recommendations} />
+            <Route path="/mistakes" component={Results} results={commonMistakes} />
+            <Route path="/details" component={Details} documentTree={richTree} />
+            <NotFoundPage default />
+          </Router>
+        </div>
+      ) : null}
     </div>
   );
 };

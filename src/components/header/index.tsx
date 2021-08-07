@@ -7,7 +7,12 @@ import style from './style.css';
 import { useState } from 'preact/hooks';
 import { MouseEvent } from 'react';
 
-const Header: FunctionalComponent = () => {
+interface Props {
+  documentTree?: TreeNode;
+  onLoadTree?: (tree: TreeNode) => void;
+}
+
+const Header: FunctionalComponent<Props> = props => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const open = Boolean(anchorEl);
 
@@ -41,6 +46,51 @@ const Header: FunctionalComponent = () => {
     setAnchorEl(null);
   };
 
+  async function handleOpenFile() {
+    setAnchorEl(null);
+
+    const [fileHandle] = await window.showOpenFilePicker?.({
+      types: [
+        {
+          description: 'JSON',
+          accept: {
+            'text/*': ['.json'],
+          },
+        },
+      ],
+      multiple: false,
+    });
+    const file = await fileHandle.getFile();
+    const contents = await file.text();
+    console.log(contents);
+
+    props.onLoadTree?.(JSON.parse(contents));
+  }
+
+  async function handleSaveFile() {
+    setAnchorEl(null);
+
+    const contents = JSON.stringify(props.documentTree);
+    const fileHandle = await window.showSaveFilePicker?.({
+      types: [
+        {
+          description: 'JSON',
+          accept: {
+            'text/*': ['.json'],
+          },
+        },
+      ],
+    });
+
+    let file: FileSystemWritableFileStream | undefined;
+    try {
+      file = await fileHandle.createWritable();
+      await file.write(contents);
+    } finally {
+      await file?.close();
+    }
+  }
+
   return (
     <header class={style.header}>
       <h1>Form troubleshooter</h1>
@@ -50,6 +100,7 @@ const Header: FunctionalComponent = () => {
         </IconButton>
         <Menu
           id="long-menu"
+          className={style.menu}
           anchorEl={anchorEl}
           keepMounted
           open={open}
@@ -68,6 +119,17 @@ const Header: FunctionalComponent = () => {
           <MenuItem onClick={handleFeatureRequest}>Request a feature</MenuItem>
           <MenuItem onClick={handleFeedback} disabled>
             Provide feedback
+          </MenuItem>
+          <div class={style.menuDivider}>Development</div>
+          <MenuItem title="Open saved tree data and view results" onClick={handleOpenFile}>
+            Open form data
+          </MenuItem>
+          <MenuItem
+            title="Save current form to be viewed later"
+            onClick={handleSaveFile}
+            disabled={!props.documentTree}
+          >
+            Save form data
           </MenuItem>
         </Menu>
       </nav>
