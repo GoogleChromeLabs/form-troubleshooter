@@ -2,6 +2,8 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { getDocumentTree } from './dom-iterator';
+import { sendMessageAndWait } from './messaging-util';
+import { getElementRectangle, hideOverlay, Rectangle, showOverlay } from './overlay';
 
 /* global chrome */
 
@@ -24,7 +26,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
       });
     } else if (request.message === 'highlight') {
-      highlightElements(request.selector, request.className, request.scroll);
+      highlightElements(request.selector, request.type, request.scroll);
     }
   } else if (
     (request.name === window.name && request.url === window.location.href) ||
@@ -38,39 +40,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return true;
     }
     if (request.message === 'highlight frame') {
-      highlightElements(request.selector, request.className, request.scroll);
+      highlightElements(request.selector, request.type, request.scroll);
+    }
+    if (request.message === 'get element rectangle') {
+      getRectangleBySelector(request.selector).then(rect => {
+        sendResponse(rect);
+      });
     }
   }
 
   if (request.message === 'clear highlight') {
-    clearHighlights(request.className);
+    clearHighlights(request.type);
   }
 });
 
-/**
- * Gets all shadow roots in a document
- * @returns {ShadowRoot[]}
- */
-function getShadowRoots() {
-  const queue = [...document.children];
-  const shadowRoots = [];
-  let item;
+async function highlightElements(cssSelector: string, type: 'click' | 'hover', scroll: boolean) {
+  const rect = await getRectangleBySelector(cssSelector);
 
-  while ((item = queue.shift())) {
-    queue.push(...item.children);
-
-    if (item.shadowRoot) {
-      queue.push(...item.shadowRoot.children);
-      shadowRoots.push(item.shadowRoot);
-    }
+  if (rect) {
+    showOverlay(rect, type, scroll);
   }
-
-  return shadowRoots;
 }
 
-function highlightElements(cssSelector: string, className: string, scroll: boolean) {
-  clearHighlights(className);
-
+async function getRectangleBySelector(cssSelector: string) {
   let currentRoot: Document | ShadowRoot = document;
   let roots = cssSelector.split(' > #shadow-root > ');
   const selector = roots[roots.length - 1];
@@ -80,66 +72,48 @@ function highlightElements(cssSelector: string, className: string, scroll: boole
     const customElement: Element | null = currentRoot.querySelector(root);
     if (customElement && customElement.shadowRoot) {
       currentRoot = customElement.shadowRoot;
-      injectStylesheet(currentRoot, 'form-troubleshooter-highlight-css', chrome.runtime.getURL('css/highlight.css'));
     }
   }
 
-  const elements = Array.from(currentRoot.querySelectorAll(selector));
-  const firstElement = elements[0];
-  if (firstElement && scroll) {
-    firstElement.scrollIntoView({ behavior: 'smooth' });
+  const element = currentRoot.querySelector(selector);
+  if (element) {
+    return getElementRectangle(element as HTMLElement);
+  } else if (cssSelector.includes(' #document ')) {
+    return await getIframeRectangle(selector);
   }
-
-  elements.forEach(elem => {
-    elem.classList.add(className);
-  });
-
-  highlightElementsInFrame(cssSelector, className, scroll);
 }
 
-function highlightElementsInFrame(cssSelector: string, className: string, scroll: boolean) {
+async function getIframeRectangle(cssSelector: string) {
   const result = /(.+?) > #document > (.+)/.exec(cssSelector);
   if (result) {
     const [match, first, selector] = result;
     if (match) {
       const iframe = document.querySelector(first) as HTMLIFrameElement;
-      if (iframe) {
-        chrome.runtime.sendMessage({
-          broadcast: true,
-          message: 'clear highlight',
-          className,
-        });
 
-        chrome.runtime.sendMessage({
+      if (iframe) {
+        const iframeRect = getElementRectangle(iframe);
+        const innerRect: Rectangle | undefined = await sendMessageAndWait({
           broadcast: true,
-          message: 'highlight frame',
+          wait: true,
+          message: 'get element rectangle',
           name: iframe.name,
           url: iframe.src,
           selector,
-          className,
-          scroll,
         });
-        iframe.scrollIntoView({ behavior: 'smooth' });
+
+        if (iframeRect && innerRect) {
+          return {
+            top: iframeRect.top + innerRect.top,
+            left: iframeRect.left + innerRect.left,
+            width: innerRect.width,
+            height: innerRect.height,
+          };
+        }
       }
     }
   }
 }
 
-function clearHighlights(className: string) {
-  const roots = [document, ...getShadowRoots()];
-  roots.forEach(root => {
-    Array.from(root.querySelectorAll(`.${className}`)).forEach(elem => {
-      elem.classList.remove(className);
-    });
-  });
-}
-
-function injectStylesheet(target: Document | ShadowRoot, id: string, url: string) {
-  if (!target.querySelector(`#${id}`)) {
-    const elem = document.createElement('link');
-    elem.rel = 'stylesheet';
-    elem.id = id;
-    elem.setAttribute('href', url);
-    target.appendChild(elem);
-  }
+function clearHighlights(type: 'click' | 'hover') {
+  hideOverlay(type);
 }

@@ -1,34 +1,52 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-.form-troubleshooter-highlight-hover {
-  outline: 1px solid #ff000099;
-  position: relative;
-}
-
-.form-troubleshooter-highlight-hover:after {
-  content: '';
+#form-troublshooter-highlight-click-overlay,
+#form-troublshooter-highlight-hover-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: #ff000011;
-  z-index: 999;
+  box-sizing: border-box;
+  transition: top 0.2s, left 0.2s, height 0.2s, width 0.2s, opacity 0.2s;
 }
 
-.form-troubleshooter-highlight {
+#form-troublshooter-highlight-click-overlay.in,
+#form-troublshooter-highlight-hover-overlay.in {
+  opacity: 1;
+  clip: auto;
+}
+
+#form-troublshooter-highlight-click-overlay.out,
+#form-troublshooter-highlight-hover-overlay.out {
+  opacity: 0;
+  animation-duration: 0.2s;
+  animation-name: overlay-disappear;
+  clip: rect(0, 0, 0, 0);
+}
+
+@keyframes overlay-disappear {
+  from {
+    clip: auto;
+  }
+
+  to {
+    clip: auto;
+  }
+}
+
+#form-troublshooter-highlight-click-overlay {
   outline: 2px solid #ff0000;
-  position: relative;
+  outline-offset: 2px;
+  z-index: 9999;
 }
 
-.form-troubleshooter-highlight:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: #ff000022;
+#form-troublshooter-highlight-hover-overlay {
+  background-color: #ff000011;
   z-index: 999;
+  transition: top 0.2s, left 0.2s, height 0.2s, width 0.2s, opacity 0.2s 0.2s;
+}
+
+#form-troublshooter-highlight-click-overlay,
+#form-troublshooter-highlight-hover-overlay {
+  position: absolute;
+  box-sizing: border-box;
+  transition: top 0.2s, left 0.2s, height 0.2s, width 0.2s, opacity 0.2s;
 }
