@@ -14,9 +14,9 @@ interface AuditResult<T = unkown> {
 }
 
 interface TreeNode {
-  name?: string;
-  text?: string;
-  type?: string;
+  name?: string | null;
+  text?: string | null;
+  type?: string | null;
   children?: TreeNode[];
   attributes?: { [key: string]: string };
 }

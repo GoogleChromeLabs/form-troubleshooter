@@ -1,7 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { pluralize, truncate } from './string-util';
+import { condenseWhitespace, pluralize, truncate } from './string-util';
 
 describe('pluralize', function () {
   describe('single word', function () {
@@ -107,5 +107,27 @@ describe('truncate', function () {
   it('should truncate a string leaving leading whitespace as is', function () {
     const result = truncate('  short sentence', 9);
     expect(result).toEqual('  shor...');
+  });
+
+  it('should return null when input is null', function () {
+    const result = truncate(null, 10);
+    expect(result).toEqual(null);
+  });
+});
+
+describe('condenseWhitespace', function () {
+  it('should condense leading and trailing whitespace (default)', function () {
+    const result = condenseWhitespace('\n\nhello  world\n\n');
+    expect(result).toEqual(' hello  world ');
+  });
+
+  it('should condense leading and trailing whitespace', function () {
+    const result = condenseWhitespace('\n\nhello  world\n\n', 'leading-trailing');
+    expect(result).toEqual(' hello  world ');
+  });
+
+  it('should condense all whitespace', function () {
+    const result = condenseWhitespace('\n\nhello\n \nworld\n\n', 'all');
+    expect(result).toEqual(' hello world ');
   });
 });
