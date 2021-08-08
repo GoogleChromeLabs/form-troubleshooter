@@ -172,7 +172,15 @@ describe('getDocumentTree', function () {
             name: 'fieldset',
             children: [
               { name: 'label', children: [{ text: 'my label' }] },
-              { name: 'input', attributes: { 'id': 'my-input', 'autofill-information': 'abc' } },
+              {
+                name: 'input',
+                attributes: {
+                  'id': 'my-input',
+                  'autofill-information': 'abc',
+                  'type': 'password',
+                  'value': 'secret password',
+                },
+              },
               {
                 name: 'svg',
                 attributes: { 'width': '100', 'data-something': 'something', 'data': 'some data' },
@@ -180,6 +188,7 @@ describe('getDocumentTree', function () {
               },
               { name: 'style', children: [{ text: 'css' }] },
               { name: 'script', children: [{ text: 'javascript' }] },
+              { name: 'textarea', attributes: { name: 'text' }, children: [{ text: 'secret password' }] },
             ],
           },
           {
@@ -205,10 +214,11 @@ describe('getDocumentTree', function () {
           name: 'fieldset',
           children: [
             { name: 'label', children: [{ text: 'my label' }] },
-            { name: 'input', attributes: { id: 'my-input' } },
+            { name: 'input', attributes: { id: 'my-input', type: 'password' } },
             { name: 'svg', attributes: { width: '100', data: 'some data' } },
             { name: 'style' },
             { name: 'script' },
+            { name: 'textarea', attributes: { name: 'text' } },
           ],
         },
         {
