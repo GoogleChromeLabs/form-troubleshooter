@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 100 100">
+  <clipPath id="contentMask">
+    <circle fill="#ffffff" r="50" cx="50" cy="50" />
+  </clipPath>
+  <g clip-path="url(#contentMask)">
+    <circle fill="#ffffff" r="49.5" cx="50" cy="50" />
+    <!-- <rect x="0" y="0" width="100" height="100" fill="#ffffff" rx="0" /> -->
+    <g stroke="#ea8600" stroke-linecap="round">
+      <circle stroke-dasharray="270 270" stroke-width="10" fill="transparent" r="45" cx="50" cy="50" style="transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dashoffset: 45px;" />
+    </g>
+    <g fill="#00000000" stroke="#00000077" stroke-width="1">
+      <rect x="24" y="28" width="52" height="12" rx="2" />
+      <rect x="24" y="44" width="52" height="12" rx="2" />
+    </g>
+    <g fill="#00000099">
+      <circle r="2" cx="30" cy="50" />
+      <circle r="2" cx="36" cy="50" />
+      <circle r="2" cx="42" cy="50" />
+      <circle r="2" cx="48" cy="50" />
+    </g>
+    <rect x="44" y="62" width="32" height="16" rx="8" fill="#1a73e8" stroke="#1a73e8" stroke-width="1" />
+  </g>
+</svg>
