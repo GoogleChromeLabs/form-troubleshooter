@@ -1,0 +1,23 @@
+name: bump version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version number
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: bump version
+        run: |
+          git config --global user.name '${{ github.actor }}'
+          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+          git commit -m "chore: bump version to ${{ github.event.inputs.version }}
+
+          release-as: ${{ github.event.inputs.version }}" --allow-empty
+          git push
