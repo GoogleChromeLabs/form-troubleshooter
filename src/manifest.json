@@ -1,7 +1,7 @@
 {
   "name": "Form Troubleshooter",
   "description": "Find and fix common form problems.",
-  "version": "1.2",
+  "version": "1.2.2",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
