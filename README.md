@@ -2,7 +2,7 @@
 
 **A Chrome extension to find and fix common form problems.**
 
-![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Recommenations tab selected](https://user-images.githubusercontent.com/205226/128688470-2d7482fe-6251-46ff-af27-c4f601d431e0.png)
+![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Recommendations tab selected](https://user-images.githubusercontent.com/205226/128688470-2d7482fe-6251-46ff-af27-c4f601d431e0.png)
 
 ![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Common mistakes tab selected]((https://user-images.githubusercontent.com/205226/128688759-74b9dd93-9a5a-455b-bd08-8016f2f7da59.png)
 
@@ -54,8 +54,7 @@ You can try out the extension on the test page [form-problems.glitch.me](https:/
   ways to function at scale and integrate with legacy and third-party systems. The same code may not be appropriate for
   smaller-scale sites.
 
-However, please [File a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for anything reported
-that appear to be incorrect.
+However, please [provide feedback](https://forms.gle/Sm7DbKfLX3hHNcDp9) or [file a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for audit results that appear to be incorrect.
 
 ## How it works
 
