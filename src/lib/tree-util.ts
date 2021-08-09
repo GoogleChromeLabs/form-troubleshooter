@@ -99,7 +99,7 @@ export function getPath(node: TreeNodeWithParent): string {
 /**
  * Gets a parent unique path segment for the node
  */
-function getPathSegment(node: TreeNodeWithParent): string {
+function getPathSegment(node: TreeNodeWithParent | TreeNodeWithContext<unknown>): string {
   if (node.type) {
     return node.type;
   }
@@ -124,10 +124,11 @@ function getPathSegment(node: TreeNodeWithParent): string {
   if (siblingsOfType?.length === 1) {
     return node.name;
   } else {
-    const index = siblingsOfType!.indexOf(node);
+    const lookupNode = (node as TreeNodeWithContext<unknown>).original ?? node;
+    const index = siblingsOfType!.indexOf(lookupNode);
     if (index === -1) {
-      console.log('node', node);
-      throw new Error('Node not found among siblings, node identity may have changed in one of the audits');
+      console.log('node', lookupNode);
+      throw new Error('Node not found among siblings');
     }
     return `${node.name}[${index}]`;
   }

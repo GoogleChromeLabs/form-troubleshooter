@@ -48,12 +48,14 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult | undefined
   );
   const invalidFields = eligibleFields
     .filter(node => !closestParent(node, 'label'))
-    .map(node => {
-      const contextNode: TreeNodeWithContext<ContextReasons> = node;
-      // mutating node instead of returning a new one to keep object identity the same
-      contextNode.context = { reasons: [] };
-      return contextNode;
-    })
+    .map(
+      node =>
+        ({
+          ...node,
+          original: node,
+          context: { reasons: [] },
+        } as TreeNodeWithContext<ContextReasons>),
+    )
     .filter(node => {
       if (node.attributes.id) {
         node.context?.reasons.push({ type: 'id', reference: node.attributes.id });

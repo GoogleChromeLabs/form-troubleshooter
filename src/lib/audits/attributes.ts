@@ -28,21 +28,26 @@ function getInvalidAttributes(element: TreeNode) {
 export function hasInvalidAttributes(tree: TreeNodeWithParent): AuditResult | undefined {
   const eligibleFields = findDescendants(tree, FORM_FIELDS);
   const invalidFields = eligibleFields
-    .map(node => {
-      const contextNode: TreeNodeWithContext<ContextInvalidAttributes> = node;
-      // mutating node instead of returning a new one to keep object identity the same
-      contextNode.context = {
-        invalidAttributes: getInvalidAttributes(node).map(attribute => {
-          const suggestions = new Fuse(Array.from(new Set([...ATTRIBUTES.global, ...(ATTRIBUTES[node.name!] || [])])), {
-            threshold: 0.2,
-          });
-          const matches = suggestions.search(attribute);
-          const suggestion = matches[0] ? matches[0].item : null;
-          return { attribute, suggestion };
-        }),
-      };
-      return contextNode;
-    })
+    .map(
+      node =>
+        ({
+          ...node,
+          original: node,
+          context: {
+            invalidAttributes: getInvalidAttributes(node).map(attribute => {
+              const suggestions = new Fuse(
+                Array.from(new Set([...ATTRIBUTES.global, ...(ATTRIBUTES[node.name!] || [])])),
+                {
+                  threshold: 0.2,
+                },
+              );
+              const matches = suggestions.search(attribute);
+              const suggestion = matches[0] ? matches[0].item : null;
+              return { attribute, suggestion };
+            }),
+          },
+        } as TreeNodeWithContext<ContextInvalidAttributes>),
+    )
     .filter(field => field.context?.invalidAttributes.length);
 
   if (invalidFields.length) {
@@ -85,11 +90,14 @@ export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined 
       auditType: 'unique-ids',
       items: duplicates.map(fields => {
         const [first, ...others] = fields as TreeNodeWithContext<ContextDuplicates>[];
-        // mutating node instead of returning a new one to keep object identity the same
-        first.context = {
-          duplicates: others,
+
+        return {
+          ...first,
+          original: first,
+          context: {
+            duplicates: others,
+          },
         };
-        return first;
       }),
       score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
@@ -114,11 +122,14 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefine
       auditType: 'unique-names',
       items: duplicates.map(fields => {
         const [first, ...others] = fields as TreeNodeWithContext<ContextDuplicates>[];
-        // mutating node instead of returning a new one to keep object identity the same
-        first.context = {
-          duplicates: others,
+
+        return {
+          ...first,
+          original: first,
+          context: {
+            duplicates: others,
+          },
         };
-        return first;
       }),
       score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };

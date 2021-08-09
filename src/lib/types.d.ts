@@ -28,6 +28,7 @@ interface TreeNodeWithParent extends TreeNode {
 }
 
 interface TreeNodeWithContext<T> extends TreeNodeWithParent {
+  original?: TreeNodeWithParent;
   context?: T;
 }
 
