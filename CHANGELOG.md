@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.0...v1.2.0) (2021-08-09)
+
+
+### Documentation
+
+* Corrections and tweaks to README ([3436731](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/3436731cc7d7e334a3e9879f0c0b1df35024fe93))
+
 ## 1.2.0 (2021-08-06)
 
 
