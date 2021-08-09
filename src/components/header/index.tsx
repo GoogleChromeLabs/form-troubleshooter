@@ -36,8 +36,7 @@ const Header: FunctionalComponent = () => {
   };
 
   const handleFeedback = () => {
-    // TODO: add url for feedback link
-    window.open('', '_blank');
+    window.open('https://forms.gle/Sm7DbKfLX3hHNcDp9', '_blank');
     setAnchorEl(null);
   };
 
@@ -66,9 +65,7 @@ const Header: FunctionalComponent = () => {
           </MenuItem>
           <MenuItem onClick={handleBugReport}>File a bug</MenuItem>
           <MenuItem onClick={handleFeatureRequest}>Request a feature</MenuItem>
-          <MenuItem onClick={handleFeedback} disabled>
-            Provide feedback
-          </MenuItem>
+          <MenuItem onClick={handleFeedback}>Provide feedback</MenuItem>
         </Menu>
       </nav>
     </header>
