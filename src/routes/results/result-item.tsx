@@ -328,7 +328,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
   },
   'label-no-field': {
     title:
-      'Labels should be associated with input fields to help users complete your form with tools like screen readers',
+      'Make forms easier to use and more accessible by associating every label with a form field',
     render: result => (
       <Fragment>
         <p>Found {pluralize(result.items.length, 'a label', 'labels')} that weren't associated with a form field:</p>
@@ -371,7 +371,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
 
   'label-unique': {
     title:
-      'Form fields with multiple labels may make it difficult for tools like screen readers to correctly identify form fields',
+      'Form fields with multiple labels may make it difficult for tools such as screen readers to correctly identify form fields',
     render: result => (
       <Fragment>
         <p>
