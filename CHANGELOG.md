@@ -1,5 +1,17 @@
 # Changelog
 
+### [1.2.1](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.0...v1.2.1) (2021-08-09)
+
+
+### Bug Fixes
+
+* **audit:** Minor tweaks to label association wording ([d7e463a](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/d7e463aaf021ae7e59e25a8aaec1cbf9eb115e71))
+
+
+### Documentation
+
+* Corrections and tweaks to README ([3436731](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/3436731cc7d7e334a3e9879f0c0b1df35024fe93))
+
 ## 1.2.0 (2021-08-06)
 
 
