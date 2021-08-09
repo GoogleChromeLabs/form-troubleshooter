@@ -41,8 +41,7 @@ const Header: FunctionalComponent<Props> = props => {
   };
 
   const handleFeedback = () => {
-    // TODO: add url for feedback link
-    window.open('', '_blank');
+    window.open('https://forms.gle/Sm7DbKfLX3hHNcDp9', '_blank');
     setAnchorEl(null);
   };
 

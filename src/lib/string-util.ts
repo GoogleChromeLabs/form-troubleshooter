@@ -9,3 +9,39 @@ export function pluralize(count: number, single: string, multiple?: string, zero
   }
   return plural;
 }
+
+export function truncate(
+  input: string | null | undefined,
+  length: number,
+  indicator = '...',
+): string | null | undefined {
+  if (!input) {
+    return input;
+  }
+
+  const truncateLength = length - indicator.length;
+
+  if (indicator.length >= length) {
+    return indicator;
+  }
+
+  if (input.length > length) {
+    return input.substring(0, truncateLength).trimEnd() + indicator;
+  }
+
+  return input.substring(0, length);
+}
+
+export function condenseWhitespace(
+  input: string | null | undefined,
+  mode: 'leading-trailing' | 'all' = 'leading-trailing',
+): string | null | undefined {
+  if (!input) {
+    return input;
+  }
+
+  if (mode === 'leading-trailing') {
+    return input.replace(/^\s+/, ' ').replace(/\s+$/, ' ');
+  }
+  return input.replace(/\s+/g, ' ');
+}

@@ -2,11 +2,12 @@
 
 **A Chrome extension to find and fix common form problems.**
 
-![image](https://user-images.githubusercontent.com/205226/124280594-c7b74a00-db40-11eb-8770-78a857815480.png)
+![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Recommendations tab selected](https://user-images.githubusercontent.com/205226/128688470-2d7482fe-6251-46ff-af27-c4f601d431e0.png)
 
-![image](https://user-images.githubusercontent.com/205226/124281671-d9e5b800-db41-11eb-93d4-32b268c10a74.png)
+![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Common mistakes tab selected](https://user-images.githubusercontent.com/205226/128693291-9fcf8397-c1b7-4fb6-9731-9750d8598915.png)
 
-![image](https://user-images.githubusercontent.com/205226/124281578-c0447080-db41-11eb-8a13-f04b1badd920.png)
+![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Form details tab selected](https://user-images.githubusercontent.com/205226/128688891-20c02f65-f35f-48f5-af99-15b822ea2510.png)
+
 
 ## Installation
 
@@ -42,15 +43,13 @@ Note that you will need to have [Node.js 12 or later](https://nodejs.org/en/) to
 
 1. In Chrome, navigate to `chrome://extensions`<br><br>
    <img alt="Screenshot of the chrome://extensions page" src="https://user-images.githubusercontent.com/205226/124620948-c86a1c00-de71-11eb-8c9d-5d7353c13f65.png" width="75%">
-
 2. Enable **Developer mode**
-3. Click the **Load unpacked** button and select the extension's folder
+3. Click the **Load unpacked** button and select the extension's folder:
 
-   - If you downloaded the `form-troubleshooter-extension.zip`, this will be the location of the extracted folder
-   - If you built the extension from source, this will be the `build/` folder of the repository
+   - If you downloaded `form-troubleshooter-extension.zip`, the extension's folder will be the location of the extracted folder.
+   - If you built the extension from source, the extension's folder will be the `build/` folder of the repository.
 
-4. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form
-   Troubleshooter**<br><br>
+4. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form Troubleshooter**<br><br>
    <img alt="Screenshot of the Chrome Extensions menu" src="https://user-images.githubusercontent.com/205226/124620955-cb650c80-de71-11eb-9c99-65430ac7949b.png" width="75%">
 
 ## Usage
@@ -60,9 +59,9 @@ attributes every time the icon is clicked.
 
 The extension popup has three sections:
 
-- **Overview of form and form field elements**
-- **Errors**
-- **Warnings**
+- **Recommendations**
+- **Common mistakes**
+- **Form details**
 
 **Save as HTML** saves the report as a local HTML file.
 
@@ -122,8 +121,7 @@ npm run pretty
   ways to function at scale and integrate with legacy and third-party systems. The same code may not be appropriate for
   smaller-scale sites.
 
-However, please [File a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for anything reported
-that appear to be incorrect.
+However, please [provide feedback](https://forms.gle/Sm7DbKfLX3hHNcDp9) or [file a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for audit results that appear to be incorrect.
 
 ## How it works
 
@@ -164,8 +162,6 @@ Feedback and audit suggestions welcome!
 - [ ] Check for forms (or other elements) that don't have a closing tag.
 - [x] Check for invalid `type` attribute values, for example `<input type="check">`.
 - [x] Suggest alternatives to invalid attribute names, e.g. for `autcomplete`.
-- [ ] Convert `map(field => stringifyElement(field));` to a single function.
-- [ ] Sort out form field/element naming (labels and buttons are not fields).
 
 ---
 
