@@ -32,23 +32,6 @@ code {
   padding: 0.05rem 0.2rem;
 }
 
-code.first-of-many {
-  padding: 0.05rem 0 0.05rem 0.2rem;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-code.last-of-many {
-  padding: 0.05rem 0.2rem 0.05rem 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-code + code {
-  padding: 0.05rem 0;
-  border-radius: 0;
-}
-
 #preact_root {
   min-width: 770px;
   min-height: 400px;

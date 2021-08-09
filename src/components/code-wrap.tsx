@@ -1,4 +1,4 @@
-import { Fragment, FunctionalComponent, h } from 'preact';
+import { FunctionalComponent, h } from 'preact';
 import style from './code-wrap.css';
 
 function escapeRegExp(str: string) {
@@ -41,22 +41,13 @@ const CodeWrap: FunctionalComponent<Props> = props => {
   }
 
   return (
-    <Fragment>
+    <span class={style.code}>
       {parts.map((part, index, arr) => (
-        <code
-          key={index}
-          class={[
-            part.emphasize ? style.emphasize : undefined,
-            index === 0 && arr.length > 1 ? 'first-of-many' : undefined,
-            index === arr.length - 1 && arr.length > 1 ? 'last-of-many' : undefined,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
+        <code key={index} class={part.emphasize ? style.emphasize : undefined}>
           {part.text}
         </code>
       ))}
-    </Fragment>
+    </span>
   );
 };
 
