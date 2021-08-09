@@ -6,14 +6,14 @@ function getOverlay(type: OverlayType) {
   if (type === 'click') {
     if (!clickOverlay) {
       clickOverlay = document.createElement('div');
-      clickOverlay.id = 'form-troublshooter-highlight-click-overlay';
+      clickOverlay.id = 'form-troubleshooter-highlight-click-overlay';
       document.body.appendChild(clickOverlay);
     }
     return clickOverlay;
   } else {
     if (!hoverOverlay) {
       hoverOverlay = document.createElement('div');
-      hoverOverlay.id = 'form-troublshooter-highlight-hover-overlay';
+      hoverOverlay.id = 'form-troubleshooter-highlight-hover-overlay';
       document.body.appendChild(hoverOverlay);
     }
     return hoverOverlay;
