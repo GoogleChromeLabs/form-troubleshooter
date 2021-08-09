@@ -4,9 +4,9 @@
 
 ![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Recommendations tab selected](https://user-images.githubusercontent.com/205226/128688470-2d7482fe-6251-46ff-af27-c4f601d431e0.png)
 
-![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Common mistakes tab selected]((https://user-images.githubusercontent.com/205226/128688759-74b9dd93-9a5a-455b-bd08-8016f2f7da59.png)
+![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Common mistakes tab selected](https://user-images.githubusercontent.com/205226/128688759-74b9dd93-9a5a-455b-bd08-8016f2f7da59.png)
 
-![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Form details tab selected]((https://user-images.githubusercontent.com/205226/128688891-20c02f65-f35f-48f5-af99-15b822ea2510.png)
+![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Form details tab selected](https://user-images.githubusercontent.com/205226/128688891-20c02f65-f35f-48f5-af99-15b822ea2510.png)
 
 
 ## Installation
