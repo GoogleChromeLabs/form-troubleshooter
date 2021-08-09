@@ -331,7 +331,10 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       'Labels should be associated with input fields to help users complete your form with tools like screen readers',
     render: result => (
       <Fragment>
-        <p>Found {pluralize(result.items.length, 'a label', 'labels')} that weren't associated with a form field:</p>
+        <p>
+          Found {pluralize(result.items.length, "a label that wasn't", "labels that weren't")} associated with a form
+          field:
+        </p>
         {defaultItemsPresenter(result.items, item =>
           defaultItemRenderer<{ reasons?: Array<{ type: string; reference: string }> }>(item, contextItem => (
             <Fragment>
@@ -350,7 +353,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                     ) : null}
                     {reason.type === 'empty-for' ? (
                       <Fragment>
-                        There <code>for</code> attribute should not be empty
+                        The <code>for</code> attribute should not be empty
                       </Fragment>
                     ) : null}
                   </li>
