@@ -324,8 +324,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'label-no-field': {
-    title:
-      'Make forms easier to use and more accessible by associating every label with a form field',
+    title: 'Make forms easier to use and more accessible by associating every label with a form field',
     render: result => (
       <Fragment>
         <p>
