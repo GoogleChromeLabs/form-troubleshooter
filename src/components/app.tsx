@@ -194,9 +194,9 @@ const App: FunctionalComponent = () => {
     const [fileHandle] = await window.showOpenFilePicker?.({
       types: [
         {
-          description: 'JSON document',
+          description: 'Saved HTML or JSON document',
           accept: {
-            'text/*': ['.json'],
+            'text/*': ['.json', '.html'],
           },
         },
       ],
@@ -204,7 +204,15 @@ const App: FunctionalComponent = () => {
     });
     const file = await fileHandle.getFile();
     const contents = await file.text();
-    setTree(JSON.parse(contents));
+    let json = contents;
+
+    const scriptExpression = /<script type="text\/json" name="tree">(.+?)<\/script>/i;
+    const treeScriptMatch = scriptExpression.exec(contents);
+    if (treeScriptMatch) {
+      json = treeScriptMatch[1];
+    }
+
+    setTree(JSON.parse(json));
   }
 
   async function handleSaveFile() {
