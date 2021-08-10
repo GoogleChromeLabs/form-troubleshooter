@@ -75,7 +75,7 @@ const App: FunctionalComponent = () => {
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.message === 'stored element data') {
           chrome.storage.local.get(['tree'], result => {
-            setTree(result.tree);
+            setTree(JSON.parse(result.tree));
           });
         }
       });

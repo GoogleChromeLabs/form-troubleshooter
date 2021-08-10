@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           console.error('chrome.storage.local.clear() error in content-script.js:', error);
         } else {
           getDocumentTree(document).then(tree => {
-            chrome.storage.local.set({ tree }, () => {
+            chrome.storage.local.set({ tree: JSON.stringify(tree) }, () => {
               chrome.runtime.sendMessage({ message: 'stored element data' });
             });
           });
