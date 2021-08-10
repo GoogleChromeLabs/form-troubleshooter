@@ -6,69 +6,10 @@ jest.mock('./messaging-util');
 import { convertNodeToTreeNode, getDocumentTree } from './dom-iterator';
 import { truncate } from './string-util';
 import { sendMessageAndWait } from './messaging-util';
+import { createNode } from './test-util';
 
 const LONG_TEXT = new Array(401).fill('a').join('');
 const TRUCATED_LONG_TEXT = truncate(LONG_TEXT, 400);
-
-function addShadowRoot(element: Element) {
-  const fakeRoot = element.ownerDocument.createElement('fake-node');
-  Object.defineProperty(fakeRoot, 'parentNode', {
-    get() {
-      return null;
-    },
-  });
-
-  Object.defineProperty(element, 'shadowRoot', {
-    get() {
-      return fakeRoot;
-    },
-  });
-}
-
-function createNode(tree: TreeNode, document?: Document, parent?: Node): Node {
-  const doc = document ?? new Document();
-  let node: Node | undefined;
-  const treeNode = tree;
-
-  if (treeNode.name) {
-    node = doc.createElement(treeNode.name);
-
-    if (treeNode.attributes) {
-      Object.entries(treeNode.attributes).forEach(([name, value]) => {
-        const attribute = doc.createAttribute(name)!;
-        attribute.value = value;
-        (node as Element).setAttributeNode(attribute);
-      });
-    }
-
-    if (treeNode.children) {
-      treeNode.children.forEach(child => {
-        const childNode = createNode(child, doc, node);
-        if (childNode) {
-          node?.appendChild(childNode);
-        }
-      });
-    }
-  } else if (treeNode.text != null) {
-    node = doc.createTextNode(treeNode.text);
-  } else if (treeNode.type === '#shadow-root') {
-    addShadowRoot(parent as Element);
-    node = (parent as Element).shadowRoot!;
-
-    if (treeNode.children) {
-      treeNode.children.forEach(child => {
-        const childNode = createNode(child, doc, node);
-        if (childNode) {
-          node!.appendChild(childNode);
-        }
-      });
-    }
-  } else {
-    throw new Error(`Unsupported node ${JSON.stringify(tree)}`);
-  }
-
-  return node;
-}
 
 describe('convertNodeToTreeNode', function () {
   describe('elements', function () {

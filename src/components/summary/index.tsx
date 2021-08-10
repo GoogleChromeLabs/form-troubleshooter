@@ -5,16 +5,17 @@ import { pluralize } from '../../lib/string-util';
 import { route } from 'preact-router';
 
 interface Props {
+  className?: string;
   score: number;
-  recommendations: any[];
-  commonMistakes: any[];
+  recommendations: AuditResult<unknown>[];
+  commonMistakes: AuditResult<unknown>[];
 }
 
 const AuditSummary: FunctionalComponent<Props> = (props: Props) => {
-  const { score, recommendations, commonMistakes } = props;
+  const { className, score, recommendations, commonMistakes } = props;
 
   return (
-    <div class={style.summary}>
+    <div class={[style.summary, className].filter(Boolean).join(' ')}>
       <Score class={style.score} radius={50} stroke={8} value={score} text={(score * 100).toFixed(0)} />
       <div class={style.result}>
         <dl>
