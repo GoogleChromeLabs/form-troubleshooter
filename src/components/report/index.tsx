@@ -1,4 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
+import { truncate } from '../../lib/string-util';
 import Results from '../../routes/results';
 import AuditSummary from '../summary';
 import style from './style.css';
@@ -15,7 +16,7 @@ const Report: FunctionalComponent<Props> = (props: Props) => {
   return (
     <div class={style.report}>
       <h1>{title}</h1>
-      <p class={style.url}>{auditUrl}</p>
+      <p class={style.url}>{truncate(auditUrl, 100)}</p>
       <AuditSummary
         className={style.reportScore}
         score={auditResults.score}
