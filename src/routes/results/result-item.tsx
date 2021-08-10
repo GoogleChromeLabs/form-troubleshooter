@@ -146,6 +146,8 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           <a
             href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-off"
             title="HTML spec autocomplete attribute information"
+            target="_blank"
+            rel="noreferrer noopener"
           >
             valid HTML
           </a>{' '}
@@ -290,6 +292,8 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           <a
             href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes"
             title="MDN article: Using data attributes"
+            target="_blank"
+            rel="noreferrer noopener"
           >
             data attributes
           </a>{' '}
@@ -324,8 +328,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'label-no-field': {
-    title:
-      'Make forms easier to use and more accessible by associating every label with a form field',
+    title: 'Make forms easier to use and more accessible by associating every label with a form field',
     render: result => (
       <Fragment>
         <p>
