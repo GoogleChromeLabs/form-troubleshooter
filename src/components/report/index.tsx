@@ -8,15 +8,21 @@ interface Props {
   title: string;
   auditUrl: string;
   auditResults: AuditDetails;
+  icon?: string;
 }
 
 const Report: FunctionalComponent<Props> = (props: Props) => {
-  const { auditResults, auditUrl, title } = props;
+  const { auditResults, auditUrl, title, icon } = props;
 
   return (
     <div class={style.report}>
-      <h1>{title}</h1>
-      <p class={style.url}>{truncate(auditUrl, 100)}</p>
+      <div class={style.title}>
+        {icon ? <img class={style.icon} src={icon} alt="Webpage icon" /> : null}
+        <div>
+          <h1>{title}</h1>
+          <p class={style.url}>{truncate(auditUrl, 100)}</p>
+        </div>
+      </div>
       <AuditSummary
         className={style.reportScore}
         score={auditResults.score}

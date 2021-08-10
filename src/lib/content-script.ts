@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { getDocumentTree } from './dom-iterator';
 import { sendMessageAndWait } from './messaging-util';
 import { getElementRectangle, hideOverlay, Rectangle, showOverlay } from './overlay';
+import { getWebsiteIcon } from './webpage-icon-util';
 
 /* global chrome */
 
@@ -27,6 +28,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     } else if (request.message === 'highlight') {
       highlightElements(request.selector, request.type, request.scroll);
+    } else if (request.message === 'get website icon') {
+      getWebsiteIcon(document).then(info => {
+        sendResponse(info);
+      });
+      return true;
     }
   } else if (
     (request.name === window.name && request.url === window.location.href) ||
@@ -46,6 +52,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       getRectangleBySelector(request.selector).then(rect => {
         sendResponse(rect);
       });
+      return true;
     }
   }
 

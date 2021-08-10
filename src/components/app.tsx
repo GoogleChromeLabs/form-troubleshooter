@@ -69,8 +69,14 @@ async function downloadOrSaveFile(content: string, options: SaveFilePickerOption
   }
 }
 
+interface TabInfo {
+  title: string;
+  url: string;
+  icon?: string;
+}
+
 const App: FunctionalComponent = () => {
-  const [tabInfo, setTabInfo] = useState({ title: 'Form audit', url: '' });
+  const [tabInfo, setTabInfo] = useState<TabInfo>({ title: 'Form audit', url: '' });
   const [currentUrl, setCurrentUrl] = useState('/');
   const history = useMemo(() => {
     const hist = createHashHistory();
@@ -117,7 +123,11 @@ const App: FunctionalComponent = () => {
         title: chromeTabs[0].title ?? '',
         url: chromeTabs[0].url ?? '',
       });
+
       chrome.tabs.sendMessage(tabId!, { message: 'popup opened' });
+      chrome.tabs.sendMessage(tabId!, { message: 'get website icon' }, response => {
+        setTabInfo(prev => ({ ...prev, icon: response?.src }));
+      });
     });
 
     if (chrome.runtime) {
@@ -272,7 +282,7 @@ const App: FunctionalComponent = () => {
       ) : null}
       {saving ? (
         <div ref={reportElement} class={style.reportContainer}>
-          <Report auditResults={auditResults} title={tabInfo.title} auditUrl={tabInfo.url} />
+          <Report auditResults={auditResults} title={tabInfo.title} auditUrl={tabInfo.url} icon={tabInfo.icon} />
         </div>
       ) : null}
     </div>

@@ -28,3 +28,15 @@
 .results {
   margin: 2rem 0 2rem 2rem;
 }
+
+.title {
+  display: flex;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+}
