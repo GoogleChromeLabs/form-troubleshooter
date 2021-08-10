@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from 'preact';
+import { Fragment, FunctionalComponent, h } from 'preact';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -6,6 +6,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import style from './style.css';
 import { useState } from 'preact/hooks';
 import { MouseEvent } from 'react';
+
+const isDev = process.env.NODE_ENV !== 'production';
 
 interface Props {
   onSaveHtml?: () => void;
@@ -80,25 +82,29 @@ const Header: FunctionalComponent<Props> = props => {
           <MenuItem onClick={() => handleClose(reportBug)}>File a bug</MenuItem>
           <MenuItem onClick={() => handleClose(requestFeature)}>Request a feature</MenuItem>
           <MenuItem onClick={() => handleClose(submitFeedback)}>Provide feedback</MenuItem>
-          <div class={style.menuDivider}>Development</div>
-          <MenuItem
-            title="Open saved tree data and view results"
-            onClick={() => {
-              handleClose(props.onOpenJson);
-            }}
-            disabled={!props.onOpenJson}
-          >
-            Open form data
-          </MenuItem>
-          <MenuItem
-            title="Save current form to be viewed later"
-            onClick={() => {
-              handleClose(props.onSaveJson);
-            }}
-            disabled={!props.onSaveJson}
-          >
-            Save form data
-          </MenuItem>
+          {isDev ? (
+            <Fragment>
+              <div class={style.menuDivider}>Development</div>
+              <MenuItem
+                title="Open saved tree data and view results"
+                onClick={() => {
+                  handleClose(props.onOpenJson);
+                }}
+                disabled={!props.onOpenJson}
+              >
+                Open form data
+              </MenuItem>
+              <MenuItem
+                title="Save current form to be viewed later"
+                onClick={() => {
+                  handleClose(props.onSaveJson);
+                }}
+                disabled={!props.onSaveJson}
+              >
+                Save form data
+              </MenuItem>
+            </Fragment>
+          ) : null}
         </Menu>
       </nav>
     </header>
