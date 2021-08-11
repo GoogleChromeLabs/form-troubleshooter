@@ -76,7 +76,7 @@ export function findDescendants(parent: TreeNodeWithParent, tagNames: string[]):
       results.push(item);
     }
     if (item.children) {
-      queue.push(...item.children);
+      queue.unshift(...item.children);
     }
   }
 

@@ -130,6 +130,56 @@ describe('tree-util', function () {
       expect(results[1].name).toEqual('c');
       expect(results[2].name).toEqual('a');
     });
+
+    it('should find descendants in tree order', function () {
+      const tree = getTreeNodeWithParents({
+        name: 'root',
+        children: [
+          { name: 'leaf', attributes: { id: '1' } },
+          {
+            name: 'branch',
+            attributes: { id: '2' },
+            children: [
+              { name: 'leaf', attributes: { id: '3' } },
+              { name: 'leaf', attributes: { id: '4' } },
+            ],
+          },
+          { name: 'leaf', attributes: { id: '5' } },
+          {
+            name: 'branch',
+            attributes: { id: '6' },
+            children: [
+              { name: 'leaf', attributes: { id: '7' } },
+              { name: 'leaf', attributes: { id: '8' } },
+              {
+                name: 'branch',
+                attributes: { id: '9' },
+                children: [
+                  { name: 'leaf', attributes: { id: '10' } },
+                  { name: 'leaf', attributes: { id: '11' } },
+                ],
+              },
+            ],
+          },
+          { name: 'leaf', attributes: { id: '12' } },
+        ],
+      });
+      const results = findDescendants(tree, ['branch', 'leaf']);
+      expect(results.map(result => ({ [result.name as string]: result.attributes.id }))).toEqual([
+        { leaf: '1' },
+        { branch: '2' },
+        { leaf: '3' },
+        { leaf: '4' },
+        { leaf: '5' },
+        { branch: '6' },
+        { leaf: '7' },
+        { leaf: '8' },
+        { branch: '9' },
+        { leaf: '10' },
+        { leaf: '11' },
+        { leaf: '12' },
+      ]);
+    });
   });
 
   describe('getTextContent', function () {
