@@ -23,6 +23,46 @@ export function getTreeNodeWithParents(parent?: TreeNode): TreeNodeWithParent {
   return root;
 }
 
+type TreeNodeConverter = (
+  node: TreeNode | TreeNodeWithParent,
+  childNodeConverter: TreeNodeConverter | null,
+) => TreeNode;
+function convertToBareTreeNode(
+  node: TreeNode | TreeNodeWithParent,
+  childNodeConverter: TreeNodeConverter | null,
+): TreeNode {
+  const newNode = {} as TreeNode;
+
+  if (node.name !== undefined) {
+    newNode.name = node.name;
+  }
+  if (node.text !== undefined) {
+    newNode.text = node.text;
+  }
+  if (node.type !== undefined) {
+    newNode.type = node.type;
+  }
+  if (node.attributes && Object.keys(node.attributes).length) {
+    newNode.attributes = {
+      ...node.attributes,
+    };
+  }
+  if (node.children?.length && childNodeConverter) {
+    newNode.children = node.children.map(child => childNodeConverter(child, childNodeConverter));
+  }
+
+  return newNode;
+}
+
+/**
+ * Copies a tree, removing non essential properties which is JSON serializable
+ *
+ * This is the opposite of `getTreeNodeWithParents`
+ */
+export function getBareTreeNode(node: TreeNodeWithParent, includeChildren = true): TreeNode {
+  return convertToBareTreeNode(node, includeChildren ? convertToBareTreeNode : null);
+}
+
 /**
  * Finds descendants of a given node by tagName
  */

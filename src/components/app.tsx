@@ -12,9 +12,8 @@ import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits/audits';
 import { createHashHistory } from 'history';
 import style from './app.css';
-import { generateHtmlString } from '../lib/save-html';
 import Report from './report';
-import { version } from '../../package.json';
+import { waitFor } from '../lib/wait-util';
 
 const tabs = [
   {
@@ -44,13 +43,17 @@ function getDefaultHtmlFilename(url: string, date: Date) {
   return `${host}-${localDate}.html`;
 }
 
-async function saveFile(content: string, options: SaveFilePickerOptions & SuggestedNameOption) {
-  const fileHandle = await window.showSaveFilePicker?.(options);
+async function saveFile(content: string | Promise<string>, options: SaveFilePickerOptions & SuggestedNameOption) {
+  // show the file picker while waiting for content simultaneously
+  const [fileHandle, fileContents] = await Promise.all([
+    window.showSaveFilePicker?.(options),
+    typeof content === 'string' ? Promise.resolve(content) : content,
+  ]);
 
   let file: FileSystemWritableFileStream | undefined;
   try {
     file = await fileHandle.createWritable();
-    await file.write(content);
+    await file.write(fileContents);
   } finally {
     await file?.close();
   }
@@ -89,7 +92,7 @@ const App: FunctionalComponent = () => {
     [richTree],
   );
   const [saving, setSaving] = useState(false);
-  const reportElement = useRef<HTMLDivElement>(null);
+  const reportElement = useRef<Report>(null);
 
   useEffect(() => {
     setTabIndex(
@@ -154,39 +157,6 @@ const App: FunctionalComponent = () => {
     }
   }, [auditResults, tree]);
 
-  // generate report and save html document
-  useEffect(() => {
-    if (saving) {
-      if (reportElement.current?.firstElementChild) {
-        (async () => {
-          await saveFile(
-            await generateHtmlString(Array.from(reportElement.current?.children ?? []), {
-              version,
-              summary: {
-                score: auditResults.score * 100,
-                errors: auditResults.errors.length,
-                warnings: auditResults.warnings.length,
-              },
-              tree,
-            }),
-            {
-              suggestedName: getDefaultHtmlFilename(tabInfo.url, new Date()),
-              types: [
-                {
-                  description: 'HTML document',
-                  accept: {
-                    'text/html': ['.html'],
-                  },
-                },
-              ],
-            },
-          );
-          setSaving(false);
-        })();
-      }
-    }
-  }, [auditResults.errors.length, auditResults.score, auditResults.warnings.length, saving, tabInfo.url, tree]);
-
   async function handleOpenFile() {
     const [fileHandle] = await window.showOpenFilePicker?.({
       types: [
@@ -227,6 +197,21 @@ const App: FunctionalComponent = () => {
 
   async function handleSaveHtml() {
     setSaving(true);
+    await saveFile(
+      waitFor(() => reportElement.current!).then(ref => ref.getHtml()),
+      {
+        suggestedName: getDefaultHtmlFilename(tabInfo.url, new Date()),
+        types: [
+          {
+            description: 'Saved HTML or JSON document',
+            accept: {
+              'text/*': ['.json', '.html'],
+            },
+          },
+        ],
+      },
+    );
+    setSaving(false);
   }
 
   return (
@@ -268,8 +253,15 @@ const App: FunctionalComponent = () => {
         </div>
       ) : null}
       {saving ? (
-        <div ref={reportElement} class={style.reportContainer}>
-          <Report auditResults={auditResults} title={tabInfo.title} auditUrl={tabInfo.url} icon={tabInfo.icon} />
+        <div class={style.reportContainer}>
+          <Report
+            ref={reportElement}
+            auditResults={auditResults}
+            title={tabInfo.title}
+            auditUrl={tabInfo.url}
+            icon={tabInfo.icon}
+            tree={tree}
+          />
         </div>
       ) : null}
     </div>

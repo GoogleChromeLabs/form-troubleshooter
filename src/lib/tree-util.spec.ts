@@ -5,6 +5,7 @@ import { runAudits } from './audits/audits';
 import {
   closestParent,
   findDescendants,
+  getBareTreeNode,
   getPath,
   getTextContent,
   getTreeNodeWithParents,
@@ -58,6 +59,51 @@ describe('tree-util', function () {
       expect(c.parent).toEqual(b);
       expect(c.attributes).toBeTruthy();
       expect(c.children).toBeTruthy();
+    });
+  });
+
+  describe('getBareTreeNode', function () {
+    it('should return node initializing children and attributes', function () {
+      const node: TreeNode = { name: 'root' };
+      const tree = getTreeNodeWithParents(node);
+      const result = getBareTreeNode(tree);
+
+      expect(() => JSON.stringify(result)).not.toThrow();
+      expect(result).toEqual(node);
+    });
+
+    it('should return node with attributes', function () {
+      const node: TreeNode = { name: 'root', attributes: { hello: 'world' } };
+      const tree = getTreeNodeWithParents(node);
+      const result = getBareTreeNode(tree);
+
+      expect(() => JSON.stringify(result)).not.toThrow();
+      expect(result).toEqual(node);
+    });
+
+    it('should return node with children', function () {
+      const node: TreeNode = {
+        name: 'root',
+        children: [{ name: 'a' }, { name: 'b', children: [{ name: 'c' }] }],
+      };
+      const tree = getTreeNodeWithParents(node);
+      const result = getBareTreeNode(tree);
+
+      expect(() => JSON.stringify(result)).not.toThrow();
+      expect(result).toEqual(node);
+    });
+
+    it('should return node with excluding children', function () {
+      const node: TreeNode = {
+        name: 'root',
+        attributes: { hello: 'world' },
+        children: [{ name: 'a' }, { name: 'b', children: [{ name: 'c' }] }],
+      };
+      const tree = getTreeNodeWithParents(node);
+      const result = getBareTreeNode(tree, false);
+
+      expect(() => JSON.stringify(result)).not.toThrow();
+      expect(result).toEqual({ name: 'root', attributes: { hello: 'world' } });
     });
   });
 
