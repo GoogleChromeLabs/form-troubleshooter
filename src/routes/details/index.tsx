@@ -83,6 +83,7 @@ const Details: FunctionalComponent<Props> = props => {
   ];
 
   if (tree) {
+    // find forms by section types
     forms = new Map(
       Array.from(
         groupBy(
@@ -94,6 +95,14 @@ const Details: FunctionalComponent<Props> = props => {
         ).entries(),
       ).map(([form, fields]) => [form, groupBy(fields, field => field.name!)]),
     );
+
+    // find forms that don't have elements
+    const allForms = findDescendants(tree, ['form']);
+    allForms.forEach(form => {
+      if (!forms.has(form)) {
+        forms.set(form, new Map());
+      }
+    });
   }
 
   return (
