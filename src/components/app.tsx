@@ -44,7 +44,7 @@ function getDefaultHtmlFilename(url: string, date: Date) {
   return `${host}-${localDate}.html`;
 }
 
-async function saveFile(content: string, options: SaveFilePickerOptions) {
+async function saveFile(content: string, options: SaveFilePickerOptions & SuggestedNameOption) {
   const fileHandle = await window.showSaveFilePicker?.(options);
 
   let file: FileSystemWritableFileStream | undefined;
@@ -53,19 +53,6 @@ async function saveFile(content: string, options: SaveFilePickerOptions) {
     await file.write(content);
   } finally {
     await file?.close();
-  }
-}
-
-async function downloadOrSaveFile(content: string, options: SaveFilePickerOptions & SuggestedNameOption) {
-  if (chrome?.downloads?.download) {
-    const blob = new Blob([content], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    chrome.downloads.download({
-      url,
-      filename: options.suggestedName ?? 'form-audit.html',
-    });
-  } else {
-    await saveFile(content, options);
   }
 }
 
@@ -172,7 +159,7 @@ const App: FunctionalComponent = () => {
     if (saving) {
       if (reportElement.current?.firstElementChild) {
         (async () => {
-          await downloadOrSaveFile(
+          await saveFile(
             await generateHtmlString(Array.from(reportElement.current?.children ?? []), {
               version,
               summary: {
