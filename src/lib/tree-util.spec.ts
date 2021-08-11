@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0 */
 import { runAudits } from './audits/audits';
 import {
   closestParent,
+  escapeCssSelectorFragment,
   findDescendants,
   getPath,
   getTextContent,
@@ -219,6 +220,10 @@ describe('tree-util', function () {
           { name: 'b', attributes: { position: '2' } },
           { name: 'b', attributes: { position: '3' } },
           { name: 'a-b', children: [{ type: '#shadow-root', children: [{ name: 'r' }, { name: 's' }] }] },
+          { name: 'my-invalid-id', attributes: { id: '0-invalid-id' } },
+          { name: 'my-invalid-id', attributes: { id: '1-invalid-id' } },
+          { name: 'other-invalid-id', attributes: { id: ':invalid-id' } },
+          { name: 'my-escaped-id', attributes: { id: 'sf-ui-header::top-nav' } },
         ],
       });
     });
@@ -288,6 +293,24 @@ describe('tree-util', function () {
       const result = getPath(node);
       expect(result).toEqual('/root/a-b/#shadow-root/s');
     });
+
+    it('should get node with index when id is invalid among siblings', function () {
+      const [, node] = findDescendants(tree, ['my-invalid-id']);
+      const result = getPath(node);
+      expect(result).toEqual('/root/my-invalid-id[1]');
+    });
+
+    it('should get node without index when id is invalid without siblings', function () {
+      const [node] = findDescendants(tree, ['other-invalid-id']);
+      const result = getPath(node);
+      expect(result).toEqual('/root/other-invalid-id');
+    });
+
+    it('should get node with escaped id', function () {
+      const [node] = findDescendants(tree, ['my-escaped-id']);
+      const result = getPath(node);
+      expect(result).toEqual('/root/my-escaped-id#sf-ui-header\\3a \\3a top-nav');
+    });
   });
 
   describe('getPath (after audits)', function () {
@@ -355,6 +378,28 @@ describe('tree-util', function () {
     it('should get path with id (leaf)', function () {
       const result = pathToQuerySelector('/root/abc#myabc/a#link');
       expect(result).toEqual('root > abc#myabc > a#link');
+    });
+  });
+
+  describe('escapeCssSelectorFragment', function () {
+    it('should return standard fragment', function () {
+      const result = escapeCssSelectorFragment('_my-id-123');
+      expect(result).toEqual('_my-id-123');
+    });
+
+    it('should not return invalid fragment', function () {
+      const result = escapeCssSelectorFragment('0valid');
+      expect(result).toEqual(null);
+    });
+
+    it('should return escaped fragment', function () {
+      const result = escapeCssSelectorFragment('m&m');
+      expect(result).toEqual('m\\26 m');
+    });
+
+    it('should return escaped fragment (colon)', function () {
+      const result = escapeCssSelectorFragment('m:m');
+      expect(result).toEqual('m\\3a m');
     });
   });
 });
