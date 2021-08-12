@@ -50,6 +50,11 @@ interface ContextText {
   text: string;
 }
 
+interface ContextAutocompleteValue {
+  id?: string;
+  name?: string;
+}
+
 interface ContextFields {
   fields: TreeNodeWithParent[];
 }

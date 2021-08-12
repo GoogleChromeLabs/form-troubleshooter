@@ -104,7 +104,25 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           Found {pluralize(result.items.length, 'a form field', 'form fields')} with no <code>autocomplete</code>{' '}
           attribute, even though an appropriate value is available:
         </p>
-        {defaultItemsPresenter(result.items)}
+        {defaultItemsPresenter(result.items, (item: TreeNodeWithContext<ContextAutocompleteValue>) => (
+          <Fragment>
+            <a
+              onClick={() => handleHighlightClick(item)}
+              onMouseEnter={() => handleHighlightMouseEnter(item)}
+              onMouseLeave={() => handleHighlightMouseLeave(item)}
+            >
+              <CodeWrap
+                text={stringifyFormElement(item)}
+                emphasize={item.context?.id ? `id="${item.context?.id}"` : `name="${item.context?.name}"`}
+              />
+            </a>
+            <ul>
+              <li>
+                Add <code>autocomplete="{item.context?.id ?? item.context?.name}"</code> to this element.
+              </li>
+            </ul>
+          </Fragment>
+        ))}
       </Fragment>
     ),
     references: [
