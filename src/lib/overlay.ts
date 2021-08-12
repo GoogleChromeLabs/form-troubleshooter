@@ -56,12 +56,16 @@ export function showOverlay(rect: Rectangle, type: OverlayType, scrollIntoView: 
       overlay.className = 'in';
 
       if (scrollIntoView) {
-        const scrollPadding = 50;
-        window.scrollTo({
-          behavior: 'smooth',
-          top: overlayTop - scrollPadding,
-          left: overlayLeft - scrollPadding,
-        });
+        const isVisible =
+          top >= 0 && left >= 0 && top + height <= window.innerHeight && left + width <= window.innerWidth;
+        if (!isVisible) {
+          const scrollPadding = 50;
+          window.scrollTo({
+            behavior: 'smooth',
+            top: overlayTop - scrollPadding,
+            left: overlayLeft - scrollPadding,
+          });
+        }
       }
     }
   }
