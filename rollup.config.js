@@ -1,8 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import typescript from '@rollup/plugin-typescript';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const buildFolder = 'build/';
+const distFolder = 'dist/';
 
 const envManifest = process.argv.includes('--configDev') ? 'manifest.dev.json' : 'manifest.prod.json';
 
@@ -25,12 +27,14 @@ export default [
       mergeJson(['src/manifest.json', 'manifest.version.json', envManifest], `${buildFolder}manifest.json`),
     ],
   },
-  // {
-  //   input: 'src/lib/options.ts',
-  //   output: {
-  //     file: `${buildFolder}js/options.js`,
-  //   },
-  // },
+  {
+    input: 'src/module.ts',
+    output: {
+      file: `${distFolder}index.js`,
+      format: 'cjs',
+    },
+    plugins: [typescript({ target: 'es6', lib: ['es5', 'es6', 'ESNext', 'dom'] }), nodeResolve()],
+  },
 ];
 
 function copy(source, destination) {
