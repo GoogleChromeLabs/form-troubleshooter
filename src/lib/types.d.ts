@@ -13,6 +13,18 @@ interface AuditResult<T = unkown> {
   score: number;
 }
 
+interface SerializableAuditDetails {
+  score: number;
+  errors: SerializableAuditResult[];
+  warnings: SerializableAuditResult[];
+}
+
+interface SerializableAuditResult {
+  auditType: string;
+  items: Array<TreeNode & { path?: string }>;
+  score: number;
+}
+
 interface TreeNode {
   name?: string | null;
   text?: string | null;

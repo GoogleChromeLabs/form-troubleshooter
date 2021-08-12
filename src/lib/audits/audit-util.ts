@@ -1,7 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import { getTextContent } from '../tree-util';
+import { getBareTreeNode, getPath, getTextContent } from '../tree-util';
 
 const FORM_ATTRIBUTES_TO_INCLUDE = ['action', 'autocomplete', 'class', 'for', 'id', 'name', 'placeholder', 'type'];
 const END_TAGS_TO_INCLUDE = new Set(['label', 'button']);
@@ -28,4 +28,18 @@ export function stringifyFormElement(node: TreeNodeWithParent): string {
   }
 
   return str;
+}
+
+export function makeAuditDetailsSerializable(auditDetails: AuditDetails): SerializableAuditDetails {
+  return {
+    score: auditDetails.score,
+    errors: auditDetails.errors.map(result => ({
+      ...result,
+      items: result.items.map(item => ({ ...getBareTreeNode(item, false), path: getPath(item) })),
+    })),
+    warnings: auditDetails.warnings.map(result => ({
+      ...result,
+      items: result.items.map(item => ({ ...getBareTreeNode(item, false), path: getPath(item) })),
+    })),
+  };
 }

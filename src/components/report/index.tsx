@@ -5,8 +5,8 @@ import Results from '../../routes/results';
 import AuditSummary from '../summary';
 import style from './style.css';
 import { version } from '../../../package.json';
-import { getBareTreeNode, getPath } from '../../lib/tree-util';
 import { waitFor } from '../../lib/wait-util';
+import { makeAuditDetailsSerializable } from '../../lib/audits/audit-util';
 
 interface Props {
   title: string;
@@ -32,17 +32,7 @@ export default class Report extends Component<Props> {
       );
       const html = await generateHtmlString([this.reportElement.current!], {
         version,
-        auditResults: {
-          score: this.props.auditResults.score * 100,
-          errors: this.props.auditResults.errors.map(result => ({
-            ...result,
-            items: result.items.map(item => ({ ...getBareTreeNode(item, false), path: getPath(item) })),
-          })),
-          warnings: this.props.auditResults.warnings.map(result => ({
-            ...result,
-            items: result.items.map(item => ({ ...getBareTreeNode(item, false), path: getPath(item) })),
-          })),
-        },
+        auditResults: makeAuditDetailsSerializable(this.props.auditResults),
         tree: this.props.tree,
       });
       return html;
