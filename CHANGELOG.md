@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.2...v1.2.0) (2021-08-13)
+
+
+### Miscellaneous Chores
+
+* Updated version in manifest to match CWS version ([4a47435](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/4a474354cb325b4c016a2130cc2fac3dc50159a4))
+
 ### [1.2.2](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.0...v1.2.2) (2021-08-09)
 
 
