@@ -1,6 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
+import { runAudits } from './audits/audits';
 import {
   closestParent,
   findDescendants,
@@ -286,6 +287,47 @@ describe('tree-util', function () {
       const [node] = findDescendants(tree, ['s']);
       const result = getPath(node);
       expect(result).toEqual('/root/a-b/#shadow-root/s');
+    });
+  });
+
+  describe('getPath (after audits)', function () {
+    it('should get root node', function () {
+      const tree = getTreeNodeWithParents({
+        name: 'root',
+        children: [
+          {
+            name: 'form',
+            children: [
+              { name: 'label' },
+              { name: 'input' },
+              { name: 'label', children: [{ text: 'label' }] },
+              { name: 'input', attributes: { name: 'name' } },
+              { name: 'label', children: [{ text: 'label' }, { name: 'input', attributes: { name: 'name' } }] },
+              { name: 'label', attributes: { for: 'name' }, children: [{ text: 'label' }] },
+              { name: 'input', attributes: { id: 'name', name: 'name' } },
+              { name: 'label', attributes: { for: 'name', bogus: 'true' }, children: [{ text: 'label' }] },
+              { name: 'input', attributes: { id: 'name' } },
+              { name: 'label', attributes: { for: 'name', bogus: 'true' }, children: [{ text: 'label' }] },
+              { name: 'input', attributes: { type: 'check' } },
+              { name: 'label', attributes: { id: 'label' }, children: [{ text: 'label' }] },
+              { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'label' } },
+              { name: 'input', attributes: { 'type': 'text', 'aria-labelledby': 'labek' } },
+              { name: 'input', attributes: { name: 'name', autocomplete: 'delivery' } },
+              { name: 'input', attributes: { name: 'name', autocomplete: 'spam' } },
+              { name: 'input', attributes: { name: 'name', autcomplete: 'postal-code' } },
+              { name: 'select', attributes: { id: 'select', name: 'select1' } },
+              { name: 'select', attributes: { id: 'select', name: 'select2' } },
+            ],
+          },
+        ],
+      });
+      const auditResults = runAudits(tree);
+
+      [...auditResults.errors, ...auditResults.warnings].forEach(result => {
+        result.items.forEach(item => {
+          expect(() => getPath(item)).not.toThrow();
+        });
+      });
     });
   });
 

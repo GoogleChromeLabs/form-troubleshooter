@@ -48,16 +48,21 @@ export function inputHasLabel(tree: TreeNodeWithParent): AuditResult | undefined
   );
   const invalidFields = eligibleFields
     .filter(node => !closestParent(node, 'label'))
-    .map(node => ({ ...node, context: { reasons: [] as Array<{ type: string; reference: string }> } }))
+    .map(node => {
+      const contextNode: TreeNodeWithContext<ContextReasons> = node;
+      // mutating node instead of returning a new one to keep object identity the same
+      contextNode.context = { reasons: [] };
+      return contextNode;
+    })
     .filter(node => {
       if (node.attributes.id) {
-        node.context.reasons.push({ type: 'id', reference: node.attributes.id });
+        node.context?.reasons.push({ type: 'id', reference: node.attributes.id });
       }
       return !labelsByFor.has(node.attributes.id);
     })
     .filter(node => {
       if (node.attributes['aria-labelledby']) {
-        node.context.reasons.push({ type: 'aria-labelledby', reference: node.attributes['aria-labelledby'] });
+        node.context?.reasons.push({ type: 'aria-labelledby', reference: node.attributes['aria-labelledby'] });
       }
       return (
         !node.attributes['aria-labelledby'] ||

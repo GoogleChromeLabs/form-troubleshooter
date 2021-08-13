@@ -125,6 +125,10 @@ function getPathSegment(node: TreeNodeWithParent): string {
     return node.name;
   } else {
     const index = siblingsOfType!.indexOf(node);
+    if (index === -1) {
+      console.log('node', node);
+      throw new Error('Node not found among siblings, node identity may have changed in one of the audits');
+    }
     return `${node.name}[${index}]`;
   }
 }

@@ -73,7 +73,6 @@ describe('labels', function () {
 
       expect(result!.items[0].name).toEqual('label');
       expect(getTextContent(result!.items[0])).toEqual('hello');
-      expect(result!.items[0].context.text).toEqual('hello');
       expect(getTextContent(result!.items[0].context.duplicates[0])).toEqual('hello');
       expect(result!.score).toBe(0);
     });

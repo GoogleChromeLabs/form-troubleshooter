@@ -31,3 +31,12 @@
   background-color: #fff;
   border-radius: 100px;
 }
+
+.menu .menuDivider {
+  margin-top: 6px;
+  border-top: 1px solid #00000044;
+  padding: 12px 16px 3px;
+  font-size: 90%;
+  opacity: 0.5;
+  cursor: default;
+}

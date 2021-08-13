@@ -3,6 +3,14 @@ SPDX-License-Identifier: Apache-2.0 */
 
 export const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
 
+export const IGNORE_CHILDREN = ['head', 'script', 'style', 'svg', 'textarea'];
+export const IGNORE_ATTRIBUTES: Array<string | RegExp> = [
+  'autofill-information',
+  'autofill-prediction',
+  'value',
+  /^data-/i,
+];
+
 // From https://html.spec.whatwg.org/multipage/form-control-infrastructure.html
 export const AUTOCOMPLETE_TOKENS = [
   'additional-name',

@@ -1,6 +1,23 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-.emphasize {
+.code .emphasize {
   font-weight: bold;
 }
+
+.code code:not(:first-child) {
+  padding-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.code code:not(:last-child) {
+  padding-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+/* 
+.code code + code {
+  padding: 0.05rem 0;
+  border-radius: 0;
+} */

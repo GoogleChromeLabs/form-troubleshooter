@@ -29,12 +29,17 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
   const eligibleFields = findDescendants(tree, ['label']);
   const labelsByForm = groupBy(
     eligibleFields
-      .map(node => ({ ...node, context: { text: getTextContent(node) } }))
-      .filter(field => field.context.text),
+      .map(node => {
+        const contextNode: TreeNodeWithContext<ContextText> = node;
+        // mutating node instead of returning a new one to keep object identity the same
+        contextNode.context = { text: getTextContent(node) };
+        return contextNode;
+      })
+      .filter(field => field.context?.text),
     node => closestParent(node, 'form'),
   );
   const duplicates = Array.from(labelsByForm.values())
-    .map(formFields => Array.from(groupBy(formFields, field => field.context.text).values()))
+    .map(formFields => Array.from(groupBy(formFields, field => field.context!.text).values()))
     .filter(formFields => formFields.filter(fields => fields.length > 1).length)
     .flat();
 
@@ -42,14 +47,12 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
     return {
       auditType: 'label-unique',
       items: duplicates.map(fields => {
-        const [first, ...others] = fields;
-        return {
-          ...first,
-          context: {
-            ...first.context,
-            duplicates: others,
-          },
+        const [first, ...others] = fields as TreeNodeWithContext<ContextDuplicates>[];
+        // mutating node instead of returning a new one to keep object identity the same
+        first.context = {
+          duplicates: others,
         };
+        return first;
       }),
       score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
@@ -63,11 +66,13 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
 export function hasLabelWithValidElements(tree: TreeNodeWithParent): AuditResult | undefined {
   const eligibleFields = findDescendants(tree, ['label']);
   const invalidFields = eligibleFields
-    .map(node => ({
-      ...node,
-      context: { fields: findDescendants(node, ['a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']) },
-    }))
-    .filter(field => field.context.fields.length);
+    .map(node => {
+      const contextNode: TreeNodeWithContext<ContextFields> = node;
+      // mutating node instead of returning a new one to keep object identity the same
+      contextNode.context = { fields: findDescendants(node, ['a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']) };
+      return contextNode;
+    })
+    .filter(field => field.context?.fields.length);
 
   if (invalidFields.length) {
     return {
@@ -90,13 +95,12 @@ export function hasLabelWithUniqueForAttribute(tree: TreeNodeWithParent): AuditR
     return {
       auditType: 'label-unique',
       items: duplicates.map(fields => {
-        const [first, ...others] = fields;
-        return {
-          ...first,
-          context: {
-            duplicates: others,
-          },
+        const [first, ...others] = fields as TreeNodeWithContext<ContextDuplicates>[];
+        // mutating node instead of returning a new one to keep object identity the same
+        first.context = {
+          duplicates: others,
         };
+        return first;
       }),
       score: 1 - duplicates.reduce((total, fields) => total + fields.length, 0) / eligibleFields.length,
     };
@@ -129,7 +133,12 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
   const labels = findDescendants(tree, ['label']);
 
   const invalidFields = labels
-    .map(node => ({ ...node, context: { reasons: [] as Array<{ type: string; reference: string }> } }))
+    .map(node => {
+      const contextNode: TreeNodeWithContext<ContextReasons> = node;
+      // mutating node instead of returning a new one to keep object identity the same
+      contextNode.context = { reasons: [] };
+      return contextNode;
+    })
     .filter(node => {
       const emptyFor = node.attributes.for != null && node.attributes.for.trim() === '';
       const invalidFor = node.attributes.for && !inputsById.has(node.attributes.for);
@@ -143,13 +152,13 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
         ).length === 0;
 
       if (emptyFor) {
-        node.context.reasons.push({ type: 'empty-for', reference: node.attributes.for });
+        node.context?.reasons.push({ type: 'empty-for', reference: node.attributes.for });
       }
 
       if (invalidFor) {
-        node.context.reasons.push({ type: 'for', reference: node.attributes.for });
+        node.context?.reasons.push({ type: 'for', reference: node.attributes.for });
       } else if (invalidAria) {
-        node.context.reasons.push({ type: 'id', reference: node.attributes.id });
+        node.context?.reasons.push({ type: 'id', reference: node.attributes.id });
       }
 
       return emptyFor || invalidFor || invalidAria || invalidChild;
