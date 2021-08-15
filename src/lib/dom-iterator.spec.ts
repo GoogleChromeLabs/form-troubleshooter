@@ -5,7 +5,7 @@ jest.mock('./messaging-util');
 
 import { convertNodeToTreeNode, getDocumentTree } from './dom-iterator';
 import { truncate } from './string-util';
-import { sendMessageAndWait } from './messaging-util';
+import { sendMessageToIframe } from './messaging-util';
 import { createNode } from './test-util';
 
 const LONG_TEXT = new Array(401).fill('a').join('');
@@ -89,7 +89,7 @@ describe('convertNodeToTreeNode', function () {
 
 describe('getDocumentTree', function () {
   beforeAll(() => {
-    (sendMessageAndWait as jest.Mock).mockReturnValue(
+    (sendMessageToIframe as jest.Mock).mockReturnValue(
       Promise.resolve({
         name: 'form',
         children: [
