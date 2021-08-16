@@ -182,19 +182,6 @@ const App: FunctionalComponent = () => {
     setTree(JSON.parse(json));
   }
 
-  async function handleSaveFile() {
-    await saveFile(JSON.stringify(tree), {
-      types: [
-        {
-          description: 'JSON document',
-          accept: {
-            'text/*': ['.json'],
-          },
-        },
-      ],
-    });
-  }
-
   async function handleSaveHtml() {
     setSaving(true);
     await saveFile(
@@ -216,11 +203,7 @@ const App: FunctionalComponent = () => {
 
   return (
     <div id="preact_root">
-      <Header
-        onOpenJson={handleOpenFile}
-        onSaveJson={tree ? handleSaveFile : undefined}
-        onSaveHtml={tree ? handleSaveHtml : undefined}
-      />
+      <Header onOpenJson={handleOpenFile} onSaveHtml={tree ? handleSaveHtml : undefined} />
       <AuditSummary
         score={auditResults.score}
         recommendations={auditResults.errors}
