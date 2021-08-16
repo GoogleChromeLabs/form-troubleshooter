@@ -44,7 +44,7 @@ const Score: FunctionalComponent<Props> = (props: Props) => {
         cx={radius}
         cy={radius}
       />
-      <text x="50%" y="50%" strokeWidth={0} text-anchor="middle" dy="0.35em">
+      <text x="50%" y="50%" strokeWidth={0} text-anchor="middle" dy="0.35em" title={`${(value * 100).toFixed(2)}`}>
         {text}
       </text>
     </svg>

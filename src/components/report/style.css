@@ -1,0 +1,42 @@
+.report {
+  padding: 1rem 2rem;
+  min-width: 1024px;
+}
+
+.report h1 {
+  margin-block-end: 0;
+}
+
+.report h1 + p {
+  margin-block-start: 0;
+}
+
+.report h2 {
+  margin-block-start: 3rem;
+}
+
+.url {
+  opacity: 0.8;
+  font-size: 0.8rem;
+}
+
+.report .reportScore {
+  margin: 0;
+  margin-top: 3rem;
+}
+
+.results {
+  margin: 2rem 0 2rem 2rem;
+}
+
+.title {
+  display: flex;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+}

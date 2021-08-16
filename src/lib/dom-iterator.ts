@@ -1,5 +1,5 @@
 import { IGNORE_ATTRIBUTES, IGNORE_CHILDREN } from './constants';
-import { sendMessageAndWait } from './messaging-util';
+import { sendMessageToIframe } from './messaging-util';
 import { condenseWhitespace, truncate } from './string-util';
 
 export async function getDocumentTree(node: Node): Promise<TreeNode> {
@@ -45,12 +45,20 @@ export async function getDocumentTree(node: Node): Promise<TreeNode> {
       }
 
       // iframes
-      if (child.nodeName.toLowerCase() === 'iframe' || child instanceof HTMLIFrameElement) {
+      if (
+        (child.nodeName.toLowerCase() === 'iframe' || child instanceof HTMLIFrameElement) &&
+        isElementVisible(child) &&
+        child instanceof Element &&
+        child.getAttribute('src') &&
+        child.getAttribute('src') !== 'about:blank'
+      ) {
         if (!childTree.children) {
           childTree.children = [];
         }
         const iframeTree = await getIframeDocumentTree(child as HTMLIFrameElement);
-        childTree.children.push({ type: '#document', children: [iframeTree] });
+        if (iframeTree) {
+          childTree.children.push({ type: '#document', children: [iframeTree] });
+        }
       }
 
       parentTree.children?.push(childTree);
@@ -122,15 +130,16 @@ export function convertNodeToTreeNode(node: Node): TreeNode | undefined {
 }
 
 async function getIframeDocumentTree(iframeElement: HTMLIFrameElement) {
-  const iframeContent: TreeNode = await sendMessageAndWait({
-    broadcast: true,
-    wait: true,
-    message: 'inspect',
-    name: iframeElement.name,
-    url: iframeElement.src,
-  });
+  try {
+    const iframeContent: TreeNode = await sendMessageToIframe(iframeElement, {
+      type: 'inspect',
+    });
 
-  return iframeContent;
+    return iframeContent;
+  } catch (err) {
+    console.error('Failed to get tree from iframe', err, iframeElement);
+    return null;
+  }
 }
 
 function isElementVisible(elem: Node | null): boolean {

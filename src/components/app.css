@@ -17,3 +17,8 @@ SPDX-License-Identifier: Apache-2.0 */
 .content {
   padding: 20px;
 }
+
+.reportContainer {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+}

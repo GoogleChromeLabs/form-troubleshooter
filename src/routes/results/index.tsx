@@ -4,11 +4,12 @@ import style from './style.css';
 
 interface Props {
   results: AuditResult[];
+  onRender?: () => void;
 }
 
 const Results: FunctionalComponent<Props> = props => {
   const { results } = props;
-  return (
+  const element = (
     <div class={style.results}>
       {results.length ? (
         <ul class={style.audit}>
@@ -26,6 +27,10 @@ const Results: FunctionalComponent<Props> = props => {
       )}
     </div>
   );
+
+  props.onRender?.();
+
+  return element;
 };
 
 export default Results;

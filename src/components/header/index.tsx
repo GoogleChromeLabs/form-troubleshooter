@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from 'preact';
+import { Fragment, FunctionalComponent, h } from 'preact';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -7,9 +7,12 @@ import style from './style.css';
 import { useState } from 'preact/hooks';
 import { MouseEvent } from 'react';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 interface Props {
-  documentTree?: TreeNode;
-  onLoadTree?: (tree: TreeNode) => void;
+  onSaveHtml?: () => void;
+  onSaveJson?: () => void;
+  onOpenJson?: () => void;
 }
 
 const Header: FunctionalComponent<Props> = props => {
@@ -20,75 +23,28 @@ const Header: FunctionalComponent<Props> = props => {
     setAnchorEl(event?.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (callback?: () => void) => {
     setAnchorEl(null);
+    callback?.();
   };
 
-  const handleBugReport = () => {
+  const reportBug = () => {
     window.open(
       'https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new?labels=bug&template=bug_report.md',
       '_blank',
     );
-    setAnchorEl(null);
   };
 
-  const handleFeatureRequest = () => {
+  const requestFeature = () => {
     window.open(
       'https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new?labels=enhancement&template=feature_request.md',
       '_blank',
     );
-    setAnchorEl(null);
   };
 
-  const handleFeedback = () => {
+  const submitFeedback = () => {
     window.open('https://forms.gle/Sm7DbKfLX3hHNcDp9', '_blank');
-    setAnchorEl(null);
   };
-
-  async function handleOpenFile() {
-    setAnchorEl(null);
-
-    const [fileHandle] = await window.showOpenFilePicker?.({
-      types: [
-        {
-          description: 'JSON',
-          accept: {
-            'text/*': ['.json'],
-          },
-        },
-      ],
-      multiple: false,
-    });
-    const file = await fileHandle.getFile();
-    const contents = await file.text();
-    console.log(contents);
-
-    props.onLoadTree?.(JSON.parse(contents));
-  }
-
-  async function handleSaveFile() {
-    setAnchorEl(null);
-
-    const contents = JSON.stringify(props.documentTree);
-    const fileHandle = await window.showSaveFilePicker?.({
-      types: [
-        {
-          description: 'JSON',
-          accept: {
-            'text/*': ['.json'],
-          },
-        },
-      ],
-    });
-
-    let file: FileSystemWritableFileStream | undefined;
-    try {
-      file = await fileHandle.createWritable();
-      await file.write(contents);
-    } finally {
-      await file?.close();
-    }
-  }
 
   return (
     <header class={style.header}>
@@ -103,33 +59,52 @@ const Header: FunctionalComponent<Props> = props => {
           anchorEl={anchorEl}
           keepMounted
           open={open}
-          onClose={handleClose}
+          onClose={() => {
+            handleClose();
+          }}
           getContentAnchorEl={null}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
           transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <MenuItem onClick={handleClose} disabled={true}>
-            Share results
-          </MenuItem>
-          <MenuItem onClick={handleClose} disabled={true}>
+          <div class={style.menuDivider}>Share</div>
+          <MenuItem
+            onClick={() => {
+              handleClose(props.onSaveHtml);
+            }}
+            disabled={!props.onSaveHtml}
+          >
             Save as HTML
           </MenuItem>
-          <MenuItem onClick={handleBugReport}>File a bug</MenuItem>
-          <MenuItem onClick={handleFeatureRequest}>Request a feature</MenuItem>
-          <MenuItem onClick={handleFeedback} disabled>
-            Provide feedback
+          <MenuItem onClick={() => handleClose()} disabled={true}>
+            Share results
           </MenuItem>
-          <div class={style.menuDivider}>Development</div>
-          <MenuItem title="Open saved tree data and view results" onClick={handleOpenFile}>
-            Open form data
-          </MenuItem>
-          <MenuItem
-            title="Save current form to be viewed later"
-            onClick={handleSaveFile}
-            disabled={!props.documentTree}
-          >
-            Save form data
-          </MenuItem>
+          <div class={style.menuDivider}>Feedback</div>
+          <MenuItem onClick={() => handleClose(reportBug)}>File a bug</MenuItem>
+          <MenuItem onClick={() => handleClose(requestFeature)}>Request a feature</MenuItem>
+          <MenuItem onClick={() => handleClose(submitFeedback)}>Provide feedback</MenuItem>
+          {isDev ? (
+            <Fragment>
+              <div class={style.menuDivider}>Development</div>
+              <MenuItem
+                title="Open saved tree data and view results"
+                onClick={() => {
+                  handleClose(props.onOpenJson);
+                }}
+                disabled={!props.onOpenJson}
+              >
+                Open form data
+              </MenuItem>
+              <MenuItem
+                title="Save current form to be viewed later"
+                onClick={() => {
+                  handleClose(props.onSaveJson);
+                }}
+                disabled={!props.onSaveJson}
+              >
+                Save form data
+              </MenuItem>
+            </Fragment>
+          ) : null}
         </Menu>
       </nav>
     </header>

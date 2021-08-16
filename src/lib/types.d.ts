@@ -28,6 +28,7 @@ interface TreeNodeWithParent extends TreeNode {
 }
 
 interface TreeNodeWithContext<T> extends TreeNodeWithParent {
+  original?: TreeNodeWithParent;
   context?: T;
 }
 
@@ -47,6 +48,11 @@ interface ContextReasons {
 
 interface ContextText {
   text: string;
+}
+
+interface ContextAutocompleteValue {
+  id?: string;
+  name?: string;
 }
 
 interface ContextFields {

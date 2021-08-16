@@ -40,3 +40,8 @@
   opacity: 0.5;
   cursor: default;
 }
+
+.menu .menuDivider:first-child {
+  margin-top: 0;
+  border-top: 0;
+}

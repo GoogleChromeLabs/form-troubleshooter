@@ -13,11 +13,26 @@ export function hasAutocompleteAttributes(tree: TreeNodeWithParent): AuditResult
   const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(
     node => node.attributes.type !== 'hidden' && node.attributes.type !== 'button' && node.attributes.type !== 'submit',
   );
-  const invalidFields = eligibleFields.filter(
-    node =>
-      !node.attributes.autocomplete &&
-      (AUTOCOMPLETE_TOKENS.includes(node.attributes.id) || AUTOCOMPLETE_TOKENS.includes(node.attributes.name)),
-  );
+  const invalidFields = eligibleFields
+    .filter(
+      node =>
+        !node.attributes.autocomplete &&
+        (AUTOCOMPLETE_TOKENS.includes(node.attributes.id) || AUTOCOMPLETE_TOKENS.includes(node.attributes.name)),
+    )
+    .map(node => {
+      const newNode: TreeNodeWithContext<ContextAutocompleteValue> = {
+        ...node,
+        original: node,
+        context: {},
+      };
+      if (AUTOCOMPLETE_TOKENS.includes(node.attributes.id)) {
+        newNode.context!.id = node.attributes.id;
+      }
+      if (AUTOCOMPLETE_TOKENS.includes(node.attributes.name)) {
+        newNode.context!.name = node.attributes.name;
+      }
+      return newNode;
+    });
 
   if (invalidFields.length) {
     return {

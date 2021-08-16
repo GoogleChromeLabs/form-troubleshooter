@@ -2,10 +2,36 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { getDocumentTree } from './dom-iterator';
-import { sendMessageAndWait } from './messaging-util';
+import { sendMessageToIframe } from './messaging-util';
 import { getElementRectangle, hideOverlay, Rectangle, showOverlay } from './overlay';
+import { getWebsiteIcon } from './webpage-icon-util';
 
 /* global chrome */
+
+window.addEventListener('message', async event => {
+  if (event.data?.message === 'iframe message') {
+    const messageType = event.data?.data?.type;
+    if (messageType === 'inspect') {
+      sendPostMessageResponse(event, await getDocumentTree(document));
+    } else if (messageType === 'get element rectangle') {
+      sendPostMessageResponse(event, await getRectangleBySelector(event.data?.data.selector));
+    }
+  }
+});
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function sendPostMessageResponse(event: MessageEvent<any>, responseMessage: any) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  event.source?.postMessage(
+    {
+      message: 'iframe message response',
+      messageId: event.data.messageId,
+      data: responseMessage,
+    },
+    event.origin,
+  );
+}
 
 // Listen for a message from the popup that it has been opened.
 // Need to re-run the audits here every time the popup is opened.
@@ -27,30 +53,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     } else if (request.message === 'highlight') {
       highlightElements(request.selector, request.type, request.scroll);
-    }
-  } else if (
-    (request.name === window.name && request.url === window.location.href) ||
-    (request.name && request.name === window.name) || // in case the iframe gets redirected
-    (request.url && request.url === window.location.href)
-  ) {
-    if (request.message === 'inspect') {
-      getDocumentTree(document).then(tree => {
-        sendResponse(tree);
+    } else if (request.message === 'clear highlight') {
+      clearHighlights(request.type);
+    } else if (request.message === 'get website icon') {
+      getWebsiteIcon(document).then(info => {
+        sendResponse(info);
       });
       return true;
     }
-    if (request.message === 'highlight frame') {
-      highlightElements(request.selector, request.type, request.scroll);
-    }
-    if (request.message === 'get element rectangle') {
-      getRectangleBySelector(request.selector).then(rect => {
-        sendResponse(rect);
-      });
-    }
-  }
-
-  if (request.message === 'clear highlight') {
-    clearHighlights(request.type);
   }
 });
 
@@ -92,22 +102,23 @@ async function getIframeRectangle(cssSelector: string) {
 
       if (iframe) {
         const iframeRect = getElementRectangle(iframe);
-        const innerRect: Rectangle | undefined = await sendMessageAndWait({
-          broadcast: true,
-          wait: true,
-          message: 'get element rectangle',
-          name: iframe.name,
-          url: iframe.src,
-          selector,
-        });
+        try {
+          const innerRect: Rectangle | undefined = await sendMessageToIframe(iframe, {
+            type: 'get element rectangle',
+            selector,
+          });
 
-        if (iframeRect && innerRect) {
-          return {
-            top: iframeRect.top + innerRect.top,
-            left: iframeRect.left + innerRect.left,
-            width: innerRect.width,
-            height: innerRect.height,
-          };
+          if (iframeRect && innerRect) {
+            return {
+              top: iframeRect.top + innerRect.top,
+              left: iframeRect.left + innerRect.left,
+              width: innerRect.width,
+              height: innerRect.height,
+            };
+          }
+        } catch (err) {
+          console.error('Failed to get rectangle from iframe', err, iframe);
+          return null;
         }
       }
     }
