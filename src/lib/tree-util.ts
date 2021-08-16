@@ -136,6 +136,19 @@ export function getPath(node: TreeNodeWithParent): string {
   return `/${pathSegments.join('/')}`;
 }
 
+const validCssFragmentExpression = /^[-_a-z]+[-_a-z0-9]*$/i;
+const validCssFragmentInitialCharactersExpression = /^[-_a-z]/i;
+const invalidCssFragmentCharactersExpression = /[^-_a-z0-9]/gi;
+export function escapeCssSelectorFragment(fragment: string): string | null {
+  if (!validCssFragmentInitialCharactersExpression.test(fragment)) {
+    return null;
+  }
+  if (validCssFragmentExpression.test(fragment)) {
+    return fragment;
+  }
+  return fragment.replace(invalidCssFragmentCharactersExpression, match => `\\${match.charCodeAt(0).toString(16)} `);
+}
+
 /**
  * Gets a parent unique path segment for the node
  */
@@ -149,7 +162,10 @@ function getPathSegment(node: TreeNodeWithParent | TreeNodeWithContext<unknown>)
   }
 
   if (node.attributes.id) {
-    return `${node.name}#${node.attributes.id}`;
+    const idFragment = escapeCssSelectorFragment(node.attributes.id);
+    if (idFragment) {
+      return `${node.name}#${idFragment}`;
+    }
   }
 
   if (!node.parent) {
