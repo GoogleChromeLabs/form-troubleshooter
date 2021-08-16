@@ -224,37 +224,44 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} without a corresponding label:</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<ContextReasons>(item, defaultItemAsCodeRenderer, contextItem => (
-            <Fragment>
-              <ul>
-                {(contextItem.context?.reasons ?? []).map((reason, index) => (
-                  <li key={index}>
-                    {reason.type === 'id' ? (
-                      <Fragment>
-                        There are no labels that reference <code>for="{reason.reference}"</code>
-                      </Fragment>
-                    ) : null}
-                    {reason.type === 'aria-labelledby' ? (
-                      <Fragment>
-                        None of the referenced labels exist:
-                        {reason.reference
-                          .split(' ')
-                          .filter(Boolean)
-                          .map((id, idIndex) => (
-                            <Fragment key={idIndex}>
-                              {idIndex ? ', ' : ''}
-                              <span>
-                                <code>{id}</code>
-                              </span>
-                            </Fragment>
-                          ))}
-                      </Fragment>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </Fragment>
-          )),
+          defaultItemRenderer<ContextReasons>(
+            item,
+            codeItem => (
+              <CodeWrap
+                text={stringifyFormElement(codeItem)}
+                emphasize={codeItem.context?.reasons
+                  .filter(reason => reason.type === 'id')
+                  .map(reason => new RegExp(` id="(${reason.reference})"`))}
+              />
+            ),
+            contextItem => (
+              <Fragment>
+                <ul>
+                  {(contextItem.context?.reasons ?? []).map((reason, index) => (
+                    <li key={index}>
+                      {reason.type === 'id' ? 'There are no labels that reference this field.' : null}
+                      {reason.type === 'aria-labelledby' ? (
+                        <Fragment>
+                          None of the referenced labels exist:
+                          {reason.reference
+                            .split(' ')
+                            .filter(Boolean)
+                            .map((id, idIndex) => (
+                              <Fragment key={idIndex}>
+                                {idIndex ? ', ' : ''}
+                                <span>
+                                  <code>{id}</code>
+                                </span>
+                              </Fragment>
+                            ))}
+                        </Fragment>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </Fragment>
+            ),
+          ),
         )}
       </Fragment>
     ),
