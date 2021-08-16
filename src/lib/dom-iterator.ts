@@ -88,7 +88,7 @@ export function getNodesByParent(node: Node): Map<Node | null, Node[]> {
   while ((currentNode = walker.nextNode())) {
     const parent = currentNode.parentNode;
 
-    if (isElementVisible(parent)) {
+    if (isElementVisible(parent) || isElementVisible(currentNode)) {
       if (nodesByParent.has(parent)) {
         nodesByParent.get(parent)?.push(currentNode);
       } else {
