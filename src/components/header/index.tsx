@@ -11,7 +11,6 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 interface Props {
   onSaveHtml?: () => void;
-  onSaveJson?: () => void;
   onOpenJson?: () => void;
 }
 
@@ -93,15 +92,6 @@ const Header: FunctionalComponent<Props> = props => {
                 disabled={!props.onOpenJson}
               >
                 Open form data
-              </MenuItem>
-              <MenuItem
-                title="Save current form to be viewed later"
-                onClick={() => {
-                  handleClose(props.onSaveJson);
-                }}
-                disabled={!props.onSaveJson}
-              >
-                Save form data
               </MenuItem>
             </Fragment>
           ) : null}
