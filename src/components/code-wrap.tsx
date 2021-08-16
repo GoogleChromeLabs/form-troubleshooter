@@ -5,40 +5,89 @@ function escapeRegExp(str: string) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-interface Props {
+interface CodePart {
+  emphasize: boolean;
   text: string;
-  emphasize?: string;
-  emphasizeAll?: boolean;
 }
 
-const CodeWrap: FunctionalComponent<Props> = props => {
-  const { text, emphasize, emphasizeAll } = props;
-  let parts = [{ text, emphasize: false }];
+function splitCodeParts(text: string, expression: RegExp | null | undefined) {
+  let parts: CodePart[] = [{ text, emphasize: false }];
 
-  if (emphasize) {
-    const expression = new RegExp(escapeRegExp(emphasize), 'g');
+  if (expression) {
     let match: RegExpExecArray | null;
     let position = 0;
 
     parts = [];
 
     while ((match = expression.exec(text))) {
+      const [full, capture] = match;
       const pre = text.substring(position, match.index);
+
       if (pre) {
         parts.push({ emphasize: false, text: pre });
       }
-      parts.push({ emphasize: true, text: match[0] });
-      position = match.index + match[0].length;
 
-      if (!emphasizeAll) {
+      if (capture) {
+        const index = full.indexOf(capture);
+        if (index !== 0) {
+          parts.push({ emphasize: false, text: full.substring(0, index) });
+        }
+        parts.push({ emphasize: true, text: capture });
+
+        if (index + capture.length < full.length) {
+          parts.push({ emphasize: false, text: full.substring(index + capture.length) });
+        }
+      } else {
+        parts.push({ emphasize: true, text: full });
+      }
+
+      position = match.index + full.length;
+
+      if (!expression.flags.includes('g')) {
         break;
       }
     }
 
-    parts.push({ emphasize: false, text: text.substring(position) });
+    if (position < text.length) {
+      parts.push({ emphasize: false, text: text.substring(position) });
+    }
 
     parts = parts.filter(part => part.text);
   }
+
+  return parts;
+}
+
+function mergeCodeParts(parts: CodePart[]) {
+  const merged: CodePart[] = [];
+  let prev: CodePart | undefined;
+
+  for (const part of parts) {
+    if (prev?.emphasize === part.emphasize) {
+      prev.text += part.text;
+    } else {
+      merged.push(part);
+      prev = part;
+    }
+  }
+
+  return merged;
+}
+
+interface Props {
+  text: string;
+  emphasize?: string | RegExp;
+}
+
+const CodeWrap: FunctionalComponent<Props> = props => {
+  const { text, emphasize } = props;
+  const expression = emphasize
+    ? typeof emphasize === 'string'
+      ? new RegExp(escapeRegExp(emphasize))
+      : emphasize
+    : null;
+
+  const parts = mergeCodeParts(splitCodeParts(text, expression));
 
   return (
     <span class={style.code}>

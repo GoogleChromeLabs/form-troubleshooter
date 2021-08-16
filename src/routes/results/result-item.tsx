@@ -66,7 +66,7 @@ function suggestionItemRenderer(item: TreeNodeWithContext<ContextSuggestion>): J
         onMouseEnter={() => handleHighlightMouseEnter(item)}
         onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
-        <CodeWrap text={stringifyFormElement(item)} emphasize={context?.token} />
+        <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(`autocomplete="[^"]*(${context?.token})`)} />
       </a>
       {item.context?.suggestion ? (
         <div>
