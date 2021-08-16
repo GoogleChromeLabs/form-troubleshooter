@@ -383,31 +383,51 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           field:
         </p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<ContextReasons>(item, defaultItemAsCodeRenderer, contextItem => (
-            <Fragment>
-              <ul>
-                {(contextItem.context?.reasons ?? []).map((reason, index) => (
-                  <li key={index}>
-                    {reason.type === 'id' ? (
-                      <Fragment>
-                        There are no form fields which reference label <code>{reason.reference}</code>
-                      </Fragment>
-                    ) : null}
-                    {reason.type === 'for' ? (
-                      <Fragment>
-                        There are no form fields with <code>id="{reason.reference}"</code>
-                      </Fragment>
-                    ) : null}
-                    {reason.type === 'empty-for' ? (
-                      <Fragment>
-                        The <code>for</code> attribute should not be empty
-                      </Fragment>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </Fragment>
-          )),
+          defaultItemRenderer<ContextReasons>(
+            item,
+            codeItem => (
+              <CodeWrap
+                text={stringifyFormElement(codeItem)}
+                emphasize={codeItem.context?.reasons
+                  .map(
+                    reason =>
+                      (reason.type === 'id'
+                        ? new RegExp(` id="(${reason.reference})"`)
+                        : reason.type === 'for'
+                        ? new RegExp(` for="(${reason.reference})"`)
+                        : reason.type === 'empty-for'
+                        ? new RegExp(` (for="")`)
+                        : null)!,
+                  )
+                  .filter(Boolean)}
+              />
+            ),
+            contextItem => (
+              <Fragment>
+                <ul>
+                  {(contextItem.context?.reasons ?? []).map((reason, index) => (
+                    <li key={index}>
+                      {reason.type === 'id' ? (
+                        <Fragment>
+                          There are no form fields which reference label <code>{reason.reference}</code>
+                        </Fragment>
+                      ) : null}
+                      {reason.type === 'for' ? (
+                        <Fragment>
+                          There are no form fields with <code>id="{reason.reference}"</code>
+                        </Fragment>
+                      ) : null}
+                      {reason.type === 'empty-for' ? (
+                        <Fragment>
+                          The <code>for</code> attribute should not be empty
+                        </Fragment>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </Fragment>
+            ),
+          ),
         )}
       </Fragment>
     ),
