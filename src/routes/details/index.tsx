@@ -132,7 +132,9 @@ const Details: FunctionalComponent<Props> = props => {
                 </a>
               </h3>
             ) : (
-              <h3>Without a form</h3>
+              <h3>
+                Elements not in a <code>&lt;form&gt;</code>
+              </h3>
             )}
             {formSections.map((section, sectionIndex) => {
               const items = fieldsMap.get(section.type)?.map(field => section.toItem(field));
