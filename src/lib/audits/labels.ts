@@ -40,12 +40,12 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
       .filter(field => field.context?.text),
     node => closestParent(node, 'form'),
   );
-  const duplicates = Array.from(labelsByForm.values())
-    .map(formFields => Array.from(groupBy(formFields, field => field.context!.text).values()))
-    .filter(formFields => formFields.filter(fields => fields.length > 1).length)
-    .flat();
+  const duplicates = Array.from(labelsByForm.values()).flatMap(formLabels =>
+    Array.from(groupBy(formLabels, field => field.context!.text).values()).filter(labels => labels.length > 1),
+  );
 
   if (duplicates.length) {
+    console.log('duplicates', duplicates);
     return {
       auditType: 'label-unique',
       items: duplicates.map(fields => {
