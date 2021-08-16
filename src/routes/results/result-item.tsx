@@ -58,14 +58,13 @@ function defaultItemsPresenter<T>(
   );
 }
 
-function suggestionItemRenderer(item: TreeNodeWithContext<ContextSuggestion>): JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const context: any = item.context;
+function suggestionItemRenderer<T extends ContextSuggestion>(
+  item: TreeNodeWithContext<T>,
+  itemAsCodeRenderer: (codeItem: TreeNodeWithContext<T>) => JSX.Element = defaultItemAsCodeRenderer,
+): JSX.Element {
   return defaultItemRenderer(
     item,
-    () => (
-      <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(`autocomplete="[^"]*(${context?.token})`)} />
-    ),
+    codeItem => itemAsCodeRenderer(codeItem),
     () =>
       item.context?.suggestion ? (
         <div>
@@ -184,7 +183,16 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           Found {pluralize(result.items.length, 'a form field', 'form fields')} with invalid <code>autocomplete</code>{' '}
           values:
         </p>
-        {defaultItemsPresenter(result.items, suggestionItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          suggestionItemRenderer<ContextSuggestion>(item, codeItem => {
+            return (
+              <CodeWrap
+                text={stringifyFormElement(item)}
+                emphasize={new RegExp(`autocomplete="[^"]*(${codeItem.context?.token})`)}
+              />
+            );
+          }),
+        )}
       </Fragment>
     ),
     references: [
@@ -258,11 +266,20 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'input-type-valid': {
-    title: 'Unrecognized input types can lead to unexpected and incosistent user experiences',
+    title: 'Unrecognized input types can lead to unexpected and inconsistent user experiences',
     render: result => (
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} with invalid types:</p>
-        {defaultItemsPresenter(result.items, suggestionItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          suggestionItemRenderer<ContextSuggestion>(item, codeItem => {
+            return (
+              <CodeWrap
+                text={stringifyFormElement(codeItem)}
+                emphasize={new RegExp(`type="(${codeItem.context?.token})"`)}
+              />
+            );
+          }),
+        )}
       </Fragment>
     ),
     references: [

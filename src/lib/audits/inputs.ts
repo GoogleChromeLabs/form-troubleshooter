@@ -11,7 +11,7 @@ import { groupBy } from '../array-util';
  */
 export function hasValidInputType(tree: TreeNodeWithParent): AuditResult | undefined {
   const eligibleFields = findDescendants(tree, ['input']);
-  const invalidFields: TreeNodeWithContext<{ suggestion: string | null }>[] = eligibleFields.filter(
+  const invalidFields: TreeNodeWithContext<ContextSuggestion>[] = eligibleFields.filter(
     node => node.attributes.type && !INPUT_TYPES.includes(node.attributes.type),
   );
 
@@ -20,7 +20,7 @@ export function hasValidInputType(tree: TreeNodeWithParent): AuditResult | undef
     invalidFields.forEach(field => {
       const matches = suggestions.search(field.attributes.type);
       const suggestion = matches[0] ? matches[0].item : null;
-      field.context = { suggestion };
+      field.context = { token: field.attributes.type, suggestion };
     });
     return {
       auditType: 'input-type-valid',
