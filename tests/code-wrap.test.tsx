@@ -99,4 +99,43 @@ describe('CodeWrap', function () {
       { text: '="fake" ...>' },
     ]);
   });
+
+  test('Wraps a string in code with multiple words to emphasize', function () {
+    const context = shallow(<CodeWrap text="hello world" emphasize={['world', 'hello']} />);
+    expect(context.find('code').map(elem => ({ className: elem.prop('className'), text: elem.text() }))).toEqual([
+      { text: 'hello', className: 'emphasize' },
+      { text: ' ' },
+      { text: 'world', className: 'emphasize' },
+    ]);
+  });
+
+  test('Wraps a string in code with multiple words to emphasize with one word sharing a prefix with another', function () {
+    const context = shallow(<CodeWrap text="hello world" emphasize={['hell', 'hello']} />);
+    expect(context.find('code').map(elem => ({ className: elem.prop('className'), text: elem.text() }))).toEqual([
+      { text: 'hello', className: 'emphasize' },
+      { text: ' world' },
+    ]);
+  });
+
+  test('Wraps a string in code with multiple words to emphasize with one word sharing a suffix with another', function () {
+    const context = shallow(<CodeWrap text="hello world" emphasize={['ello', 'hello']} />);
+    expect(context.find('code').map(elem => ({ className: elem.prop('className'), text: elem.text() }))).toEqual([
+      { text: 'hello', className: 'emphasize' },
+      { text: ' world' },
+    ]);
+  });
+
+  test('Wraps a string in code with multiple words to emphasize with one word sharing a prefix with another, and one being global', function () {
+    const context = shallow(<CodeWrap text="hello world, hello, hello, hello" emphasize={[/hell/g, 'hello']} />);
+    expect(context.find('code').map(elem => ({ className: elem.prop('className'), text: elem.text() }))).toEqual([
+      { text: 'hello', className: 'emphasize' },
+      { text: ' world, ' },
+      { text: 'hell', className: 'emphasize' },
+      { text: 'o, ' },
+      { text: 'hell', className: 'emphasize' },
+      { text: 'o, ' },
+      { text: 'hell', className: 'emphasize' },
+      { text: 'o' },
+    ]);
+  });
 });

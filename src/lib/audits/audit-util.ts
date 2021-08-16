@@ -9,9 +9,9 @@ const END_TAGS_TO_INCLUDE = new Set(['label', 'button']);
 /**
  * Create a representation of a form element.
  */
-export function stringifyFormElement(node: TreeNodeWithParent): string {
+export function stringifyFormElement(node: TreeNodeWithParent, additionalAttributes: string[] = []): string {
   const attributes = Object.entries(node.attributes)
-    .filter(entry => FORM_ATTRIBUTES_TO_INCLUDE.includes(entry[0]))
+    .filter(entry => [...FORM_ATTRIBUTES_TO_INCLUDE, ...additionalAttributes].includes(entry[0]))
     // Include empty attributes, e.g. for="", but not missing attributes.
     .filter(entry => node.attributes[entry[0]] !== null);
   const attributesString = attributes
