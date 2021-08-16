@@ -45,5 +45,24 @@ npm run build
 (cd build && zip -r extension.zip ./)
 
 # upload and publish extension
-curl -H "Authorization: Bearer ${access_token}" -H "x-goog-api-version: 2" -X PUT -T build/extension.zip "https://www.googleapis.com/upload/chromewebstore/v1.1/items/${EXTENSION_ID}"
-curl -H "Authorization: Bearer ${access_token}" -H "x-goog-api-version: 2" -H "Content-Length: 0" -X POST "https://www.googleapis.com/chromewebstore/v1.1/items/${EXTENSION_ID}/publish"
+response=`curl -H "Authorization: Bearer ${access_token}" -H "x-goog-api-version: 2" -X PUT -T build/extension.zip "https://www.googleapis.com/upload/chromewebstore/v1.1/items/${EXTENSION_ID}" 2>/dev/null`
+echo "$response"
+status=`echo "console.log($response.uploadState)" | node`
+
+if [[ $status != "SUCCESS" ]]
+then
+  echo "Failed to upload extension. Response:"
+  echo "$response"
+  exit 1
+fi
+
+response=`curl -H "Authorization: Bearer ${access_token}" -H "x-goog-api-version: 2" -H "Content-Length: 0" -X POST "https://www.googleapis.com/chromewebstore/v1.1/items/${EXTENSION_ID}/publish" 2>/dev/null`
+echo "$response"
+status=`echo "console.log($response.status[0])" | node`
+
+if [[ $status != "OK" ]]
+then
+  echo "Falied to publish extension. Response:"
+  echo "$response"
+  exit 1
+fi
