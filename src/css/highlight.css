@@ -35,12 +35,12 @@ SPDX-License-Identifier: Apache-2.0 */
 #form-troubleshooter-highlight-click-overlay {
   outline: 2px solid #ff0000;
   outline-offset: 2px;
-  z-index: 9999;
+  z-index: 999999;
 }
 
 #form-troubleshooter-highlight-hover-overlay {
   background-color: #ff000011;
-  z-index: 999;
+  z-index: 999998;
   transition: top 0.2s, left 0.2s, height 0.2s, width 0.2s, opacity 0.2s 0.2s;
 }
 
