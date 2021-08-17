@@ -45,7 +45,6 @@ export function hasUniqueLabels(tree: TreeNodeWithParent): AuditResult | undefin
   );
 
   if (duplicates.length) {
-    console.log('duplicates', duplicates);
     return {
       auditType: 'label-unique-text',
       items: duplicates.map(fields => {
