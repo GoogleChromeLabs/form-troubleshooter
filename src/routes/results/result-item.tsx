@@ -157,7 +157,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found {pluralize(result.items.length, 'a form field', 'form fields')} with <code>autocomplete="off"</code>
         </p>
-        {defaultItemsPresenter(result.items)}
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer(item, () => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(' autocomplete="off"')} />
+          )),
+        )}
         <p>
           Although <code>autocomplete="off"</code> is{' '}
           <a
