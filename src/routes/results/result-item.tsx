@@ -458,7 +458,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>Found labels with the same text:</p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp('>([^<]+)<')} />
+          )),
+        )}
       </Fragment>
     ),
     references: [
