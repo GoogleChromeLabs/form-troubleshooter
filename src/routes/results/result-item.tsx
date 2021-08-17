@@ -438,7 +438,21 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       },
     ],
   },
-
+  'label-unique-text': {
+    title: 'Labels within the same form should have unique text values',
+    render: result => (
+      <Fragment>
+        <p>Found labels with the same text:</p>
+        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+      </Fragment>
+    ),
+    references: [
+      {
+        title: 'Duplicate Form Label',
+        url: 'https://equalizedigital.com/accessibility-checker/duplicate-form-label/',
+      },
+    ],
+  },
   'label-unique': {
     title:
       'Form fields with multiple labels may make it difficult for tools such as screen readers to correctly identify form fields',
