@@ -132,7 +132,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>Found {pluralize(result.items.length, 'a form field', 'form fields')} with empty autocomplete values:</p>
-        {defaultItemsPresenter(result.items)}
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer(item, () => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(' autocomplete="\\s*"')} />
+          )),
+        )}
       </Fragment>
     ),
     references: [
