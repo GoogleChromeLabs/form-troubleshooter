@@ -480,7 +480,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found labels with the same <code>for</code> attribute:
         </p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(' for="([^"]*)"')} />
+          )),
+        )}
       </Fragment>
     ),
     references: [
