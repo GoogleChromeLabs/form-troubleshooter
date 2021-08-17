@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from 'preact';
+import { Fragment, FunctionalComponent, h } from 'preact';
 import { escapeRegExp } from '../lib/string-util';
 import style from './code-wrap.css';
 
@@ -105,13 +105,11 @@ const CodeWrap: FunctionalComponent<Props> = props => {
   const parts = mergeCodeParts(splitCodeParts(text, expressions));
 
   return (
-    <span class={style.code}>
-      {parts.map((part, index, arr) => (
-        <code key={index} class={part.emphasize ? style.emphasize : undefined}>
-          {part.text}
-        </code>
+    <code class={style.code}>
+      {parts.map((part, index) => (
+        <Fragment key={index}>{part.emphasize ? <strong>{part.text}</strong> : part.text}</Fragment>
       ))}
-    </span>
+    </code>
   );
 };
 
