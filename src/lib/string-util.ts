@@ -45,3 +45,7 @@ export function condenseWhitespace(
   }
   return input.replace(/\s+/g, ' ');
 }
+
+export function escapeRegExp(str: string | null | undefined): string | null | undefined {
+  return str ? str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : str;
+}

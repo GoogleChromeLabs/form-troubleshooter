@@ -1,9 +1,6 @@
 import { FunctionalComponent, h } from 'preact';
+import { escapeRegExp } from '../lib/string-util';
 import style from './code-wrap.css';
-
-function escapeRegExp(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 interface CodePart {
   emphasize: boolean;
@@ -102,7 +99,7 @@ const CodeWrap: FunctionalComponent<Props> = props => {
   const { text, emphasize } = props;
   const emphasis = emphasize instanceof Array ? emphasize : [emphasize];
   const expressions = emphasis
-    .map(em => (em ? (typeof em === 'string' ? new RegExp(escapeRegExp(em)) : em) : null)!)
+    .map(em => (em ? (typeof em === 'string' ? new RegExp(escapeRegExp(em)!) : em) : null)!)
     .filter(Boolean);
 
   const parts = mergeCodeParts(splitCodeParts(text, expressions));

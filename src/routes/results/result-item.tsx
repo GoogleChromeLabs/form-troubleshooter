@@ -7,7 +7,7 @@ import {
   handleHighlightMouseEnter,
   handleHighlightMouseLeave,
 } from '../../lib/element-highlighter';
-import { pluralize } from '../../lib/string-util';
+import { escapeRegExp, pluralize } from '../../lib/string-util';
 import style from './style.css';
 
 interface Props {
@@ -193,7 +193,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
             return (
               <CodeWrap
                 text={stringifyFormElement(item)}
-                emphasize={new RegExp(`autocomplete="[^"]*(${codeItem.context?.token})`)}
+                emphasize={new RegExp(`autocomplete="[^"]*(${escapeRegExp(codeItem.context?.token)})`)}
               />
             );
           }),
@@ -236,7 +236,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                 text={stringifyFormElement(codeItem)}
                 emphasize={codeItem.context?.reasons
                   .filter(reason => reason.type === 'id')
-                  .map(reason => new RegExp(` id="(${reason.reference})"`))}
+                  .map(reason => new RegExp(` id="(${escapeRegExp(reason.reference)})"`))}
               />
             ),
             contextItem => (
@@ -287,7 +287,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
             return (
               <CodeWrap
                 text={stringifyFormElement(codeItem)}
-                emphasize={new RegExp(`type="(${codeItem.context?.token})"`)}
+                emphasize={new RegExp(`type="(${escapeRegExp(codeItem.context?.token)})"`)}
               />
             );
           }),
@@ -316,7 +316,9 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                     item,
                     codeItem.context!.invalidAttributes.map(invalid => invalid.attribute),
                   )}
-                  emphasize={codeItem.context!.invalidAttributes.map(invalid => new RegExp(` (${invalid.attribute})=`))}
+                  emphasize={codeItem.context!.invalidAttributes.map(
+                    invalid => new RegExp(` (${escapeRegExp(invalid.attribute)})=`),
+                  )}
                 />
               );
             },
@@ -397,9 +399,9 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                   .map(
                     reason =>
                       (reason.type === 'id'
-                        ? new RegExp(` id="(${reason.reference})"`)
+                        ? new RegExp(` id="(${escapeRegExp(reason.reference)})"`)
                         : reason.type === 'for'
-                        ? new RegExp(` for="(${reason.reference})"`)
+                        ? new RegExp(` for="(${escapeRegExp(reason.reference)})"`)
                         : reason.type === 'empty-for'
                         ? new RegExp(` (for="")`)
                         : null)!,
@@ -540,7 +542,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           duplicateItemRenderer(item, codeItem => (
             <CodeWrap
               text={stringifyFormElement(codeItem)}
-              emphasize={new RegExp(` id="(${codeItem.attributes.id})"`)}
+              emphasize={new RegExp(` id="(${escapeRegExp(codeItem.attributes.id)})"`)}
             />
           )),
         )}
@@ -568,7 +570,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           duplicateItemRenderer(item, codeItem => (
             <CodeWrap
               text={stringifyFormElement(codeItem)}
-              emphasize={new RegExp(` name="(${codeItem.attributes.name})"`)}
+              emphasize={new RegExp(` name="(${escapeRegExp(codeItem.attributes.name)})"`)}
             />
           )),
         )}
