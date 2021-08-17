@@ -74,13 +74,18 @@ function suggestionItemRenderer<T extends ContextSuggestion>(
   );
 }
 
-function duplicateItemRenderer(item: TreeNodeWithContext<ContextDuplicates>): JSX.Element {
+function duplicateItemRenderer<T extends ContextDuplicates>(
+  item: TreeNodeWithContext<T>,
+  itemAsCodeRenderer: (codeItem: TreeNodeWithContext<T>) => JSX.Element = defaultItemAsCodeRenderer,
+): JSX.Element {
   return defaultItemRenderer(
     item,
-    () => <CodeWrap text={stringifyFormElement(item)} />,
+    codeItem => itemAsCodeRenderer(codeItem),
     () =>
       item.context?.duplicates?.length
-        ? item.context?.duplicates.map((dup, index) => <Fragment key={index}>, {defaultItemRenderer(dup)}</Fragment>)
+        ? item.context?.duplicates.map((dup, index) => (
+            <Fragment key={index}>, {defaultItemRenderer(dup, itemAsCodeRenderer)}</Fragment>
+          ))
         : null,
   );
 }
@@ -531,7 +536,14 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found form fields with duplicate <code>id</code> attributes:
         </p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap
+              text={stringifyFormElement(codeItem)}
+              emphasize={new RegExp(` id="(${codeItem.attributes.id})"`)}
+            />
+          )),
+        )}
       </Fragment>
     ),
     references: [
@@ -552,7 +564,14 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found fields in the same form with duplicate <code>name</code> attributes:
         </p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap
+              text={stringifyFormElement(codeItem)}
+              emphasize={new RegExp(` name="(${codeItem.attributes.name})"`)}
+            />
+          )),
+        )}
       </Fragment>
     ),
     references: [
