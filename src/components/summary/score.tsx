@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { FunctionalComponent, h } from 'preact';
 import style from './style.css';
 

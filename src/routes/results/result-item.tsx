@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 /* eslint-disable react/display-name */
 import { ComponentChildren, Fragment, FunctionalComponent, h } from 'preact';
 import CodeWrap from '../../components/code-wrap';

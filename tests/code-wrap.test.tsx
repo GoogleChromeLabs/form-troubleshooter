@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { h } from 'preact';
 import CodeWrap from '../src/components/code-wrap';
 // See: https://github.com/preactjs/enzyme-adapter-preact-pure

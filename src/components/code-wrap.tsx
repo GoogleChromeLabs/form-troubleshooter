@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { Fragment, FunctionalComponent, h } from 'preact';
 import { escapeRegExp } from '../lib/string-util';
 import style from './code-wrap.css';

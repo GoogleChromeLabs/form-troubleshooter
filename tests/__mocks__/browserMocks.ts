@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 // Mock Browser API's which are not supported by JSDOM, e.g. ServiceWorker, LocalStorage
 /**
  * An example how to mock localStorage is given below 👇

@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { Fragment, FunctionalComponent, h } from 'preact';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';

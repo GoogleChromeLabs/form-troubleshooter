@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { Component, createRef, h } from 'preact';
 import { generateHtmlString } from '../../lib/save-html';
 import { truncate } from '../../lib/string-util';

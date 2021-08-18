@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { FunctionalComponent } from 'preact';
 import { CustomHistory, route, Route, Router } from 'preact-router';
 
