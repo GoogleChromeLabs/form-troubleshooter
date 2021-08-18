@@ -12,12 +12,12 @@ form-audit extract [...saved-html-files]
 ## Installation
 
 ```sh
-# make sure that form-troubleshooter has been built, run the following command if required
+# Make sure that form-troubleshooter has been built, run the following command if required (from the `cli` directory):
 # (cd .. && npm install && npm run build)
 
-# install dependencies
+# From the `cli` directory, install dependencies:
 npm install
 
-# install command line alias
+# From the `cli` directory, install the command line alias:
 npm install --global .
 ```
