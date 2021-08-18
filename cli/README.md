@@ -1,6 +1,6 @@
 # Form troubleshooter command line interface
 
-This tools is a command line interface for running miscellaneous Form troubleshooter tasks.
+This tool is a command line interface for running miscellaneous **Form troubleshooter** tasks.
 
 ## Usage
 
