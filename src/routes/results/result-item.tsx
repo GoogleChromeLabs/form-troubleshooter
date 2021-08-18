@@ -7,7 +7,7 @@ import {
   handleHighlightMouseEnter,
   handleHighlightMouseLeave,
 } from '../../lib/element-highlighter';
-import { pluralize } from '../../lib/string-util';
+import { escapeRegExp, pluralize } from '../../lib/string-util';
 import style from './style.css';
 
 interface Props {
@@ -20,13 +20,15 @@ interface AuditTypePresenter {
   references: LearnMoreReference[];
 }
 
-type ItemRenderer<T> = (
-  item: TreeNodeWithContext<T>,
-  extraContext?: (contextItem: TreeNodeWithContext<T>) => ComponentChildren | undefined,
-) => ComponentChildren | null;
+type ItemRenderer<T> = (item: TreeNodeWithContext<T>) => ComponentChildren | null;
+
+function defaultItemAsCodeRenderer<T>(codeItem: TreeNodeWithContext<T>) {
+  return <code>{stringifyFormElement(codeItem)}</code>;
+}
 
 function defaultItemRenderer<T>(
   item: TreeNodeWithContext<T>,
+  itemAsCodeRenderer: (codeItem: TreeNodeWithContext<T>) => JSX.Element = defaultItemAsCodeRenderer,
   extraContext?: (contextItem: TreeNodeWithContext<T>) => ComponentChildren | undefined,
 ) {
   return (
@@ -36,7 +38,7 @@ function defaultItemRenderer<T>(
         onMouseEnter={() => handleHighlightMouseEnter(item)}
         onMouseLeave={() => handleHighlightMouseLeave(item)}
       >
-        <code>{stringifyFormElement(item)}</code>
+        {itemAsCodeRenderer(item)}
       </a>
       {extraContext ? extraContext(item) : null}
     </Fragment>
@@ -56,41 +58,35 @@ function defaultItemsPresenter<T>(
   );
 }
 
-function suggestionItemRenderer(item: TreeNodeWithContext<ContextSuggestion>): JSX.Element {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const context: any = item.context;
-  return (
-    <Fragment>
-      <a
-        onClick={() => handleHighlightClick(item)}
-        onMouseEnter={() => handleHighlightMouseEnter(item)}
-        onMouseLeave={() => handleHighlightMouseLeave(item)}
-      >
-        <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(`autocomplete="[^"]*(${context?.token})`)} />
-      </a>
-      {item.context?.suggestion ? (
+function suggestionItemRenderer<T extends ContextSuggestion>(
+  item: TreeNodeWithContext<T>,
+  itemAsCodeRenderer: (codeItem: TreeNodeWithContext<T>) => JSX.Element = defaultItemAsCodeRenderer,
+): JSX.Element {
+  return defaultItemRenderer(
+    item,
+    codeItem => itemAsCodeRenderer(codeItem),
+    () =>
+      item.context?.suggestion ? (
         <div>
           Did you mean <code>{item.context?.suggestion}</code>?
         </div>
-      ) : null}
-    </Fragment>
+      ) : null,
   );
 }
 
-function duplicateItemRenderer(item: TreeNodeWithContext<ContextDuplicates>): JSX.Element {
-  return (
-    <Fragment>
-      <a
-        onClick={() => handleHighlightClick(item)}
-        onMouseEnter={() => handleHighlightMouseEnter(item)}
-        onMouseLeave={() => handleHighlightMouseLeave(item)}
-      >
-        <code>{stringifyFormElement(item)}</code>
-      </a>
-      {item.context?.duplicates?.length
-        ? item.context?.duplicates.map((dup, index) => <Fragment key={index}>, {defaultItemRenderer(dup)}</Fragment>)
-        : null}
-    </Fragment>
+function duplicateItemRenderer<T extends ContextDuplicates>(
+  item: TreeNodeWithContext<T>,
+  itemAsCodeRenderer: (codeItem: TreeNodeWithContext<T>) => JSX.Element = defaultItemAsCodeRenderer,
+): JSX.Element {
+  return defaultItemRenderer(
+    item,
+    codeItem => itemAsCodeRenderer(codeItem),
+    () =>
+      item.context?.duplicates?.length
+        ? item.context?.duplicates.map((dup, index) => (
+            <Fragment key={index}>, {defaultItemRenderer(dup, itemAsCodeRenderer)}</Fragment>
+          ))
+        : null,
   );
 }
 
@@ -104,25 +100,24 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           Found {pluralize(result.items.length, 'a form field', 'form fields')} with no <code>autocomplete</code>{' '}
           attribute, even though an appropriate value is available:
         </p>
-        {defaultItemsPresenter(result.items, (item: TreeNodeWithContext<ContextAutocompleteValue>) => (
-          <Fragment>
-            <a
-              onClick={() => handleHighlightClick(item)}
-              onMouseEnter={() => handleHighlightMouseEnter(item)}
-              onMouseLeave={() => handleHighlightMouseLeave(item)}
-            >
+        {defaultItemsPresenter(result.items, (item: TreeNodeWithContext<ContextAutocompleteValue>) =>
+          defaultItemRenderer(
+            item,
+            () => (
               <CodeWrap
                 text={stringifyFormElement(item)}
                 emphasize={item.context?.id ? `id="${item.context?.id}"` : `name="${item.context?.name}"`}
               />
-            </a>
-            <ul>
-              <li>
-                Add <code>autocomplete="{item.context?.id ?? item.context?.name}"</code> to this element.
-              </li>
-            </ul>
-          </Fragment>
-        ))}
+            ),
+            () => (
+              <ul>
+                <li>
+                  Add <code>autocomplete="{item.context?.id ?? item.context?.name}"</code> to this element.
+                </li>
+              </ul>
+            ),
+          ),
+        )}
       </Fragment>
     ),
     references: [
@@ -137,7 +132,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     render: result => (
       <Fragment>
         <p>Found {pluralize(result.items.length, 'a form field', 'form fields')} with empty autocomplete values:</p>
-        {defaultItemsPresenter(result.items)}
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer(item, () => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(' autocomplete="\\s*"')} />
+          )),
+        )}
       </Fragment>
     ),
     references: [
@@ -158,7 +157,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found {pluralize(result.items.length, 'a form field', 'form fields')} with <code>autocomplete="off"</code>
         </p>
-        {defaultItemsPresenter(result.items)}
+        {defaultItemsPresenter(result.items, item =>
+          defaultItemRenderer(item, () => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(' autocomplete="off"')} />
+          )),
+        )}
         <p>
           Although <code>autocomplete="off"</code> is{' '}
           <a
@@ -193,7 +196,16 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           Found {pluralize(result.items.length, 'a form field', 'form fields')} with invalid <code>autocomplete</code>{' '}
           values:
         </p>
-        {defaultItemsPresenter(result.items, suggestionItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          suggestionItemRenderer<ContextSuggestion>(item, codeItem => {
+            return (
+              <CodeWrap
+                text={stringifyFormElement(item)}
+                emphasize={new RegExp(`autocomplete="[^"]*(${escapeRegExp(codeItem.context?.token)})`)}
+              />
+            );
+          }),
+        )}
       </Fragment>
     ),
     references: [
@@ -225,37 +237,44 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} without a corresponding label:</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<ContextReasons>(item, contextItem => (
-            <Fragment>
-              <ul>
-                {(contextItem.context?.reasons ?? []).map((reason, index) => (
-                  <li key={index}>
-                    {reason.type === 'id' ? (
-                      <Fragment>
-                        There are no labels that reference <code>for="{reason.reference}"</code>
-                      </Fragment>
-                    ) : null}
-                    {reason.type === 'aria-labelledby' ? (
-                      <Fragment>
-                        None of the referenced labels exist:
-                        {reason.reference
-                          .split(' ')
-                          .filter(Boolean)
-                          .map((id, idIndex) => (
-                            <Fragment key={idIndex}>
-                              {idIndex ? ', ' : ''}
-                              <span>
-                                <code>{id}</code>
-                              </span>
-                            </Fragment>
-                          ))}
-                      </Fragment>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </Fragment>
-          )),
+          defaultItemRenderer<ContextReasons>(
+            item,
+            codeItem => (
+              <CodeWrap
+                text={stringifyFormElement(codeItem)}
+                emphasize={codeItem.context?.reasons
+                  .filter(reason => reason.type === 'id')
+                  .map(reason => new RegExp(` id="(${escapeRegExp(reason.reference)})"`))}
+              />
+            ),
+            contextItem => (
+              <Fragment>
+                <ul>
+                  {(contextItem.context?.reasons ?? []).map((reason, index) => (
+                    <li key={index}>
+                      {reason.type === 'id' ? 'There are no labels that reference this field.' : null}
+                      {reason.type === 'aria-labelledby' ? (
+                        <Fragment>
+                          None of the referenced labels exist:
+                          {reason.reference
+                            .split(' ')
+                            .filter(Boolean)
+                            .map((id, idIndex) => (
+                              <Fragment key={idIndex}>
+                                {idIndex ? ', ' : ''}
+                                <span>
+                                  <code>{id}</code>
+                                </span>
+                              </Fragment>
+                            ))}
+                        </Fragment>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </Fragment>
+            ),
+          ),
         )}
       </Fragment>
     ),
@@ -267,11 +286,20 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
     ],
   },
   'input-type-valid': {
-    title: 'Unrecognized input types can lead to unexpected and incosistent user experiences',
+    title: 'Unrecognized input types can lead to unexpected and inconsistent user experiences',
     render: result => (
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an input field', 'input fields')} with invalid types:</p>
-        {defaultItemsPresenter(result.items, suggestionItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          suggestionItemRenderer<ContextSuggestion>(item, codeItem => {
+            return (
+              <CodeWrap
+                text={stringifyFormElement(codeItem)}
+                emphasize={new RegExp(`type="(${escapeRegExp(codeItem.context?.token)})"`)}
+              />
+            );
+          }),
+        )}
       </Fragment>
     ),
     references: [
@@ -287,23 +315,39 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'an element', 'elements')} with invalid attributes</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<ContextInvalidAttributes>(item, contextItem => (
-            <Fragment>
-              <ul>
-                {contextItem.context!.invalidAttributes.map((context, index) => (
-                  <li key={index}>
-                    <code>{context.attribute}</code>
-                    {context.suggestion ? (
-                      <span>
-                        {' '}
-                        - did you mean <code>{context.suggestion}</code>?
-                      </span>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </Fragment>
-          )),
+          defaultItemRenderer<ContextInvalidAttributes>(
+            item,
+            codeItem => {
+              return (
+                <CodeWrap
+                  text={stringifyFormElement(
+                    item,
+                    codeItem.context!.invalidAttributes.map(invalid => invalid.attribute),
+                  )}
+                  emphasize={codeItem.context!.invalidAttributes.map(
+                    invalid => new RegExp(` (${escapeRegExp(invalid.attribute)})=`),
+                  )}
+                />
+              );
+            },
+            contextItem => (
+              <Fragment>
+                <ul>
+                  {contextItem.context!.invalidAttributes.map((context, index) => (
+                    <li key={index}>
+                      <code>{context.attribute}</code>
+                      {context.suggestion ? (
+                        <span>
+                          {' '}
+                          - did you mean <code>{context.suggestion}</code>?
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </Fragment>
+            ),
+          ),
         )}
         <p>
           Consider using{' '}
@@ -354,31 +398,51 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
           field:
         </p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<ContextReasons>(item, contextItem => (
-            <Fragment>
-              <ul>
-                {(contextItem.context?.reasons ?? []).map((reason, index) => (
-                  <li key={index}>
-                    {reason.type === 'id' ? (
-                      <Fragment>
-                        There are no form fields which reference label <code>{reason.reference}</code>
-                      </Fragment>
-                    ) : null}
-                    {reason.type === 'for' ? (
-                      <Fragment>
-                        There are no form fields with <code>id="{reason.reference}"</code>
-                      </Fragment>
-                    ) : null}
-                    {reason.type === 'empty-for' ? (
-                      <Fragment>
-                        The <code>for</code> attribute should not be empty
-                      </Fragment>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </Fragment>
-          )),
+          defaultItemRenderer<ContextReasons>(
+            item,
+            codeItem => (
+              <CodeWrap
+                text={stringifyFormElement(codeItem)}
+                emphasize={codeItem.context?.reasons
+                  .map(
+                    reason =>
+                      (reason.type === 'id'
+                        ? new RegExp(` id="(${escapeRegExp(reason.reference)})"`)
+                        : reason.type === 'for'
+                        ? new RegExp(` for="(${escapeRegExp(reason.reference)})"`)
+                        : reason.type === 'empty-for'
+                        ? new RegExp(` (for="")`)
+                        : null)!,
+                  )
+                  .filter(Boolean)}
+              />
+            ),
+            contextItem => (
+              <Fragment>
+                <ul>
+                  {(contextItem.context?.reasons ?? []).map((reason, index) => (
+                    <li key={index}>
+                      {reason.type === 'id' ? (
+                        <Fragment>
+                          There are no form fields which reference label <code>{reason.reference}</code>
+                        </Fragment>
+                      ) : null}
+                      {reason.type === 'for' ? (
+                        <Fragment>
+                          There are no form fields with <code>id="{reason.reference}"</code>
+                        </Fragment>
+                      ) : null}
+                      {reason.type === 'empty-for' ? (
+                        <Fragment>
+                          The <code>for</code> attribute should not be empty
+                        </Fragment>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </Fragment>
+            ),
+          ),
         )}
       </Fragment>
     ),
@@ -389,7 +453,25 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       },
     ],
   },
-
+  'label-unique-text': {
+    title: 'Labels within the same form should have unique text values',
+    render: result => (
+      <Fragment>
+        <p>Found labels with the same text:</p>
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp('>([^<]+)<')} />
+          )),
+        )}
+      </Fragment>
+    ),
+    references: [
+      {
+        title: 'Duplicate Form Label',
+        url: 'https://equalizedigital.com/accessibility-checker/duplicate-form-label/',
+      },
+    ],
+  },
   'label-unique': {
     title:
       'Form fields with multiple labels may make it difficult for tools such as screen readers to correctly identify form fields',
@@ -398,7 +480,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found labels with the same <code>for</code> attribute:
         </p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap text={stringifyFormElement(item)} emphasize={new RegExp(' for="([^"]*)"')} />
+          )),
+        )}
       </Fragment>
     ),
     references: [
@@ -414,7 +500,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
       <Fragment>
         <p>Found {pluralize(result.items.length, 'a label', 'labels')} containing a heading or interactive element:</p>
         {defaultItemsPresenter(result.items, item =>
-          defaultItemRenderer<ContextFields>(item, contextItem => (
+          defaultItemRenderer<ContextFields>(item, defaultItemAsCodeRenderer, contextItem => (
             <Fragment>
               {' contains the following elements: '}
               {contextItem.context!.fields.map((field, index) => (
@@ -468,7 +554,14 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found form fields with duplicate <code>id</code> attributes:
         </p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap
+              text={stringifyFormElement(codeItem)}
+              emphasize={new RegExp(` id="(${escapeRegExp(codeItem.attributes.id)})"`)}
+            />
+          )),
+        )}
       </Fragment>
     ),
     references: [
@@ -489,7 +582,14 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
         <p>
           Found fields in the same form with duplicate <code>name</code> attributes:
         </p>
-        {defaultItemsPresenter(result.items, duplicateItemRenderer)}
+        {defaultItemsPresenter(result.items, item =>
+          duplicateItemRenderer(item, codeItem => (
+            <CodeWrap
+              text={stringifyFormElement(codeItem)}
+              emphasize={new RegExp(` name="(${escapeRegExp(codeItem.attributes.name)})"`)}
+            />
+          )),
+        )}
       </Fragment>
     ),
     references: [

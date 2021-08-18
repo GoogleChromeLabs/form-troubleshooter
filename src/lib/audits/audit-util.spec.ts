@@ -59,5 +59,20 @@ describe('audit-util', function () {
       const result = stringifyFormElement(element);
       expect(result).toEqual('<button id="__id" name="__name">hello</button>');
     });
+
+    it('should render button with additional visible attributes', function () {
+      const element = getTreeNodeWithParents({ name: 'button', attributes: { id: '__id', additional: 'true' } });
+      const result = stringifyFormElement(element, ['additional']);
+      expect(result).toEqual('<button id="__id" additional="true"></button>');
+    });
+
+    it('should render button with additional visible attributes with more attributes', function () {
+      const element = getTreeNodeWithParents({
+        name: 'button',
+        attributes: { id: '__id', additional: 'true', more: 'true' },
+      });
+      const result = stringifyFormElement(element, ['additional']);
+      expect(result).toEqual('<button id="__id" additional="true" ...></button>');
+    });
   });
 });

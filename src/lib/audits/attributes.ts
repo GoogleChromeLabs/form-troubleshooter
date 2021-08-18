@@ -112,10 +112,9 @@ export function hasUniqueNames(tree: TreeNodeWithParent): AuditResult | undefine
     .filter(node => node.attributes.name)
     .filter(node => node.attributes.type !== 'radio' && node.attributes.type !== 'checkbox');
   const fieldsByForm = groupBy(eligibleFields, node => closestParent(node, 'form'));
-  const duplicates = Array.from(fieldsByForm.values())
-    .map(formFields => Array.from(groupBy(formFields, field => field.attributes.name).values()))
-    .filter(formFields => formFields.filter(fields => fields.length > 1).length)
-    .flat();
+  const duplicates = Array.from(fieldsByForm.values()).flatMap(formFields =>
+    Array.from(groupBy(formFields, field => field.attributes.name).values()).filter(fields => fields.length > 1),
+  );
 
   if (duplicates.length) {
     return {
