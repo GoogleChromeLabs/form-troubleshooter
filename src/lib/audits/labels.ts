@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { groupBy } from '../array-util';
 import { closestParent, findDescendants, getTextContent } from '../tree-util';
+import Fuse from 'fuse.js';
 
 const INPUT_SELECT_TEXT_FIELDS = ['input', 'select', 'textarea'];
 
@@ -140,6 +141,9 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
     item => item.node,
   );
   const labels = findDescendants(tree, ['label']);
+  const inputIdSuggestions = new Fuse(Array.from(inputsById.keys()), {
+    threshold: 0.3,
+  });
 
   const invalidFields = labels
     .map(
@@ -167,7 +171,10 @@ export function hasInput(tree: TreeNodeWithParent): AuditResult | undefined {
       }
 
       if (invalidFor) {
-        node.context?.reasons.push({ type: 'for', reference: node.attributes.for });
+        const matches = inputIdSuggestions.search(node.attributes.for);
+        const suggestion = matches[0] ? matches[0].item : null;
+
+        node.context?.reasons.push({ type: 'for', reference: node.attributes.for, suggestion });
       } else if (invalidAria) {
         node.context?.reasons.push({ type: 'id', reference: node.attributes.id });
       }

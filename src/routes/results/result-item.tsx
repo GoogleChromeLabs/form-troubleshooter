@@ -430,6 +430,11 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                       {reason.type === 'for' ? (
                         <Fragment>
                           There are no form fields with <code>id="{reason.reference}"</code>
+                          {reason.suggestion ? (
+                            <Fragment>
+                              , did you mean <code>{reason.suggestion}</code>?
+                            </Fragment>
+                          ) : null}
                         </Fragment>
                       ) : null}
                       {reason.type === 'empty-for' ? (
