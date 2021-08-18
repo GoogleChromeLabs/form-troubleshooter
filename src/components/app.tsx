@@ -190,9 +190,9 @@ const App: FunctionalComponent = () => {
         suggestedName: getDefaultHtmlFilename(tabInfo.url, new Date()),
         types: [
           {
-            description: 'Saved HTML or JSON document',
+            description: 'HTML document',
             accept: {
-              'text/*': ['.json', '.html'],
+              'text/*': ['.html'],
             },
           },
         ],
