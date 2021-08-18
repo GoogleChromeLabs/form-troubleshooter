@@ -40,6 +40,27 @@ export function getElementRectangle(element: HTMLElement): Rectangle | undefined
   }
 }
 
+const PIXEL_EXPRESSION = /^([-\d.]+)px/;
+function getPixelValue(cssUnit: string) {
+  const match = PIXEL_EXPRESSION.exec(cssUnit);
+  if (match) {
+    return Number(match[1]);
+  }
+  return null;
+}
+
+function getBodyOffset() {
+  const rect = document.body.getBoundingClientRect();
+  const style = window.getComputedStyle(document.body);
+  const marginTop = getPixelValue(style.marginTop) ?? 0;
+  const marginLeft = getPixelValue(style.marginLeft) ?? 0;
+
+  return {
+    top: rect.top - marginTop,
+    left: rect.left - marginLeft,
+  };
+}
+
 export function showOverlay(rect: Rectangle, type: OverlayType, scrollIntoView: boolean): void {
   const overlay = getOverlay(type);
 
@@ -47,8 +68,9 @@ export function showOverlay(rect: Rectangle, type: OverlayType, scrollIntoView: 
     const { top, left, width, height } = rect;
 
     if (top || left || width || height) {
-      const overlayTop = top + window.pageYOffset;
-      const overlayLeft = left + window.pageXOffset;
+      const offset = getBodyOffset();
+      const overlayTop = top - offset.top;
+      const overlayLeft = left - offset.left;
       overlay.style.top = `${overlayTop}px`;
       overlay.style.left = `${overlayLeft}px`;
       overlay.style.width = `${width}px`;
