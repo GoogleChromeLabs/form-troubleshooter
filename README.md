@@ -8,7 +8,6 @@
 
 ![Screenshot of Form troubleshooter extension popup, running on form-problems.glitch.me page, Form details tab selected](https://user-images.githubusercontent.com/205226/128688891-20c02f65-f35f-48f5-af99-15b822ea2510.png)
 
-
 ## Installation
 
 When released, this extension will be available from the
@@ -46,10 +45,12 @@ Note that you will need to have [Node.js 12 or later](https://nodejs.org/en/) to
 2. Enable **Developer mode**
 3. Click the **Load unpacked** button and select the extension's folder:
 
-   - If you downloaded `form-troubleshooter-extension.zip`, the extension's folder will be the location of the extracted folder.
+   - If you downloaded `form-troubleshooter-extension.zip`, the extension's folder will be the location of the extracted
+     folder.
    - If you built the extension from source, the extension's folder will be the `build/` folder of the repository.
 
-4. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form Troubleshooter**<br><br>
+4. You can pin the extension so its icon is always visible: from the Chrome **Extensions** menu, select **Form
+   Troubleshooter**<br><br>
    <img alt="Screenshot of the Chrome Extensions menu" src="https://user-images.githubusercontent.com/205226/124620955-cb650c80-de71-11eb-9c99-65430ac7949b.png" width="75%">
 
 ## Usage
@@ -121,7 +122,9 @@ npm run pretty
   ways to function at scale and integrate with legacy and third-party systems. The same code may not be appropriate for
   smaller-scale sites.
 
-However, please [provide feedback](https://forms.gle/Sm7DbKfLX3hHNcDp9) or [file a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for audit results that appear to be incorrect.
+However, please [provide feedback](https://forms.gle/Sm7DbKfLX3hHNcDp9) or
+[file a bug](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/new) for audit results that appear to be
+incorrect.
 
 ## How it works
 
