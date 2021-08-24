@@ -28,6 +28,15 @@ describe('audit-util', function () {
       expect(result).toEqual('<input id="__id" name="__name">');
     });
 
+    it('should render input with empty attribute without ""', function () {
+      const element = getTreeNodeWithParents({
+        name: 'input',
+        attributes: { id: '__id', name: '' },
+      });
+      const result = stringifyFormElement(element);
+      expect(result).toEqual('<input id="__id" name>');
+    });
+
     it('should render button with attributes', function () {
       const element = getTreeNodeWithParents({ name: 'button', attributes: { id: '__id', name: '__name' } });
       const result = stringifyFormElement(element);

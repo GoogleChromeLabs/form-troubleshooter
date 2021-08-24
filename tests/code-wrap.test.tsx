@@ -127,4 +127,50 @@ describe('CodeWrap', function () {
       { text: 'o' },
     ]);
   });
+
+  describe('Attribute highlighting', function () {
+    let expression: RegExp;
+
+    beforeEach(() => {
+      expression = / (link)((?==)|(?=[^"]*$)|(?![^"]+(?<!=)"))/g;
+    });
+
+    test('Wraps an attribute with a value', function () {
+      const context = shallow(<CodeWrap text={'<a class="some link here" link="yes">'} emphasize={expression} />);
+      expect(getCodeInfo(context)).toEqual([
+        { text: '<a class="some link here" ' },
+        { text: 'link', type: 'strong' },
+        { text: '="yes">' },
+      ]);
+    });
+
+    test('Wraps an attribute without a value at the end of a tag', function () {
+      const context = shallow(<CodeWrap text={'<a class="some link here" link>'} emphasize={expression} />);
+      expect(getCodeInfo(context)).toEqual([
+        { text: '<a class="some link here" ' },
+        { text: 'link', type: 'strong' },
+        { text: '>' },
+      ]);
+    });
+
+    test('Wraps an attribute without a value with ...', function () {
+      const context = shallow(<CodeWrap text={'<a class="some link here" link ...>'} emphasize={expression} />);
+      expect(getCodeInfo(context)).toEqual([
+        { text: '<a class="some link here" ' },
+        { text: 'link', type: 'strong' },
+        { text: ' ...>' },
+      ]);
+    });
+
+    test('Wraps an attribute without a value with other attributes trailing', function () {
+      const context = shallow(
+        <CodeWrap text={'<a class="some link here" link rel="noopener">'} emphasize={expression} />,
+      );
+      expect(getCodeInfo(context)).toEqual([
+        { text: '<a class="some link here" ' },
+        { text: 'link', type: 'strong' },
+        { text: ' rel="noopener">' },
+      ]);
+    });
+  });
 });

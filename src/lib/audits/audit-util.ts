@@ -16,6 +16,9 @@ export function stringifyFormElement(node: TreeNodeWithParent, additionalAttribu
     .filter(entry => node.attributes[entry[0]] !== null);
   const attributesString = attributes
     .map(([name, value]) => {
+      if (!value) {
+        return name;
+      }
       return `${name}="${value}"`;
     })
     .join(' ');

@@ -325,7 +325,7 @@ const auditPresenters: { [auditType: string]: AuditTypePresenter } = {
                     codeItem.context!.invalidAttributes.map(invalid => invalid.attribute),
                   )}
                   emphasize={codeItem.context!.invalidAttributes.map(
-                    invalid => new RegExp(` (${escapeRegExp(invalid.attribute)})=`),
+                    invalid => new RegExp(` (${escapeRegExp(invalid.attribute)})((?==)|(?=[^"]*$)|(?![^"]+(?<!=)"))`),
                   )}
                 />
               );
