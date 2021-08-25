@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.4](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.3...v1.2.4) (2021-08-25)
+
+
+### Bug Fixes
+
+* remove audit attribute value from output when empty ([83dc375](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/83dc375542dff1c31fa2e6efa86ac2f3228505a1)), closes [#105](https://www.github.com/GoogleChromeLabs/form-troubleshooter/issues/105)
+
 ### [1.2.3](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.0...v1.2.3) (2021-08-18)
 
 
