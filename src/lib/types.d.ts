@@ -55,7 +55,7 @@ interface ContextSuggestion {
 }
 
 interface ContextReasons {
-  reasons: Array<{ type: string; reference: string }>;
+  reasons: Array<{ type: string; reference: string; suggestion?: string | null }>;
 }
 
 interface ContextText {
