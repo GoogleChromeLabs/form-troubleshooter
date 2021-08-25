@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { getImageInfo, ImageInfo } from './image-info-util';
 
 export async function getWebsiteIcon(document: Document): Promise<ImageInfo | null> {

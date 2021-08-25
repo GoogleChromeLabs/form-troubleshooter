@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import { IGNORE_ATTRIBUTES, IGNORE_CHILDREN } from './constants';
 import { sendMessageToIframe } from './messaging-util';
 import { condenseWhitespace, truncate } from './string-util';

@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import typescript from '@rollup/plugin-typescript';

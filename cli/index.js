@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const yargs = require('yargs/yargs');

@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 export function pluralize(count: number, single: string, multiple?: string, zero?: string): string {
   if (count === 1) {
     return single;

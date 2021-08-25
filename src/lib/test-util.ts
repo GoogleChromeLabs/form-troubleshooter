@@ -1,3 +1,6 @@
+/* Copyright 2021 Google LLC.
+SPDX-License-Identifier: Apache-2.0 */
+
 export function createNode(tree: TreeNode, document?: Document, parent?: Node): Node {
   const doc = document ?? new Document();
   let node: Node | undefined;
