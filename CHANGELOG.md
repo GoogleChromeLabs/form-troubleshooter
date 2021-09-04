@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.3...v1.3.0) (2021-09-04)
+
+
+### Features
+
+* add suggestion for labels that don't have a matching field ([6d33065](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/6d330651809d6e7435253db68df1b8ad6acfa32c)), closes [#23](https://www.github.com/GoogleChromeLabs/form-troubleshooter/issues/23)
+
+
+### Bug Fixes
+
+* remove audit attribute value from output when empty ([83dc375](https://www.github.com/GoogleChromeLabs/form-troubleshooter/commit/83dc375542dff1c31fa2e6efa86ac2f3228505a1)), closes [#105](https://www.github.com/GoogleChromeLabs/form-troubleshooter/issues/105)
+
 ### [1.2.3](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.0...v1.2.3) (2021-08-18)
 
 
