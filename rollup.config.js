@@ -5,6 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 
 const buildFolder = 'build/';
 const distFolder = 'dist/';
@@ -13,10 +14,18 @@ const envManifest = process.argv.includes('--configDev') ? 'manifest.dev.json' :
 
 export default [
   {
-    input: 'src/background.js',
+    input: 'src/background.ts',
     output: {
       file: `${buildFolder}background.js`,
     },
+    plugins: [
+      typescript(),
+      replace({
+        'preventAssignment': true,
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+      nodeResolve(),
+    ],
   },
   {
     input: 'src/lib/content-script.ts',

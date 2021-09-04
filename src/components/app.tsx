@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { FunctionalComponent } from 'preact';
-import { CustomHistory, route, Route, Router } from 'preact-router';
+import { route, Route, Router, RouterOnChangeArgs } from 'preact-router';
 
 import Results from '../routes/results';
 import NotFoundPage from '../routes/notfound';
@@ -13,7 +13,6 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import Details from '../routes/details';
 import { getTreeNodeWithParents } from '../lib/tree-util';
 import { runAudits } from '../lib/audits/audits';
-import { createHashHistory } from 'history';
 import style from './app.css';
 import Report from './report';
 import { waitFor } from '../lib/wait-util';
@@ -71,15 +70,6 @@ interface TabInfo {
 const App: FunctionalComponent = () => {
   const [tabInfo, setTabInfo] = useState<TabInfo>({ title: 'Form audit', url: '' });
   const [currentUrl, setCurrentUrl] = useState('/');
-  const history = useMemo(() => {
-    const hist = createHashHistory();
-    setCurrentUrl(hist.location.pathname);
-
-    hist.listen(({ location }) => {
-      setCurrentUrl(location.pathname);
-    });
-    return hist;
-  }, []);
   const [tabIndex, setTabIndex] = useState(0);
   const [tree, setTree] = useState<TreeNode>();
   const richTree = useMemo(() => (tree ? getTreeNodeWithParents(tree) : undefined), [tree]);
@@ -96,6 +86,7 @@ const App: FunctionalComponent = () => {
   );
   const [saving, setSaving] = useState(false);
   const reportElement = useRef<Report>(null);
+  const [testDataFile, setTestDataFile] = useState('');
 
   useEffect(() => {
     setTabIndex(
@@ -135,10 +126,11 @@ const App: FunctionalComponent = () => {
       (async () => {
         // test data for development
         const params = new URLSearchParams(window.location.search.replace('?', ''));
-        const testDataFile = params.get('data');
-        if (testDataFile) {
+        const file = params.get('data');
+        if (file) {
           const testData = await (await fetch(params.get('data') || '/test-data/score.json')).json();
           setTree(testData);
+          setTestDataFile(file);
         }
 
         setTabInfo(prev => ({
@@ -204,6 +196,13 @@ const App: FunctionalComponent = () => {
     setSaving(false);
   }
 
+  function onRouteChange(args: RouterOnChangeArgs) {
+    setCurrentUrl(args.url);
+    if (testDataFile) {
+      history.replaceState(null, '', `?data=${testDataFile}`);
+    }
+  }
+
   return (
     <div id="preact_root">
       <Header onOpenJson={handleOpenFile} onSaveHtml={tree ? handleSaveHtml : undefined} />
@@ -228,7 +227,7 @@ const App: FunctionalComponent = () => {
       </div>
       {tree ? (
         <div class={style.content}>
-          <Router history={history as unknown as CustomHistory}>
+          <Router onChange={onRouteChange}>
             <Redirect path="/" to="/recommendations" />
             <Redirect path="/index.html" to="/recommendations" />
             <Route path="/recommendations" component={Results} results={auditResults.errors} />
