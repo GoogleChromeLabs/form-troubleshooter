@@ -120,6 +120,21 @@ export function closestParent(node: TreeNodeWithParent, tagName: string): TreeNo
 }
 
 /**
+ * Searches for the closest document or shadow root
+ */
+export function closestRoot(node: TreeNodeWithParent): TreeNodeWithParent {
+  let currentNode: TreeNodeWithParent = node;
+  while (currentNode.parent) {
+    if (currentNode.type === '#document' || currentNode.type === '#shadow-root') {
+      return currentNode;
+    }
+
+    currentNode = currentNode.parent;
+  }
+  return currentNode;
+}
+
+/**
  * Gets a path to the node separated by `/`
  *
  * @param {TreeNodeWithParent} node

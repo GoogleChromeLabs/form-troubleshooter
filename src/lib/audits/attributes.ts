@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0 */
 
 import { groupBy } from '../array-util';
 import { ATTRIBUTES, FORM_FIELDS, INPUT_SELECT_TEXT_FIELDS } from '../constants';
-import { closestParent, findDescendants } from '../tree-util';
+import { closestParent, closestRoot, findDescendants } from '../tree-util';
 import Fuse from 'fuse.js';
 
 function getInvalidAttributes(element: TreeNode) {
@@ -82,8 +82,10 @@ export function hasIdOrName(tree: TreeNodeWithParent): AuditResult | undefined {
  */
 export function hasUniqueIds(tree: TreeNodeWithParent): AuditResult | undefined {
   const eligibleFields = findDescendants(tree, INPUT_SELECT_TEXT_FIELDS).filter(node => node.attributes.id);
-  const fieldsById = groupBy(eligibleFields, node => node.attributes.id);
-  const duplicates = Array.from(fieldsById.values()).filter(values => values.length > 1);
+  const fieldsByShadowRoot = groupBy(eligibleFields, node => closestRoot(node));
+  const duplicates = Array.from(fieldsByShadowRoot.values()).flatMap(shadowFields =>
+    Array.from(groupBy(shadowFields, field => field.attributes.id).values()).filter(fields => fields.length > 1),
+  );
 
   if (duplicates.length) {
     return {
