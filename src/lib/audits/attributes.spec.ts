@@ -296,6 +296,126 @@ describe('attributes', function () {
       expect(result!.items[0].context.duplicates[0].attributes.name).toEqual('input2');
       expect(result!.score).toBeCloseTo(1 / 3);
     });
+
+    it('should not return audit error when form has multiple fields with the same id in different shadow roots', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          {
+            name: 'html',
+            children: [
+              {
+                name: 'dark-mode-toggle',
+                children: [
+                  {
+                    type: '#shadow-root',
+                    children: [
+                      {
+                        name: 'form',
+                        children: [
+                          {
+                            name: 'input',
+                            attributes: {
+                              id: 'l',
+                              name: 'mode',
+                              type: 'radio',
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                name: 'dark-mode-toggle',
+                children: [
+                  {
+                    type: '#shadow-root',
+                    children: [
+                      {
+                        name: 'form',
+                        children: [
+                          {
+                            name: 'input',
+                            attributes: {
+                              id: 'l',
+                              name: 'mode',
+                              type: 'radio',
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      const result = hasUniqueIds(tree);
+      expect(result).toBeUndefined();
+    });
+
+    it('should not return audit error when form has multiple fields with the same id in different frames', function () {
+      const tree = getTreeNodeWithParents({
+        children: [
+          {
+            name: 'html',
+            children: [
+              {
+                name: 'iframe',
+                children: [
+                  {
+                    type: '#document',
+                    children: [
+                      {
+                        name: 'form',
+                        children: [
+                          {
+                            name: 'input',
+                            attributes: {
+                              id: 'l',
+                              name: 'mode',
+                              type: 'radio',
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                name: 'iframe',
+                children: [
+                  {
+                    type: '#document',
+                    children: [
+                      {
+                        name: 'form',
+                        children: [
+                          {
+                            name: 'input',
+                            attributes: {
+                              id: 'l',
+                              name: 'mode',
+                              type: 'radio',
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      const result = hasUniqueIds(tree);
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('hasUniqueNames', function () {
