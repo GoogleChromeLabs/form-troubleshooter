@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0 */
 
 import { FunctionalComponent } from 'preact';
-import { route, Route, Router, RouterOnChangeArgs } from 'preact-router';
+import { getCurrentUrl, route, Route, Router, RouterOnChangeArgs } from 'preact-router';
 
 import Results from '../routes/results';
 import NotFoundPage from '../routes/notfound';
@@ -69,7 +69,7 @@ interface TabInfo {
 
 const App: FunctionalComponent = () => {
   const [tabInfo, setTabInfo] = useState<TabInfo>({ title: 'Form audit', url: '' });
-  const [currentUrl, setCurrentUrl] = useState('/');
+  const [currentUrl, setCurrentUrl] = useState(getCurrentUrl());
   const [tabIndex, setTabIndex] = useState(0);
   const [tree, setTree] = useState<TreeNode>();
   const richTree = useMemo(() => (tree ? getTreeNodeWithParents(tree) : undefined), [tree]);
@@ -89,9 +89,10 @@ const App: FunctionalComponent = () => {
   const [testDataFile, setTestDataFile] = useState('');
 
   useEffect(() => {
+    const urlPath = currentUrl.replace(/\?.*/, '');
     setTabIndex(
       Math.max(
-        tabs.findIndex(tab => tab.route === currentUrl),
+        tabs.findIndex(tab => tab.route === urlPath),
         0,
       ),
     );
