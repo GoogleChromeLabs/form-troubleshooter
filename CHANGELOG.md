@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.3.1](https://github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.3.0...v1.3.1) (2022-04-06)
+
+
+### Bug Fixes
+
+* allow ids to be repeated in different doms ([0d46c57](https://github.com/GoogleChromeLabs/form-troubleshooter/commit/0d46c579222d8e49db0b0217a82e7671c7aa379c)), closes [#116](https://github.com/GoogleChromeLabs/form-troubleshooter/issues/116)
+
 ## [1.3.0](https://www.github.com/GoogleChromeLabs/form-troubleshooter/compare/v1.2.3...v1.3.0) (2021-09-04)
 
 
