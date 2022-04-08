@@ -12,12 +12,7 @@
 
 This extension is be available from the [Chrome Web Store](https://chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
 
-You can also download and install the latest version of the extension, or build the extension from 
-source:
-
-* Download source code from the [releases page on GitHub](https://github.com/GoogleChromeLabs/form-troubleshooter/releases). 
-Earlier versions are available from the same page
-* [Download the latest build of the extension](https://github.com/GoogleChromeLabs/form-troubleshooter/releases/latest/download/form-troubleshooter-extension.zip) and extract it to your preferred location
+You can also download the source code for the extension and build and install it locally.
 
 ### Build from source
 
