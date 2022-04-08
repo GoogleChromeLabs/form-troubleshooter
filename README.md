@@ -10,35 +10,25 @@
 
 ## Installation
 
-When released, this extension will be available from the
-[Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
+This extension is be available from the [Chrome Web Store](chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
 
-For the moment, you have the option to either
+You can also download and install the latest version of the extension, or build the extension from 
+source:
 
-- Download the latest extension, or
-- To build from source
+* Download source code from the [releases page on GitHub](https://github.com/GoogleChromeLabs/form-troubleshooter/releases). 
+Earlier versions are available from the same page
+* [Download the latest build of the extension](https://github.com/GoogleChromeLabs/form-troubleshooter/releases/latest/download/form-troubleshooter-extension.zip) and extract it to your preferred location
 
-### Download the latest version (recommended)
+### Build from source
 
-The latest version of the extension can be downloaded with the following URL:
-https://github.com/GoogleChromeLabs/form-troubleshooter/releases/latest/download/form-troubleshooter-extension.zip
+You will need [Node.js 12 or later](https://nodejs.org/en/) to build the extension.
 
-Note that you can download specific versions using by visiting the
-[releases page](https://github.com/GoogleChromeLabs/form-troubleshooter/releases) on GitHub and downloading the
-`form-troubleshooter-extension.zip` file.
-
-Once you have downloaded the zip file, extract in your preferred location.
-
-### Building from source
-
-Note that you will need to have [Node.js 12 or later](https://nodejs.org/en/) to build the extension.
-
-1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) or clone the
-   repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
+1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) 
+or clone the repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
 2. Install dependencies: `npm install`
 3. Build the extension: `npm run build`
 
-### Installing the extension
+### Install the extension locally
 
 1. In Chrome, navigate to `chrome://extensions`<br><br>
    <img alt="Screenshot of the chrome://extensions page" src="https://user-images.githubusercontent.com/205226/124620948-c86a1c00-de71-11eb-8c9d-5d7353c13f65.png" width="75%">
