@@ -10,7 +10,7 @@
 
 ## Installation
 
-This extension is be available from the [Chrome Web Store](chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
+This extension is be available from the [Chrome Web Store](https://chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
 
 You can also download and install the latest version of the extension, or build the extension from 
 source:
