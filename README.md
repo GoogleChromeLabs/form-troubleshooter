@@ -10,7 +10,8 @@
 
 ## Installation
 
-This extension is be available from the [Chrome Web Store](https://chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
+This extension is be available from the
+[Chrome Web Store](https://chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
 
 You can also download the source code for the extension and build and install it locally.
 
@@ -18,8 +19,8 @@ You can also download the source code for the extension and build and install it
 
 You will need [Node.js 12 or later](https://nodejs.org/en/) to build the extension.
 
-1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) 
-or clone the repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
+1. [Download the code](https://github.com/GoogleChromeLabs/form-troubleshooter/archive/refs/heads/main.zip) or clone the
+   repo:<br><br>`git clone git@github.com:GoogleChromeLabs/form-troubleshooter.git`<br><br>
 2. Install dependencies: `npm install`
 3. Build the extension: `npm run build`
 
