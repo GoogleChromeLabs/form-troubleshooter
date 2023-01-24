@@ -29,7 +29,7 @@ function sendPostMessageResponse(event: MessageEvent<any>, responseMessage: any)
       messageId: event.data.messageId,
       data: responseMessage,
     },
-    { targetOrigin: event.origin }
+    { targetOrigin: event.origin },
   );
 }
 
