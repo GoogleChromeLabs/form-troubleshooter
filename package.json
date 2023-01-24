@@ -54,7 +54,7 @@
     "fs-extra": "^10.0.0",
     "jest": "^26.2.2",
     "jest-preset-preact": "^4.0.3",
-    "preact-cli": "^3.0.0",
+    "preact-cli": "^3.4.5",
     "prettier": "^2.3.2",
     "regenerator-runtime": "^0.13.9",
     "rimraf": "^3.0.2",
@@ -63,8 +63,8 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.3",
-    "@material-ui/icons": "^4.11.2",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
     "fuse.js": "^6.4.6",
     "preact": "^10.5.14",
     "preact-render-to-string": "^5.1.19",
