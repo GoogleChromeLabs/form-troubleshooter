@@ -154,17 +154,21 @@ const App: FunctionalComponent = () => {
   }, [auditResults, tree]);
 
   async function handleOpenFile() {
-    const [fileHandle] = await window.showOpenFilePicker?.({
-      types: [
-        {
-          description: 'Saved HTML or JSON document',
-          accept: {
-            'text/*': ['.json', '.html'],
+    const [fileHandle] =
+      (await window.showOpenFilePicker?.({
+        types: [
+          {
+            description: 'Saved HTML or JSON document',
+            accept: {
+              'text/*': ['.json', '.html'],
+            },
           },
-        },
-      ],
-      multiple: false,
-    });
+        ],
+        multiple: false,
+      })) || [];
+    if (fileHandle === undefined) {
+      return;
+    }
     const file = await fileHandle.getFile();
     const contents = await file.text();
     let json = contents;
