@@ -9,7 +9,7 @@ import { getWebsiteIcon } from './webpage-icon-util';
 /* global chrome */
 
 window.addEventListener('message', async event => {
-  if (event.data?.message === 'iframe message') {
+  if (event.data?.message === 'iframe message' && event.origin === window.location.origin) {
     const messageType = event.data?.data?.type;
     if (messageType === 'inspect') {
       sendPostMessageResponse(event, await getDocumentTree(document));
