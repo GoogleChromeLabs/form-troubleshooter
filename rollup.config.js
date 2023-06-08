@@ -1,7 +1,7 @@
 /* Copyright 2021 Google LLC.
 SPDX-License-Identifier: Apache-2.0 */
 
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import * as path from 'path';
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -9,6 +9,7 @@ import replace from '@rollup/plugin-replace';
 
 const buildFolder = 'build/';
 const distFolder = 'dist/';
+const __dirname = process.cwd();
 
 const envManifest = process.argv.includes('--configDev') ? 'manifest.dev.json' : 'manifest.prod.json';
 
