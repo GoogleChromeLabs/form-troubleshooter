@@ -15,9 +15,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: bump version
         run: |
-          git config --global user.name '${{ github.actor }}'
-          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-          git commit -m "chore: bump version to ${{ github.event.inputs.version }}
+          git config --global user.name '${GITHUB_ACTOR}'
+          git config --global user.email '${GITHUB_ACTOR}@users.noreply.github.com'
+          git commit -m "chore: bump version to ${GITHUB_EVENT_INPUTS_VERSION}
 
-          release-as: ${{ github.event.inputs.version }}" --allow-empty
+          release-as: ${GITHUB_EVENT_INPUTS_VERSION}" --allow-empty
           git push
+        env:
+          GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
