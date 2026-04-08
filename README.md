@@ -10,10 +10,10 @@
 
 ## Installation
 
-This extension is be available from the
+This extension is available from the
 [Chrome Web Store](https://chrome.google.com/webstore/detail/form-troubleshooter/lpjhcgjbicfdoijennopbjooigfipfjh).
 
-You can also download the source code for the extension and build and install it locally.
+You can also download the source code for the extension, to build and install locally.
 
 ### Build from source
 
